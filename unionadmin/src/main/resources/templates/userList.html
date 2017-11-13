@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" layout:decorator="${session.userContext.menuPos eq 'layout-top-nav' ? 'layoutTop' : 'layoutLeft'}">
+<head>
+    <title></title>
+</head>
+<body>
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper" layout:fragment="content">
+    <section class="content-header">
+        <h1>网站主列表</h1>
+    </section>
+    <section class="content">
+        <div id="toolbar" class="btn-group">
+            <button id="all" type="button" class="btn btn-default plan-type">
+                <span class="glyphicon glyphicon-home" aria-hidden="true"></span>全部列表
+            </button>
+            <button id="btn_add" type="button" class="btn btn-default plan-type">
+                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>增加
+            </button>
+            <button id="PendingReview" type="button" class="btn btn-default plan-type">
+                <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>正常
+            </button>
+            <button id="Audited" type="button" class="btn btn-default plan-type">
+                <span class="fa fa-unlock" aria-hidden="true"></span>未激活
+            </button>
+            <button id="locked" type="button" class="btn btn-default plan-type">
+                <span class="glyphicon glyphicon-lock" aria-hidden="true"></span>锁定
+            </button>
+        </div>
+        <table id="table" class="table"></table>
+        <input type="hidden" id="uidHidden" th:value="${uidHidden}" />
+    </section>
+    <!-- 模态框（Modal） -->
+    <div class="modal fade" id="modalDialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form th:action="@{/manage/addAdsUser}" method="post" role="form" id="form">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <h4 class="modal-title" id="dialogTitle">编辑</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="col-md-6 col-xs-12">
+                            <label for="username">站长名称</label>
+                            <input type="text" class="form-control" placeholder="站长名称" name="username" id="username"/>
+                        </div>
+                        <div class="col-md-6 col-xs-12">
+                            <label for="password">密码</label>
+                            <input type="password" class="form-control" placeholder="不修改密码则不填" name="password"
+                                   id="password" maxlength="100"/>
+                        </div>
+                        <div class="col-md-6 col-xs-12">
+                            <label for="ddl_test">用户类型</label>
+                            <select class="form-control" name="utype" id="ddl_test">
+                                <option value="1">站长</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 col-xs-12">
+                            <label for="limiturl">网站限制</label>
+                            <select class="form-control" name="limiturl">
+                                <option value="0">限制域名</option>
+                                <option value="1">不限制</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 col-xs-12">
+                            <label for="limitdiv">暗层限制</label>
+                            <select class="form-control" name="limitdiv">
+                                <option value="0">默认</option>
+                                <option value="1">没有</option>
+                                <option value="2">每个IP一次</option>
+                                <option value="3">随机</option>
+                                <option value="4">每次</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 col-xs-12">
+                            <label for="limitdivheight">暗层高度</label>
+                            <input type="number" class="form-control number2" placeholder="暗层多高" name="limitdivheight"
+                                   maxlength="3"/>
+                        </div>
+                        <div class="col-md-6 col-xs-12">
+                            <label for="limitpop">弹窗限制</label>
+                            <select class="form-control" name="limitpop">
+                                <option value="0">默认</option>
+                                <option value="1">不弹</option>
+                                <option value="2">每个IP一次</option>
+                                <option value="3">随机</option>
+                                <option value="4">每次</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 col-xs-12">
+                            <label for="runtype">广告播放形式</label>
+                            <select class="form-control" name="runtype">
+                                <option value="0">顺序随机</option>
+                                <option value="1">无序随机</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 col-xs-12">
+                            <label for="paytype">站长结算周期</label>
+                            <select class="form-control" name="paytype">
+                                <option value="1">日结</option>
+                                <option value="2">周结</option>
+                                <option value="3">月结</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 col-xs-12">
+                            <label for="chartype">站长24小时内的计费方式</label>
+                            <select class="form-control" name="chartype">
+                                <option value="1">UV</option>
+                                <option value="2">IP</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 col-xs-12">
+                            <label for="memo">备注说明</label>
+                            <textarea placeholder="备注说明" name="memo" class="form-control" maxlength="50"></textarea>
+                        </div>
+                        <div class="col-md-6 col-xs-12">
+                            <label for="limitplan">屏蔽计划</label>
+                            <textarea placeholder="屏蔽计划" name="limitplan" class="form-control"
+                                      maxlength="500"></textarea>
+                        </div>
+                        <div class="col-md-6 col-xs-12">
+                            <label for="cpv">CPV扣量</label>
+                            <input type="number" class="form-control number" placeholder="CPV扣量" name="cpv"
+                                   maxlength="40"/>
+                        </div>
+                        <div class="col-md-6 col-xs-12">
+                            <label for="cpc">CPC扣量</label>
+                            <input type="number" class="form-control number" placeholder="CPC扣量" name="cpc"
+                                   maxlength="40"/>
+                        </div>
+                        <div class="col-md-6 col-xs-12">
+                            <label for="cpc">CPA扣量</label>
+                            <input type="number" class="form-control number" placeholder="CPC扣量" name="cpa"
+                                   maxlength="40"/>
+                        </div>
+                        <div class="col-md-6 col-xs-12">
+                            <label for="cpc">CPS扣量</label>
+                            <input type="number" class="form-control number" placeholder="CPC扣量" name="cps"
+                                   maxlength="40"/>
+                        </div>
+                        <div class="col-md-6 col-xs-12">
+                            <label for="cpc">CPM扣量</label>
+                            <input type="number" class="form-control number" placeholder="CPC扣量" name="cpm"
+                                   maxlength="40"/>
+                        </div>
+                        <div class="col-md-6 col-xs-12">
+                            <label for="serviceid">专属客服</label>
+                            <select class="form-control" name="serviceid">
+                                <option value="0">默认</option>
+                                <option th:each="CustomerName,CustomerStat:${AllUserName}"
+                                        th:text="${CustomerName.username}"
+                                        th:value="${CustomerName.uid}"/>
+                            </select>
+                        </div>
+                        <div class="col-md-6 col-xs-12">
+                            <label for="realname2">真实姓名</label>
+                            <input type="text" class="form-control" placeholder="真实姓名" name="realname" maxlength="20"/>
+                        </div>
+                        <div class="col-md-6 col-xs-12">
+                            <label for="qq2">联系QQ</label>
+                            <input type="text" class="form-control" placeholder="联系QQ" name="qq" maxlength="15"/>
+                        </div>
+                        <div class="col-md-6 col-xs-12">
+                            <label for="mobile">联系电话</label>
+                            <input type="text" class="form-control" placeholder="联系电话" name="mobile" maxlength="11"/>
+                        </div>
+                        <div class="col-md-6 col-xs-12">
+                            <label for="idcard">身份证号码</label>
+                            <input type="text" class="form-control" placeholder="身份证号码" name="idcard" maxlength="18"/>
+                        </div>
+                        <div class="col-md-6 col-xs-12">
+                            <label for="bankname">收款银行</label>
+                            <select class="form-control" name="bankname">
+                                <option value="中国银行">中国银行</option>
+                                <option value="农业银行">农业银行</option>
+                                <option value="工商银行">工商银行</option>
+                                <option value="建设银行">建设银行</option>
+                                <option value="招商银行">招商银行</option>
+                                <option value="支付宝">支付宝</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 col-xs-12">
+                            <label for="bankbranch">开户分行</label>
+                            <input type="text" class="form-control" placeholder="开户分行" name="bankbranch"
+                                   maxlength="200"/>
+                        </div>
+                        <div class="col-md-6 col-xs-12">
+                            <label for="bankaccount">收款姓名</label>
+                            <input type="text" class="form-control" placeholder="收款姓名" name="bankaccount"
+                                   maxlength="20"/>
+                        </div>
+                        <div class="col-md-6 col-xs-12">
+                            <label for="banknum">收款帐号</label>
+                            <input type="text" class="form-control" placeholder="收款帐号" name="banknum" maxlength="50"/>
+                        </div>
+                        <div class="col-md-6 col-xs-12">
+                            <span id="errContainer" style="color:red;"/>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                        <button type="submit" class="btn btn-primary">确认</button>
+                    </div>
+                </form>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
+
+    <!-- 模态框（Modal） -->
+    <div class="modal fade" id="modalDialog2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form th:action="@{/manage/updateAdsUser}" method="post" role="form" id="form2">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <h4 class="modal-title" id="dialogTitle2">编辑</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="col-md-6 col-xs-12">
+                            <label for="username2">站长名称</label>
+                            <input type="text" class="form-control" placeholder="站长名称" name="username2" id="username2"
+                                   readonly="readonly"/>
+                        </div>
+                        <div class="col-md-6 col-xs-12">
+                            <label for="password">密码</label>
+                            <input type="password" class="form-control" placeholder="不修改密码则不填" name="password"
+                                   id="password2" maxlength="100"/>
+                        </div>
+                        <div class="col-md-6 col-xs-12">
+                            <label for="ddl_test2">用户类型</label>
+                            <select class="form-control" name="utype" id="ddl_test2" disabled="disabled">
+                                <option value="1">站长</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 col-xs-12">
+                            <label for="limiturl">网站限制</label>
+                            <select class="form-control" name="limiturl" id="limiturl">
+                                <option value="0">限制域名</option>
+                                <option value="1">不限制</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 col-xs-12">
+                            <label for="limitdiv">暗层限制</label>
+                            <select class="form-control" name="limitdiv" id="limitdiv">
+                                <option value="0">默认</option>
+                                <option value="1">没有</option>
+                                <option value="2">每个IP一次</option>
+                                <option value="3">随机</option>
+                                <option value="4">每次</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 col-xs-12">
+                            <label for="limitdivheight">暗层高度<span>(200:117)(150:87)(100:57)</span></label>
+                            <input type="number" class="form-control" placeholder="暗层多高" name="limitdivheight"
+                                   id="limitdivheight" maxlength="3"/>
+                        </div>
+                        <div class="col-md-6 col-xs-12">
+                            <label for="limitpop">弹窗限制</label>
+                            <select class="form-control" name="limitpop" id="limitpop">
+                                <option value="0">默认</option>
+                                <option value="1">不弹</option>
+                                <option value="2">每个IP一次</option>
+                                <option value="3">随机</option>
+                                <option value="4">每次</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 col-xs-12">
+                            <label for="runtype">广告播放形式</label>
+                            <select class="form-control" name="runtype" id="runtype">
+                                <option value="0">顺序随机</option>
+                                <option value="1">无序随机</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 col-xs-12">
+                            <label for="paytype">站长结算周期</label>
+                            <select class="form-control" name="paytype" id="paytype">
+                                <option value="1">日结</option>
+                                <option value="2">周结</option>
+                                <option value="3">月结</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 col-xs-12">
+                            <label for="chartype">站长24小时内的计费方式</label>
+                            <select class="form-control" name="chartype" id="chartype">
+                                <option value="1">UV</option>
+                                <option value="2">IP</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 col-xs-12">
+                            <label for="memo">备注说明</label>
+                            <textarea placeholder="备注说明" name="memo" id="memo" class="form-control"
+                                      maxlength="50"></textarea>
+                        </div>
+                        <div class="col-md-6 col-xs-12">
+                            <label for="limitplan">屏蔽计划</label>
+                            <textarea placeholder="屏蔽计划" name="limitplan" id="limitplan" class="form-control"
+                                      maxlength="500"></textarea>
+                        </div>
+                        <div class="col-md-6 col-xs-12">
+                            <label for="cpv">CPV扣量</label>
+                            <input type="number" class="form-control number" placeholder="CPV扣量" name="cpv" id="cpv"
+                                   maxlength="40"/>
+                        </div>
+                        <div class="col-md-6 col-xs-12">
+                            <label for="cpc">CPC扣量</label>
+                            <input type="number" class="form-control number" placeholder="CPC扣量" name="cpc" id="cpc"
+                                   maxlength="40"/>
+                        </div>
+                        <div class="col-md-6 col-xs-12">
+                            <label for="cpc">CPA扣量</label>
+                            <input type="number" class="form-control number" placeholder="CPC扣量" name="cpa" id="cpa"
+                                   maxlength="40"/>
+                        </div>
+                        <div class="col-md-6 col-xs-12">
+                            <label for="cpc">CPS扣量</label>
+                            <input type="number" class="form-control number" placeholder="CPC扣量" name="cps" id="cps"
+                                   maxlength="40"/>
+                        </div>
+                        <div class="col-md-6 col-xs-12">
+                            <label for="cpc">CPM扣量</label>
+                            <input type="number" class="form-control number" placeholder="CPC扣量" name="cpm" id="cpm"
+                                   maxlength="40"/>
+                        </div>
+                        <div class="col-md-6 col-xs-12">
+                            <label for="serviceid">专属客服</label>
+                            <select class="form-control" name="serviceid" id="serviceid">
+                                <option value="0">默认</option>
+                                <option th:each="CustomerName,CustomerStat:${AllUserName}"
+                                        th:text="${CustomerName.username}"
+                                        th:value="${CustomerName.uid}"/>
+                            </select>
+                        </div>
+                        <div class="col-md-6 col-xs-12">
+                            <label for="realname2">真实姓名</label>
+                            <input type="text" class="form-control" placeholder="真实姓名" name="realname" id="realname2"
+                                   maxlength="20"/>
+                        </div>
+                        <div class="col-md-6 col-xs-12">
+                            <label for="qq2">联系QQ</label>
+                            <input type="text" class="form-control" placeholder="联系QQ" name="qq" id="qq2"
+                                   maxlength="15"/>
+                        </div>
+                        <div class="col-md-6 col-xs-12">
+                            <label for="mobile">联系电话</label>
+                            <input type="text" class="form-control" placeholder="联系电话" name="mobile" id="mobile"
+                                   maxlength="11"/>
+                        </div>
+                        <div class="col-md-6 col-xs-12">
+                            <label for="idcard">身份证号码</label>
+                            <input type="text" class="form-control" placeholder="身份证号码" name="idcard" maxlength="18"
+                                   id="idcard"/>
+                        </div>
+                        <div class="col-md-6 col-xs-12">
+                            <label for="bankname">收款银行</label>
+                            <select class="form-control" name="bankname" id="bankname">
+                                <option value="中国银行">中国银行</option>
+                                <option value="农业银行">农业银行</option>
+                                <option value="工商银行">工商银行</option>
+                                <option value="建设银行">建设银行</option>
+                                <option value="招商银行">招商银行</option>
+                                <option value="支付宝">支付宝</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 col-xs-12">
+                            <label for="bankbranch">开户分行</label>
+                            <input type="text" class="form-control" placeholder="开户分行" name="bankbranch" id="bankbranch"
+                                   maxlength="200"/>
+                        </div>
+                        <div class="col-md-6 col-xs-12">
+                            <label for="bankaccount">收款姓名</label>
+                            <input type="text" class="form-control" placeholder="收款姓名" name="bankaccount"
+                                   id="bankaccount" maxlength="20"/>
+                        </div>
+                        <div class="col-md-6 col-xs-12">
+                            <label for="banknum">收款帐号</label>
+                            <input type="text" class="form-control" placeholder="收款帐号" name="banknum" id="banknum"
+                                   maxlength="50"/>
+                        </div>
+                        <div class="col-md-6 col-xs-12">
+                            <span id="errContainer2" style="color:red;"/>
+                            <input type="hidden" id="uid" name="uid"/>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                        <button type="submit" class="btn btn-primary">确认</button>
+                    </div>
+                </form>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
+    <div class="modal fade bs-example-modal-sm" tabindex="-1" id="models3" role="dialog"
+         aria-labelledby="mySmallModalLabel">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Info</h4>
+                </div>
+                <div class="modal-body">
+                    <span id="returnstatus2"></span>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" data-dismiss="modal" class="btn btn-primary">YES</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div style="display: none;" layout:fragment="script">
+    <!-- form validate -->
+    <script src="https://cdn.bootcss.com/jquery-validate/1.16.0/jquery.validate.js"></script>
+    <script src="https://cdn.bootcss.com/jquery.form/4.2.1/jquery.form.js"></script>
+    <script type="application/javascript" th:inline="JavaScript">
+        function addSearchGroup() {
+            // 插入多选框、输入框、按钮
+            var searchBtnGroup = $('<div class="input-group pull-right"></div>');
+            var $button = $('<div class="columns pull-right search-button"><button id="search" class="btn btn-default form-control" type="button" name="refresh" title="查询">' +
+                '<i class="glyphicon glyphicon-search icon-search"></i></button></div>');
+            var $input = $('<div class="columns pull-right search-input"><input id="searchValue" class="form-control" type="text" placeholder="搜索内容"/></div>');
+            var $select = $('<div class="columns pull-right search-select"><select id="search-condition" class="form-control"></select></div>');
+
+            // 插入select搜索下拉框
+            var selectDom = $select.find('select');
+            selectDom.append('<option value="username">站长名称</option>');
+            selectDom.append('<option value="mobile">手机号码</option>');
+            selectDom.append('<option value="qq">站长QQ</option>');
+            selectDom.append('<option value="serviceid">专属客服ID</option>');
+            selectDom.append('<option value="uid">站长ID</option>');
+            searchBtnGroup.append($button,$input,$select);
+            $('.fixed-table-toolbar').append(searchBtnGroup);
+        }
+
+        /*<![CDATA[*/
+        var height = $(window).width() <= 767 ? $(window).height() - 115 : $(window).height() - 65;
+        $('#table').bootstrapTable({
+            url: '/manage/adsUserList',
+            striped: true,  //表格显示条纹
+            pagination: true, //启动分页
+            paginationLoop: false, //
+            pageSize: 50,  //每页显示的记录数
+            pageNumber: 1, //当前第几页
+            pageList: [50, 100, 200],  //记录数可选列表
+            search: false,  //是否启用查询
+            sortable: false, //是否启用排序
+            showHeader: true, //
+            showFooter: true, //
+            singleSelect: true, //
+            clickToSelect: true,
+            toolbar: '#toolbar', //
+            stickyHeader: true, // 是否固定表头
+            sidePagination: "server", //表示服务端请求
+            queryParamsType: "undefined",// limit or undefined
+            queryParams: function queryParams(params) {   //设置查询参数
+                var param = {
+                    //这里是在ajax发送请求的时候设置一些参数 params有什么东西，自己看看源码就知道了
+                    page: params.pageNumber - 1,
+                    size: params.pageSize
+                };
+                return param;
+            },
+            columns: [
+                {field: 'uid', title: 'ID', align: 'center', valign: 'middle', formatter: function (value, row, index) {
+                    return "<a href='http://www.dianyoo.cn/aff/index?uid=" + row.uid + "'target='_blank'>" + row.uid + "</a>";
+                }},
+                {field: 'username', title: '站长名称', align: 'left', valign: 'middle', formatter: function (value, row, index) {
+                    return "<span style='color: #3c8dbc;cursor: pointer; '>" + value + "</span>"
+                }},
+                {field: 'money', title: '今日收入', align: 'center', valign: 'middle'},
+                {field: 'daymoney', title: '昨日收入', align: 'center', valign: 'middle'},
+                {field: 'weekmoney', title: '周收入', align: 'center', valign: 'middle'},
+                {field: 'monthmoney', title: '月收入', align: 'center', valign: 'middle'},
+                {field: 'xmoney', title: '未结算', align: 'center', valign: 'middle'},
+                {field: 'runtype', title: '轮播', align: 'center', valign: 'middle', formatter: function (value, row, index) {
+                    if (value == 0) {
+                        return "顺序随机";
+                    } else if (value == 1) {
+                        return "无序随机";
+                    }
+                }},
+                {field: 'paytype', title: '结算', align: 'center', valign: 'middle', formatter: function (value, row, index) {
+                    if (value == 1) {
+                        return "日结";
+                    } else if (value == 2) {
+                        return "周结";
+                    }else if (value == 3) {
+                        return "月结";
+                    }
+                }},
+                {field: 'chartype', title: '计费方式', align: 'center', valign: 'middle', formatter: function (value, row, index) {
+                    if (value == 1) {
+                        return "UV";
+                    } else if (value == 2) {
+                        return "IP";
+                    }
+                }},
+                {field: 'deduction', title: '扣量', align: 'center', valign: 'middle', formatter: function (value, row, index) {
+                    var div = "<div>";
+                    var str = "";
+                    for (var key in row.deduction) {
+                        div += key + ":" + row.deduction[key] + '%<br/>';
+                    }
+                    return div + "</div>";
+                }},
+                {field: 'regtime', title: '注册时间', align: 'center', valign: 'middle', formatter: function (value, row, index) {
+                    return $.format.date(value.time, 'yyyy-MM-dd');
+                }},
+                {field: 'logintime', title: '登录时间', align: 'center', valign: 'middle', formatter: function (value, row, index) {
+                    if (value) {
+                        return $.format.date(value.time, 'yyyy-MM-dd HH:mm:ss');
+                    }
+                    return "-";
+                }},
+                {field: 'loginip', title: '登录IP', align: 'left', valign: 'middle', visible: false},
+                {field: 'serviceid', title: '专属客服', align: 'center', valign: 'middle'},
+                {field: 'ustatus', title: '状态', align: 'center', valign: 'middle', formatter: function (value, row, index) {
+                    if (value == 0) {
+                        return '<span class="label label-warning">未激活</span>';
+                    } else if (value == 1) {
+                        return '<span class="label label-info">正常</span>';
+                    } else if (value == 9) {
+                        return '<span class="label label-danger">锁定</span>';
+                    }
+                }}
+            ],
+            onClickCell: function (field, value, row, $element) {
+                var array = [];
+
+                array.push("<a href='/manage/adsSite?uid=" + row.uid + "'>查看网站</a>");
+                array.push("<a href='/manage/adsZone?uid=" + row.uid + "'>查看广告位</a>");
+                array.push("<a href='/manage/ustatlist?searchField=uid&searchValue=" + row.uid + "'>查看报表</a>");
+                array.push("<a href='/manage/logVisitAnalysis?uid="+ row.uid +"'>当天IP信息</a>");
+                array.push("<a href='javascript:void(0);' class='btn_edit' >修改</a>");
+                array.push("<a href='javascript:void(0);' class='update-ustatus' uid='" + row.uid + "' ustatus='1'>激活</a>");
+                array.push("<a href='javascript:void(0);' class='update-ustatus' uid='" + row.uid + "' ustatus='9'>锁定</a>");
+                array.push("<a href='javascript:void(0);' class='update-ustatus' uid='" + row.uid + "' ustatus='8'>删除</a>");
+                quickMenu((field === 'username'), array, $element);
+            }
+        });
+
+        // 若接受到参数
+        $("#uidHidden").val() && $("#table").bootstrapTable('refreshOptions',
+            {url: '/manage/userData?utype=1&searchCondition=uid&searchValue=' + $("#uidHidden").val()});
+
+        addSearchGroup();
+        $('#modalDialog').modal({backdrop: false, keyboard: false, show: false});
+        $('#modalDialog2').modal({backdrop: false, keyboard: false, show: false});
+        $('#modalDialog').on('hide.bs.modal', function () {
+            document.forms["form"].reset();
+        });
+        $('#modalDialog2').on('hide.bs.modal', function () {
+            document.forms["form2"].reset();
+        });
+        $('#btn_add').click(function () {
+            $('#modalDialog').modal('show');
+        });
+
+        $('#menu-panel').on("click", ".btn_edit", function () {
+            var index = $("#table").find("tr.info").data("index");
+            var selObj = $("#table").bootstrapTable('getData')[index];
+            if (selObj) {
+                $('#menu-panel').hide();
+                //看着
+                var cpv = "";
+                var cpc = "";
+                var cpa = "";
+                var cps = "";
+                var cpm = "";
+                if (selObj.deduction != "" && selObj.deduction != null) {
+                    var str = selObj.deduction;
+                    if (str.cpv == undefined || str.cpv == "" || str.cpv == null) {
+                        str.cpv = "";
+                    }
+                    if (str.cpc == undefined || str.cpc == "" || str.cpc == null) {
+                        str.cpc = "";
+                    }
+                    if (str.cpa == undefined || str.cpa == "" || str.cpa == null) {
+                        str.cpa = "";
+                    }
+                    if (str.cps == undefined || str.cps == "" || str.cps == null) {
+                        str.cps = "";
+                    }
+                    if (str.cpm == undefined || str.cpm == "" || str.cpm == null) {
+                        str.cpm = "";
+                    }
+                    cpv = str.cpv;
+                    cpc = str.cpc;
+                    cpa = str.cpa;
+                    cps = str.cps;
+                    cpm = str.cpm;
+                }
+                document.forms["form2"].serviceid.value = selObj.serviceid;
+                document.forms["form2"].uid.value = selObj.uid;//隐藏的id
+                document.forms["form2"].username2.value = selObj.username;//站长名称
+                document.forms["form2"].memo.value = selObj.memo;//备注说明
+                document.forms["form2"].qq.value = selObj.qq;//QQ
+                document.forms["form2"].realname.value = selObj.realname;//真实姓名
+                document.forms["form2"].mobile.value = selObj.mobile;//手机号码
+                document.forms["form2"].idcard.value = selObj.idcard;//ID卡
+                document.forms["form2"].bankname.value = selObj.bankname;//收款银行
+                document.forms["form2"].bankbranch.value = selObj.bankbranch;//开户分行
+                document.forms["form2"].bankaccount.value = selObj.bankaccount;//收款姓名
+                document.forms["form2"].banknum.value = selObj.banknum;//收款账号
+                document.forms["form2"].utype.value = selObj.utype;//用户类型
+                document.forms["form2"].cpv.value = cpv;//cpv扣量
+                document.forms["form2"].cpc.value = cpc;//cpc扣量
+                document.forms["form2"].cpa.value = cpa;//cpa扣量
+                document.forms["form2"].cps.value = cps;//cps扣量
+                document.forms["form2"].cpm.value = cpm;//cpm扣量
+                document.forms["form2"].limiturl.value = selObj.limiturl;//是否限制域名
+                document.forms["form2"].limitdiv.value = selObj.limitdiv;//是否暗层
+                document.forms["form2"].limitdivheight.value = selObj.limitdivheight;//暗层多高
+                document.forms["form2"].limitpop.value = selObj.limitpop;//是否暗弹
+                document.forms["form2"].runtype.value = selObj.runtype;//广告播放形式
+                document.forms["form2"].paytype.value = selObj.paytype;//站长结算周期
+                document.forms["form2"].chartype.value = selObj.chartype;//站长24小时内的计费模式
+                document.forms["form2"].limitplan.value = selObj.limitplan;//站长24小时内的计费模式
+                $('#modalDialog2').modal('show');
+            } else {
+                alert('至少选择一条记录');
+            }
+        });
+        // 身份证号码验证
+        jQuery.validator.addMethod("idcardno", function (value, element) {
+            return this.optional(element) || isIdCardNo(value);
+        }, "请正确输入身份证号码");
+
+        function isIdCardNo(num) {
+            var factorArr = new Array(7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2, 1);
+            var parityBit = new Array("1", "0", "X", "9", "8", "7", "6", "5", "4", "3", "2");
+            var varArray = new Array();
+            var intValue;
+            var lngProduct = 0;
+            var intCheckDigit;
+            var intStrLen = num.length;
+            var idNumber = num;
+            //initialize
+            if ((intStrLen != 15) && (intStrLen != 18)) {
+                return false;
+            }
+            // check andset value
+            for (var i = 0; i < intStrLen; i++) {
+                varArray[i] = idNumber.charAt(i);
+                if ((varArray[i] < '0' || varArray[i] > '9') && (i != 17)) {
+                    return false;
+                } else if (i < 17) {
+                    varArray[i] = varArray[i] * factorArr[i];
+                }
+            }
+
+            if (intStrLen == 18) {
+                //check date
+                var date8 = idNumber.substring(6, 14);
+                if (isDate8(date8) == false) {
+                    return false;
+                }
+                // calculate the sum of the products
+                for (i = 0; i < 17; i++) {
+                    lngProduct = lngProduct + varArray[i];
+                }
+                // calculate the check digit
+                intCheckDigit = parityBit[lngProduct % 11];
+                // check last digit
+                if (varArray[17] != intCheckDigit) {
+                    return false;
+                }
+            }
+            else {       //length is 15
+                //check date
+                var date6 = idNumber.substring(6, 12);
+                if (isDate6(date6) == false) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        function isDate6(sDate) {
+            if (!/^[0-9]{6}$/.test(sDate)) {
+                return false;
+            }
+            var year, month, day;
+            year = sDate.substring(0, 4);
+            month = sDate.substring(4, 6);
+            if (year < 1700 || year > 2500) return false;
+            if (month < 1 || month > 12) return false;
+            return true;
+        }
+
+        function isDate8(sDate) {
+            if (!/^[0-9]{8}$/.test(sDate)) {
+                return false;
+            }
+            var year, month, day;
+            year = sDate.substring(0, 4);
+            month = sDate.substring(4, 6);
+            day = sDate.substring(6, 8);
+            var iaMonthDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+            if (year < 1700 || year > 2500) return false;
+            if (((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0)) iaMonthDays[1] = 29;
+            if (month < 1 || month > 12) return false
+            if (day < 1 || day > iaMonthDays[month - 1]) return false;
+            return true;
+        }
+
+        // 手机号码验证
+        jQuery.validator.addMethod("isMobile", function (value, element) {
+            var length = value.length;
+            var mobile = /^(((13[0-9]{1})|(15[0-9]{1})|(18[0-9]{1}))+\d{8})$/;
+            return this.optional(element) || (length == 11 && mobile.test(value));
+        }, "手机格式不正确");
+        //判断输入的是否为整数
+        jQuery(".number").blur(function () {
+            var value = jQuery(this).val();
+            if (value < 0) {
+                alert("不能是负数！");
+            }
+            if (value > 100) {
+                alert("不能大于100！");
+            }
+        });
+        jQuery(".number2").blur(function () {
+            var value = jQuery(this).val();
+            if (value < 0) {
+                alert("不能是负数！");
+            }
+        });
+        $("#form2").validate({
+            rules: {
+                mobile: {
+                    isMobile: "required"
+                },
+                idcard: {
+                    idcardno: "required"
+                },
+                limitdivheight: {
+                    required: true,
+                    maxlength: 3
+                }
+            },
+            messages: {
+                mobile: '手机格式不正确，请重新输入！',
+                limitdivheight: {
+                    maxlength: "最大长度不能超过3",
+                    required: "暗层高度不能为空！"
+                }
+            },
+            focusCleanup: true,
+            focusInvalid: false,
+            onfocusin: function (element) {
+                $("#errContainer2").html("");
+            },
+            errorPlacement: function (error, element) {
+                $("#errContainer2").html("");
+                $("#errContainer2").html($(error).text());
+            },
+            submitHandler: function (form) {
+                $(form).ajaxSubmit({
+                    success: function (responseText, statusText, xhr, $form) {
+                        var json = $.parseJSON(responseText);
+                        if (json.result == 'success') {
+                            window.location.reload();
+                        } else {
+                            alert(json.result);
+                        }
+                    }
+                });
+            }
+
+        });
+        $("#form").validate({
+            rules: {
+                username: {
+                    required: true,
+                    maxlength: 20
+                },
+                password: {
+                    required: true,
+                    maxlength: 100
+                },
+                realname: {
+                    maxlength: 20
+                },
+                mobile: {
+                    isMobile: "required"
+                },
+                idcard: {
+                    idcardno: "required"
+                },
+                limitdivheight: {
+                    required: true,
+                    maxlength: 3
+                }
+            },
+            messages: {
+                username: {
+                    required: '用户名称不能空',
+                    maxlength: "最大长度不能超过20"
+                },
+                password: {
+                    required: '用户密码不能空',
+                    maxlength: "最大长度不能超过100"
+                },
+                realname: {
+                    maxlength: "最大长度不能超过20"
+                },
+                mobile: '手机格式不正确，请重新输入！',
+                limitdivheight: {
+                    maxlength: "最大长度不能超过3",
+                    required: "暗层高度不能为空！"
+                }
+            },
+            focusCleanup: true,
+            focusInvalid: false,
+            onfocusin: function (element) {
+                $("#errContainer").html("");
+            },
+            errorPlacement: function (error, element) {
+                $("#errContainer").html("");
+                $("#errContainer").html($(error).text());
+            },
+            submitHandler: function (form) {
+                $(form).ajaxSubmit({
+                    success: function (responseText, statusText, xhr, $form) {
+                        var json = $.parseJSON(responseText);
+                        console.log(json);
+                        if (json.result == 'success') {
+                            window.location.reload();
+                        } else {
+                            alert(json.result);
+                        }
+                    }
+                });
+            }
+        });
+        // 定义站长用户类型，状态查询事件
+        $("#PendingReview,#Audited,#locked,#all").on("click", function () {
+            if (this.id === "PendingReview") {
+                $("#table").bootstrapTable('refreshOptions', {url: '/manage/findUustatus?ustatus=1&utype=1'});
+            } else if (this.id === "Audited") {
+                $("#table").bootstrapTable('refreshOptions', {url: '/manage/findUustatus?ustatus=0&utype=1'});
+            } else if (this.id === "locked") {
+                $("#table").bootstrapTable('refreshOptions', {url: '/manage/findUustatus?ustatus=9&utype=1'});
+            }
+            else if (this.id = "all") {
+                $("#table").bootstrapTable('refreshOptions', {url: '/manage/adsUserList'});
+            }
+            addSearchGroup();
+            $(".plan-type").removeClass('active');
+            $(this).addClass('active');
+        });
+        // 定义搜索框click 事件
+        $(".content").on("click", ".search-button #search", function () {
+            var searchCondition = $("#search-condition").val();
+            var searchValue = $("#searchValue").val();
+            $("#table").bootstrapTable('refreshOptions', {
+                url: '/manage/userData?utype=1&searchCondition=' + searchCondition
+                + '&searchValue=' + searchValue
+            });
+            addSearchGroup();
+        });
+        // ustatus状态更新click 事件
+        $("#menu-panel").on("click", ".update-ustatus", function () {
+            var uid = $(this).attr("uid");
+            var ustatus = $(this).attr("ustatus");
+            if (!confirm("你是否要做此操作？")) {
+                return;
+            }
+            $.ajax({
+                type: 'POST',
+                url: '/manage/updateStatus',
+                async: true,
+                contentType: 'application/x-www-form-urlencoded',
+                data: {"uid": uid, "ustatus": ustatus},
+                dataType: "json",
+                success: function (data) {
+                    $("#menu-panel").hide();
+                    $("#table").bootstrapTable("refresh");
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                }
+            });
+        });
+        //点击enter搜索
+        $(document).keydown(function (event) {
+            if (event.keyCode == 13) {
+                $("#search").trigger('click');
+            }
+        });
+        /*]]>*/
+    </script>
+</div>
+</body>
+</html>

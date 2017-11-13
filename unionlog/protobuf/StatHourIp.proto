@@ -1,0 +1,38 @@
+syntax = "proto3";
+package io.union.log.common.proto;
+
+option java_package = "io.union.log.common.proto";
+option java_outer_classname = "StatHourIpProto";
+
+message StatHourIpMessage {
+
+    uint64 id = 1;
+    uint64 uid = 2;
+    uint64 siteid = 3;
+    uint64 planid = 4;
+    uint64 add_time = 5;
+    uint64 hour0 = 6;
+    uint64 hour1 = 7;
+    uint64 hour2 = 8;
+    uint64 hour3 = 9;
+    uint64 hour4 = 10;
+    uint64 hour5 = 11;
+    uint64 hour6 = 12;
+    uint64 hour7 = 13;
+    uint64 hour8 = 14;
+    uint64 hour9 = 15;
+    uint64 hour10 = 16;
+    uint64 hour11 = 17;
+    uint64 hour12 = 18;
+    uint64 hour13 = 19;
+    uint64 hour14 = 20;
+    uint64 hour15 = 21;
+    uint64 hour16 = 22;
+    uint64 hour17 = 23;
+    uint64 hour18 = 24;
+    uint64 hour19 = 25;
+    uint64 hour20 = 26;
+    uint64 hour21 = 27;
+    uint64 hour22 = 28;
+    uint64 hour23 = 29;
+}

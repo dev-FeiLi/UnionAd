@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout">
+<head>
+    <title>点优移动传媒会员后台</title>
+    <!-- Bootstrap Styles-->
+    <link href="/assets/css/bootstrap.css" rel="stylesheet" />
+    <!-- FontAwesome Styles-->
+    <link href="/assets/css/font-awesome.css" rel="stylesheet" />
+    <!-- Custom Styles-->
+    <link href="/assets/css/custom-styles.css" rel="stylesheet" />
+    <!-- datapicker -->
+    <link href="/assets/js/datapicker/datepicker3.css" rel="stylesheet" />
+    <!-- select -->
+    <link href="/assets/css/select2.min.css" rel="stylesheet" />
+    <link href="/assets/css/style.css" rel="stylesheet" />
+</head>
+<body>
+<div id="wrapper">
+    <!--/. NAV TOP  -->
+    <nav class="navbar-default navbar-side" role="navigation">
+        <div class="sidebar-collapse">
+            <div class="navname"><p><i class="fa fa-user"></i><span th:text="${'您好 '+ session.userContext.realname}"/></p></div>
+            <ul class="nav" id="main-menu">
+                <li><a th:class="${menu eq 'index' ? 'active-menu' : ''}" href="/aff/index"><i class="fa fa-home"></i>首页</a></li>
+                <li><a th:class="${menu eq 'zone' ? 'active-menu' : ''}" href="/aff/zone"><i class="fa fa-gear"></i>广告管理</a></li>
+                <li><a th:class="${menu eq 'site' ? 'active-menu' : ''}" href="/aff/site"><i class="fa fa-edge"></i>网站管理</a></li>
+                <li><a th:class="${menu eq 'settlement' ? 'active-menu' : ''}" href="/aff/settlement"><i class="fa fa-money"></i>结算记录</a></li>
+                <li><a th:class="${menu eq 'bank' ? 'active-menu' : ''}" href="/aff/bank"><i class="fa fa-credit-card"></i>银行信息</a></li>
+                <li><a th:class="${menu eq 'basic' ? 'active-menu' : ''}" href="/aff/basic"><i class="fa fa-user"></i>基本信息</a></li>
+                <li><a th:class="${menu eq 'pass' ? 'active-menu' : ''}" href="/aff/pass"><i class="fa fa-lock"></i>密码管理</a></li>
+                <li><a href="/logout"><i class="fa fa-power-off"></i>安全退出</a></li>
+            </ul>
+        </div>
+    </nav>
+    <!-- /. NAV SIDE  -->
+    <div id="page-wrapper">
+        <div class="pagetop">
+            <div id="sideNav"><i class="fa fa-bars icon"></i></div>
+
+        </div>
+        <div id="page-main" layout:fragment="content"></div>
+    </div>
+    <!-- /. PAGE WRAPPER  -->
+</div>
+<!-- /. WRAPPER  -->
+<!-- JS Scripts-->
+<!-- jQuery Js -->
+<script src="/assets/js/jquery-1.10.2.js"></script>
+<!-- Bootstrap Js -->
+<script src="/assets/js/bootstrap.min.js"></script>
+<!-- Metis Menu Js -->
+<script src="/assets/js/jquery.metisMenu.js"></script>
+<!-- clockpicker Js -->
+<script src="/assets/js/datapicker/bootstrap-datepicker.js"></script>
+<!-- select JS -->
+<script src="/assets/js/select2.full.min.js"></script>
+<!-- distpicker JS -->
+<script src="/assets/js/distpicker/distpicker.data.js"></script>
+<script src="/assets/js/distpicker/distpicker.js"></script>
+<script type="text/javascript">
+/*<![CDATA[*/
+$("#sideNav").click(function(){
+    if($(this).hasClass('closed')){
+        $('.navbar-side').animate({left: '0px'});
+        $(this).removeClass('closed');
+        $('#page-wrapper').animate({'margin-left' : '260px'});
+
+    }
+    else{
+        $(this).addClass('closed');
+        $('.navbar-side').animate({left: '-260px'});
+        $('#page-wrapper').animate({'margin-left' : '0px'});
+    }
+});
+// 时间选择器
+$('#data_1 .input-group.date').datepicker({
+    todayBtn: "linked",
+    keyboardNavigation: false,
+    forceParse: false,
+    calendarWeeks: true,
+    autoclose: true
+});
+//index select
+$(".selectbox").select2();
+//重置
+$('#reset').click(function(){
+    document.getElementById("form").reset();
+});
+// 省市二级联动
+$('#target').distpicker();
+/*]]>*/
+</script>
+<div style="display: none;" layout:fragment="script"></div>
+</body>
+</html>

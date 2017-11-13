@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" layout:decorator="waplayout">
+<head>
+	<title th:text="${wapTitle}"/>
+</head>
+<body>
+<div layout:fragment="content">
+	<section class="ser-bgc">
+		<div class="center-wrap page-info">
+			<div class="page-title">
+				<title th:text="${article.title}"/>
+				<small th:text="${#dates.format(article.addTime,'yyyy-MM-dd')}"/>
+			</div>
+			<div class="page-char" th:utext="${article.content}"/>
+		</div>	
+	</section>
+</div>
+</body>
+</html>

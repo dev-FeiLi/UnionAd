@@ -1,0 +1,19 @@
+syntax = "proto3";
+package io.union.js.common.proto;
+
+option java_package = "io.union.js.common.proto";
+option java_outer_classname = "AdsSiteProto";
+
+message AdsSiteMessage {
+
+    uint64 siteid = 1;
+    string sitename = 2;
+    string siteurl = 3;
+    uint32 sitetype = 4;
+    uint64 dayip = 5;
+    uint64 daypv = 6;
+    string beian = 7;
+    uint32 sstatus = 8;
+    uint64 addTime = 9;
+    uint64 uid = 10;
+}

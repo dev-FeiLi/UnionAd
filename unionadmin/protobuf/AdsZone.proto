@@ -1,0 +1,24 @@
+syntax = "proto3";
+package io.union.admin.common.proto;
+
+option java_package = "io.union.admin.common.proto";
+option java_outer_classname = "AdsZoneProto";
+
+message AdsZoneMessage {
+
+    uint64 zoneid = 1;
+    uint64 uid = 2;
+    uint32 zstatus = 3;
+    string zonename = 4;
+    uint32 paytype = 5;
+    uint32 viewtype = 6;
+    string viewadids = 7;
+    uint32 width = 8;
+    uint32 height = 9;
+    string hcontrol = 10;
+    uint64 add_time = 11;
+    string jdomain = 12;
+    string idomain = 13;
+    string description = 14;
+    string viewname = 15;
+}

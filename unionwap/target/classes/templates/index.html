@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" layout:decorator="waplayout">
+<head>
+    <title th:text="${wapTitle}"/>
+</head>
+<body>
+<div layout:fragment="content">
+    <section class="banner">
+        <div class="center-wrap">
+            <div class="banchar">
+                <h2>点优移动传媒</h2>
+                <h3>为您打造精细化移动营销服务</h3>
+                <h3>最好的移动互联网广告平台</h3>
+            </div>
+            <div class="login-box">
+                <title>登录点优后台</title>
+                <form th:action="@{/logcheck}" method="post" role="form" id="loginForm">
+                    <div class="login-input user">
+                        <input type="text" name="username" placeholder="请输入帐号"/>
+                    </div>
+                    <div class="login-input password">
+                        <input type="password" name="password" placeholder="请输入密码"/>
+                    </div>
+                    <button class="btn login-sub" type="submit">登陆</button>
+                </form>
+                <div class="login-other">
+                    <a href="/reg/aff">注册帐号</a>
+                    <span>|</span>
+                    <a href="javascript:void(0);" onclick="javascript:alert('请联系专属客服可找回密码');">找回密码</a>
+                </div>
+            </div>
+        </div>
+        <div class="banbot">
+            <ul class="center-wrap">
+                <li><a href="javascript:void(0);">
+                    <img src="/images/icon3.png" alt=""/>
+                    <p>2亿次<br/>PV展现</p>
+                </a></li>
+                <li><a href="javascript:void(0);">
+                    <img src="/images/icon4.png" alt=""/>
+                    <p>10万<br/>wap网站</p>
+                </a></li>
+                <li><a href="javascript:void(0);">
+                    <img src="/images/icon5.png" alt=""/>
+                    <p>1000<br/>APP推广者</p>
+                </a></li>
+            </ul>
+        </div>
+    </section>
+    <section class="main">
+        <title>合作案例</title>
+        <div class="main-center">
+            <ul id="myTab" class="nav nav-tabs">
+                <li class="active"><a href="#web" data-toggle="tab">网站主</a></li>
+                <li><a href="#ad" data-toggle="tab">广告主</a></li>
+            </ul>
+            <div id="myTabContent" class="tab-content">
+                <!-- 网站主 -->
+                <div class="tab-pane fade in active" id="web">
+                    <div id="myWeb" class="carousel slide carousel-fade">
+                        <!-- 轮播（Carousel）指标
+                        <ol class="carousel-indicators">
+                            <li data-target="#myWeb" data-slide-to="0" class="active"></li>
+                            <li data-target="#myWeb" data-slide-to="1"></li>
+                        </ol> -->
+                        <!-- 轮播（Carousel）项目 -->
+                        <div class="carousel-inner">
+                            <div class="item active clearfix">
+                                <p><a href="javascript:void(0);"><img src="/images/aff1.jpg" alt=""/></a></p>
+                                <p><a href="javascript:void(0);"><img src="/images/aff2.jpg" alt=""/></a></p>
+                                <p><a href="javascript:void(0);"><img src="/images/aff3.jpg" alt=""/></a></p>
+                                <p><a href="javascript:void(0);"><img src="/images/aff4.jpg" alt=""/></a></p>
+                                <p><a href="javascript:void(0);"><img src="/images/aff5.jpg" alt=""/></a></p>
+                                <p><a href="javascript:void(0);"><img src="/images/aff6.jpg" alt=""/></a></p>
+                                <p><a href="javascript:void(0);"><img src="/images/aff7.jpg" alt=""/></a></p>
+                                <p><a href="javascript:void(0);"><img src="/images/aff8.jpg" alt=""/></a></p>
+                                <p><a href="javascript:void(0);"><img src="/images/aff9.jpg" alt=""/></a></p>
+                                <p><a href="javascript:void(0);"><img src="/images/aff10.jpg" alt=""/></a></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 网站主 end -->
+                <!-- 广告主 -->
+                <div class="tab-pane fade" id="ad">
+                    <div id="myAd" class="carousel slide carousel-fade">
+                        <!-- 轮播（Carousel）指标
+                        <ol class="carousel-indicators">
+                            <li data-target="#myAd" data-slide-to="0" class="active"></li>
+                            <li data-target="#myAd" data-slide-to="1"></li>
+                        </ol> -->
+                        <!-- 轮播（Carousel）项目 -->
+                        <div class="carousel-inner">
+                            <div class="item active clearfix">
+                                <p><a href="javascript:void(0);"><img src="/images/adv1.jpg" alt=""/></a></p>
+                                <p><a href="javascript:void(0);"><img src="/images/adv2.jpg" alt=""/></a></p>
+                                <p><a href="javascript:void(0);"><img src="/images/adv3.jpg" alt=""/></a></p>
+                                <p><a href="javascript:void(0);"><img src="/images/adv4.jpg" alt=""/></a></p>
+                                <p><a href="javascript:void(0);"><img src="/images/adv5.jpg" alt=""/></a></p>
+                                <p><a href="javascript:void(0);"><img src="/images/adv6.jpg" alt=""/></a></p>
+                                <p><a href="javascript:void(0);"><img src="/images/adv7.jpg" alt=""/></a></p>
+                                <p><a href="javascript:void(0);"><img src="/images/adv8.jpg" alt=""/></a></p>
+                                <p><a href="javascript:void(0);"><img src="/images/adv9.jpg" alt=""/></a></p>
+                                <p><a href="javascript:void(0);"><img src="/images/adv10.jpg" alt=""/></a></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 广告主 end -->
+            </div>
+            <div class="main-service">
+                <title>客服中心</title>
+                <div class="main-service-inside">
+                    <h1>网站主客服</h1>
+                    <small>站长放广告咨询这里</small>
+                    <ul class="clearfix">
+                        <li th:each="node,nodeStat:${services}" th:if="${(node.utype eq 3) and (node.ustatus eq 1)}">
+                            <a th:href="@{tencent://message/(uin=${node.qq},Site=${wapUrl},Menu=yes)}" th:text="${node.realname}"/>
+                        </li>
+                    </ul>
+                </div>
+                <div class="main-service-inside">
+                    <h1>广告主客服</h1>
+                    <small>投放广告咨询这里</small>
+                    <ul class="clearfix">
+                        <li th:each="node,nodeStat:${services}" th:if="${(node.utype eq 4) and (node.ustatus eq 1)}">
+                            <a th:href="@{tencent://message/(uin=${node.qq},Site=${wapUrl},Menu=yes)}" th:text="${node.realname}"/>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+</body>
+</html>

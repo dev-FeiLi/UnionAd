@@ -1,0 +1,16 @@
+syntax = "proto3";
+package io.union.log.common.proto;
+
+option java_package = "io.union.log.common.proto";
+option java_outer_classname = "LogBrowserProto";
+
+message LogBrowserMessage {
+
+    uint64 id = 1;
+    string brw_name = 2;
+    string brw_version = 3;
+    string brw_plat = 4;
+    uint64 brw_num = 5;
+    uint64 uid = 6;
+    uint64 add_time = 7;
+}

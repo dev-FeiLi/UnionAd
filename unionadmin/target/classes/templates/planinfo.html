@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"  layout:decorator="${session.userContext.menuPos eq 'layout-top-nav' ? 'layoutTop' : 'layoutLeft'}">
+<head>
+    <title></title>
+    <style type="text/css">
+    .form-horizontal .control-group {
+        margin-bottom: 14px;
+    }
+    .heading {
+        border-bottom: 1px solid #dcdcdc;
+        margin-bottom: 18px;
+        padding-bottom: 5px;
+        padding-left: 10px;
+    }
+    .formSep {
+        padding-bottom: 12px;
+        border-bottom: 1px dashed #dcdcdc;
+    }
+    .form-horizontal .control-label {
+        float: left;
+        width: 130px;
+        padding-top: 5px;
+        text-align: right;
+    }
+    .form-horizontal .controls {
+        margin-left: 30px;
+        padding-left: 130px;
+        margin-bottom: 0px;
+    }
+    select {
+        height: auto;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        padding: 5px;
+        line-height: 20px;
+    }
+    .input_text {
+        height: 24px;
+        padding: 0px 6px;
+        margin-bottom: 5px;
+        font-size: 14px;
+        line-height: 20px;
+        color: #555;
+        vertical-align: middle;
+        -webkit-border-radius: 4px;
+        -moz-border-radius: 4px;
+        border-radius: 4px;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
+        -moz-box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
+        box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
+        -webkit-transition: border linear .2s, box-shadow linear .2s;
+        -moz-transition: border linear .2s, box-shadow linear .2s;
+        -o-transition: border linear .2s, box-shadow linear .2s;
+        transition: border linear .2s, box-shadow linear .2s;
+    }
+    .form-horizontal .controls span {
+        color: #666;
+    }
+    ul, ol {
+        padding: 0;
+        margin: 0;
+        display: block;
+        list-style: none;
+    }
+    .area li {
+        line-height: 32px;
+        height: 32px;
+    }
+    .area li span {
+        display: block;
+        width: 30px;
+        height: 32px;
+        font-size: 12px;
+        float: left;
+        line-height: 32px;
+    }
+    ol, ul {
+        list-style: none;
+    }
+    .region {
+        width: 700px;
+        font-size: 12px;
+        font-weight: normal;
+        height: 32px;
+        line-height: 32px;
+        float: left;
+    }
+    .region div {
+        float: left;
+        width: 65px;
+        text-align: center;
+    }
+    .region .hover {
+        border: solid 1px #97A5B2;
+        border-right: none;
+        background-color: #FFF;
+        margin: -1px 0;
+        z-index: 999;
+        position: relative;
+    }
+    .region input {
+        margin-top: -2px;
+        vertical-align: middle;
+    }
+    .p_city {
+        /* display: none; */
+        border: solid 1px #97A5B2;
+        position: absolute;
+        padding: 3px 0;
+        margin: -1px;
+        background-color: #FFF;
+        z-index: 998;
+        width: 180px;
+    }
+    .p_city li {
+        float: left;
+        padding: 5px;
+        white-space: nowrap;
+    }
+    .clearfix:after{
+        content:".";
+        display:block;
+        height:0;
+        clear:both;
+        visibility:hidden}
+    </style>
+
+</head>
+<body>
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper" layout:fragment="content">
+    <section class="content-header">
+        <h1 id="pageTitle" th:utext="${initType}"></h1>
+    </section>
+    <section class="content">
+        <form class="form-horizontal" th:method="post">
+            <div class="p_tab p_cg">
+                <div class="control-group formSep">
+                    <label class="control-label">投放广告商</label>
+                    <div class="controls">
+                        <select name="uid" id="uid" th:disabled="${planInfo.uid}">
+                            <option value="">请选择一个广告商</option>
+                            <option th:each="user,userStatus:${advUserList}" th:text="${user.username +'￥' + user.xmoney}"
+                                    th:value="${user.uid}" th:selected="${user.uid eq planInfo.uid}">
+                            </option>
+                        </select> <span>帐号余额太少的广告商不显示、不能发布计划</span>
+                        <span id="u_text"></span>
+                    </div>
+                </div>
+                <div class="control-group formSep">
+                    <label class="control-label">计划名称</label>
+                    <div class="controls">
+                        <input name="planName" id="planName" type="text" class="input_text span30" th:value="${planInfo.title}" style="width: 400px;"/>
+                    </div>
+                </div>
+                <div class="control-group formSep st">
+                    <label class="control-label">计费模式</label>
+                    <div class="controls">
+                        <select name="payType" id="payType" th:value="${planInfo.payType}" th:disabled="${planInfo.payType ne null}">
+                            <option value="">请选择</option>
+                            <option value="1" th:selected="${planInfo.payType eq 1}" >&nbsp; CPM &nbsp;</option>
+                            <option value="2" th:selected="${planInfo.payType eq 2}">&nbsp; CPV &nbsp;</option>
+                            <option value="3" th:selected="${planInfo.payType eq 3}">&nbsp; CPC &nbsp;</option>
+                            <option value="4" th:selected="${planInfo.payType eq 4}">&nbsp; CPA &nbsp;</option>
+                            <option value="5" th:selected="${planInfo.payType eq 5}">&nbsp; CPS &nbsp;</option>
+                        </select>
+                    </div>
+                </div>
+                <div hidden="true" class="control-group formSep">
+                    <label class="control-label">网站审核方式</label>
+                    <div class="controls">
+                        <input type="radio" name="audit" value="N" th:checked="${planInfo.isAudit}"/>无需申请
+                        <!--<input type="radio" name="audit" value="Y" />-->
+                        <!--人工审核 <span>需要站长申请才能投放</span>-->
+                    </div>
+                </div>
+                <div class="control-group formSep">
+                    <label class="control-label">投放设备</label>
+                    <div class="controls">
+                        <label><input type="radio" value="all" name="isLimitDevice" />不限</label>
+                        <label><input type="radio" value="acls" name="isLimitDevice" />指定终端</label><span id="mobile_data_error" class="frc_error"></span>
+                        <div id="limitDeviceWrapper" style="margin-top: 20px; display: none;">
+                            <table style="width:450px" class="class_tb">
+                                <tbody>
+                                <tr>
+                                    <td>
+                                        <label ><input type="checkbox" name="limitdevice" id="limitdevice" value="1" />桌面电脑</label>
+                                    </td>
+                                    <td>
+                                        <label ><input type="checkbox" name="limitdevice" id="limitdevice" value="2" />苹果IOS</label>
+                                    </td>
+                                    <td>
+                                        <label ><input type="checkbox" name="limitdevice" id="limitdevice" value="3" />Android</label>
+                                    </td>
+                                    <td>
+                                        <label ><input type="checkbox" name="limitdevice" id="limitdevice" value="4" />微软WP</label>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="control-group formSep">
+                    <label class="control-label">广告地址</label>
+                    <div class="controls">
+                        <input type="text" name="adsUrl" id="adsUrl" style="min-width: 600px;" class="input_text span30" th:value="${planInfo.adsUrl}" />
+                        <span>该计划下预设广告的url， 可以新建(编辑)广告页面修改</span>
+                    </div>
+                </div>
+                <div class="control-group formSep">
+                    <label class="control-label">权重</label>
+                    <div class="controls">
+                        <input type="number" name="priority" id="priority" class="input_text span30" th:value="${planInfo.priority eq null? '' : planInfo.priority}" />
+                        <span>权重，若不填写默认是5</span>
+                    </div>
+                </div>
+                <div class="control-group formSep">
+                    <label class="control-label">点击率</label>
+                    <div class="controls">
+                        <input name="clickRate" id="clickRate" style="width: 147px;padding-right: 18px;text-align: right;box-sizing: border-box;" class="input_text span30" th:value="${planInfo.clickRate}" />
+                        <span style="margin-left: -18px;">%</span><span style="margin-left: 5px;">(人为增加计划的点击率，不包括自然行为)</span>
+                    </div>
+                </div>
+                <div class="control-group formSep">
+                    <label class="control-label">效果跟踪</label>
+                    <div class="controls">
+                        <label><input type="checkbox" name="isnotify" id="isnotify" value="Y" />是</label>
+                    </div>
+                </div>
+            </div>
+            <!-- 出价与预算 -->
+            <div class="p_tab p_ys">
+                <h3 class="heading">出价与预算</h3>
+                <div class="control-group formSep">
+                    <label class="control-label">ios单价</label>
+                    <div class="controls">
+                        <span>出厂价: </span><input type="number" class="input_text" name="iosPriceAdv" placeholder="厂商出价ios" /><span>元</span>
+                        <span>会员价: </span><input type="number" class="input_text" name="iosPriceAff" placeholder="会员单价ios"/><span>元</span>
+                    </div>
+                </div>
+                <div class="control-group formSep">
+                    <label class="control-label">android单价</label>
+                    <div class="controls">
+                        <span>出厂价: </span><input type="number" class="input_text" name="androidPriceAdv" placeholder="厂商出价android" /><span>元</span>
+                        <span>会员价: </span><input type="number" class="input_text " name="androidPriceAff" placeholder="会员单价android" /><span>元</span>
+                    </div>
+                </div>
+                <div class="control-group formSep">
+                    <label class="control-label">站长</label>
+                    <div id="userPrice" class="controls"></div>
+                </div>
+                <div class="control-group formSep">
+                    <label class="control-label">每日限额</label>
+                    <div class="controls">
+                        <input name="limitMoney" type="number" class="input_text span30" id="limitMoney" th:value="${planInfo.limitMoney}"/>
+                        <span>达到每日预算限额时，广告就会在当天停止展示</span>
+                    </div>
+                </div>
+                <div class="control-group formSep">
+                    <label class="control-label">项目扣量 </label>
+                    <div class="controls">
+                        <input name="deduction" type="number" class="input_text span30" id="deduction"  th:value="${planInfo.deduction}" />
+                        <span>项目扣量优先全局扣量，低于站长单独扣量，为空既按全局扣量</span>
+                    </div>
+                </div>
+            </div>
+            <!-- 投放限制 -->
+            <div class="p_tab p_xz">
+                <h3 class="heading">投放限制</h3>
+                <div class="control-group formSep">
+                    <label class="control-label">开始日期 </label>
+                    <div class="controls" id="start-date">
+                        <input style="display: inline-block" name="startTime" id="startTime" class="input_text input-group date" th:value="${planInfo.startTime ne null ? #dates.format(planInfo.startTime, 'yyyy-MM-dd') : ''}" readonly="true"/>
+                        <label style="display: inline-block;" class="fa fa-calendar"></label>
+                    </div>
+                </div>
+                <div class="control-group formSep">
+                    <label class="control-label">结束日期 </label>
+                    <div class="controls" id="end-date">
+                        <input style="display: inline-block" name="stopTime" id="stopTime" class=" input_text input-group date" th:value="${planInfo.stopTime ne null ? #dates.format(planInfo.stopTime, 'yyyy-MM-dd') : ''}" readonly="true"/>
+                        <label style="display: inline-block" class="fa fa-calendar"></label>
+                    </div>
+                </div>
+                <div class="control-group formSep">
+                    <label class="control-label">暗层限制</label>
+                    <div class="controls">
+                        <label><input type="radio" name="limitdiv" id="limitdiv" value="0" th:checked="${planInfo.limitDiv eq 0}" />默认</label>
+                        <label><input type="radio" name="limitdiv" id="limitdiv" value="1" th:checked="${planInfo.limitDiv eq 1}" />不弹</label>
+                        <label><input type="radio" name="limitdiv" id="limitdiv" value="2" th:checked="${planInfo.limitDiv eq 2}" />每个IP一次</label>
+                        <label><input type="radio" name="limitdiv" id="limitdiv" value="3" th:checked="${planInfo.limitDiv eq 3}" />随机</label>
+                        <label><input type="radio" name="limitdiv" id="limitdiv" value="4" th:checked="${planInfo.limitDiv eq 4}" />每次</label>
+                    </div>
+                </div>
+                <div class="control-group formSep" id="limitDivHeightWrapper" style="display: none;">
+                    <label class="control-label">暗层高度</label>
+                    <div class="controls">
+                        <input type="number" name="limitDivHeight" id="limitDivHeight" class="input_text " th:value="${planInfo.limitDivHeight}"/>px
+                    </div>
+                </div>
+                <div class="control-group formSep">
+                    <label class="control-label">弹窗限制</label>
+                    <div class="controls">
+                        <label><input type="radio" name="limitPop" value="0" th:checked="${planInfo.limitPop eq 0}"/>默认</label>
+                        <label><input type="radio" name="limitPop" value="1" th:checked="${planInfo.limitPop eq 1}"/>不弹</label>
+                        <label><input type="radio" name="limitPop" value="2" th:checked="${planInfo.limitPop eq 2}"/>每个IP一次</label>
+                        <label><input type="radio" name="limitPop" value="3" th:checked="${planInfo.limitPop eq 3}"/>随机</label>
+                        <label><input type="radio" name="limitPop" value="4" th:checked="${planInfo.limitPop eq 4}"/>每次</label>
+                    </div>
+                </div>
+                <div class="control-group formSep">
+                    <label class="control-label">站长限制 </label>
+                    <div class="controls">
+                        <label><input type="radio" name="restrictions" id="restrictions" value="1" th:checked="${planInfo.limitUid eq ''}"/>不限制</label>
+                        <label><input type="radio" name="restrictions" value="3" th:checked="${planInfo.limitUid ne ''}"/>屏蔽以下站长 </label>
+                    </div>
+                </div>
+                <div class="control-group formSep" id="resuids" style="display: none;">
+                    <label class="control-label">站长限制ID </label>
+                    <div class="controls">
+                        <textarea name="resuid" id="resuid" class="input_text span30" style="width:380px" th:text="${planInfo.limitUid}"></textarea>
+                        <span>多ID限制格式“,”逗号隔开</span>
+                    </div>
+                </div>
+                <div class="control-group formSep">
+                    <label class="control-label">网站限制 </label>
+                    <div class="controls">
+                        <label><input type="radio" name="sitelimit" id="sitelimit" value="1" th:checked="${planInfo.limitSite eq ''}" />不限制</label>
+                        <!--<input type="radio" name="sitelimit" value="2" />-->
+                        <!--允许以下网站-->
+                        <label><input type="radio" name="sitelimit" value="3" th:checked="${planInfo.limitSite ne ''}"/>屏蔽以下网站</label>
+                    </div>
+                </div>
+                <div class="control-group formSep" id="limitsiteids" style="display: none;">
+                    <label class="control-label">限制网站ID </label>
+                    <div class="controls">
+                        <textarea name="limitsiteid" id="limitsiteid" class="input_text span30" style="width:380px" th:text="${planInfo.limitSite}"></textarea>
+                    </div>
+                </div>
+            </div>
+            <!-- 定向设置 -->
+            <div class="p_tab p_dx">
+                <h3 class="heading">定向设置</h3>
+                <div class="control-group formSep">
+                    <label class="control-label">投放地域</label>
+                    <div class="controls">
+                        <label><input type="radio" value="all" name="limitArea" checked="checked"/> 不限</label>
+                        <label><input type="radio" value="acls" name="limitArea" /> 选择地区</label>
+                        <div id="chinaArea" class="clearfix" style="display: none; margin-top: 10px; margin-left: -50px;"></div>
+                    </div>
+                </div>
+                <div class="control-group formSep">
+                    <label class="control-label">网站类型</label>
+                    <div class="controls">
+                        <label><input type="radio" value="all" name="needLimitSite" checked="checked"/>不限</label>
+                        <label><input type="radio" value="acls" name="needLimitSite" id="needLimitSite" />指定类型</label>
+                        <div id="siteClass" style="display: none">
+
+                        </div>
+                    </div>
+                </div>
+                <div class="control-group formSep">
+                    <label class="control-label">周期日程</label>
+                    <div class="controls">
+                        <label><input type="radio" value="all" name="limitTime" checked="checked"/>不限</label>
+                        <label><input type="radio" value="acls" name="limitTime" id="limitTime" />指定周期日程</label>
+                        <div id="timeSheet" style="margin-top: 15px;display: none;">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="p_tab p_qt"></div>
+        </form>
+        <!-- 提交按钮 -->
+        <div class="control-group" style="height:50px; margin-bottom:30px; margin-left: 158px;">
+            <div class="controls">
+                <button class="btn btn-gebo" type="button" id="f_button" style="display:none">下一步</button>
+                <button class="btn btn-primary" id="f_submit" style="">提交</button>
+            </div>
+        </div>
+    </section>
+    <input id="planId" type="hidden" th:value="${planInfo.planId}"/>
+    <input id="pstatus" type="hidden" th:value="${planInfo.pstatus}"/>
+    <input id="uidHidden" type="hidden" th:value="${uid}" />
+</div>
+
+<div style="display: none;" layout:fragment="script">
+    <!-- form validate -->
+    <script src="https://cdn.bootcss.com/jquery-validate/1.16.0/jquery.validate.js"></script>
+    <script src="https://cdn.bootcss.com/jquery.form/4.2.1/jquery.form.js"></script>
+
+    <script type="application/javascript" th:inline="JavaScript">
+        /*<![CDATA[*/
+        function acity(){
+            var province = [];
+            province[0] =["A-G","安徽","北京","重庆","福建","贵州","广东","广西","甘肃","澳门","国外"];
+            province[1] =["H-J","湖北","湖南","河北","河南","海南","江苏","吉林","江西","黑龙江"];
+            province[2] =["L-S","辽宁","宁夏","青海","山东","上海","山西","陕西","四川","内蒙古"];
+            province[3] =["T-Z","天津","新疆","西藏","云南","浙江","台湾","香港"];
+            var city = [];
+            city["北京"] = ("北京");
+            city["上海"] = ("上海");
+            city["重庆"] = ("重庆");
+            city["天津"] = ("天津");
+            city["香港"] = ("香港");
+            city["台湾"] = ("台湾");
+            city["澳门"] = ("澳门");
+            city["河北"] = ("石家庄,唐山,秦皇岛,邯郸,邢台,保定,张家口,承德,沧州,廊坊,衡水");
+            city["山西"] = ("太原,大同,阳泉,长治,晋城,朔州,晋中,运城,忻州,临汾,吕梁地");
+            city["内蒙古"] = ("呼和浩特,包头,乌海,赤峰,通辽,鄂尔多斯,呼伦贝尔,乌兰察布,锡林郭勒,巴彦淖尔,阿拉善,兴安盟");
+            city["辽宁"] = ("沈阳,大连,鞍山,抚顺,本溪,丹东,锦州,葫芦岛,营口,盘锦,阜新,辽阳,铁岭,朝阳");
+            city["吉林"] = ("长春,吉林,四平,辽源,通化,白山,松原,白城,延边");
+            city["黑龙江"] = ("哈尔滨,齐齐哈尔,鹤岗,双鸭山,鸡西,大庆,伊春,牡丹江,佳木斯,七台河,黑河,绥化,大兴安岭");
+            city["江苏"] = ("南京,徐州,连云港,淮安,宿迁,盐城,扬州,泰州,南通,镇江,常州,无锡,苏州");
+            city["浙江"] = ("杭州,宁波,温州,嘉兴,湖州,绍兴,金华,衢州,舟山,台州,丽水");
+            city["安徽"] = ("合肥,芜湖,蚌埠,淮南,马鞍山,淮北,铜陵,安庆,黄山,滁州,阜阳,宿州,巢湖,六安,亳州,池州,宣城");
+            city["福建"] = ("福州,厦门,三明,莆田,泉州,漳州,南平,龙岩,宁德");
+            city["江西"] = ("南昌,景德镇,萍乡,九江,新余,鹰潭,赣州,吉安,宜春,抚州,上饶");
+            city["山东"] = ("济南,青岛,淄博,枣庄,东营,潍坊,烟台,威海,济宁,泰安,日照,莱芜,临沂,德州,聊城,滨州,菏泽");
+            city["河南"] = ("郑州,开封,洛阳,平顶山,焦作,鹤壁,新乡,安阳,濮阳,许昌,漯河,三门峡,南阳,商丘,信阳,周口,驻马店");
+            city["湖北"] = ("武汉,黄石,襄樊,十堰,荆州,宜昌,荆门,鄂州,孝感,黄冈,咸宁,随州,恩施");
+            city["湖南"] = ("长沙,株洲,湘潭,衡阳,邵阳,岳阳,常德,张家界,益阳,郴州,永州,怀化,娄底,湘西");
+            city["广东"] = ("广州,深圳,珠海,汕头,韶关,河源,梅州,惠州,汕尾,东莞,中山,江门,佛山,阳江,湛江,茂名,肇庆,清远,潮州,揭阳,云浮");
+            city["广西"] = ("南宁,柳州,桂林,梧州,北海,防城港,钦州,贵港,玉林,百色,贺州,河池,来宾,崇左");
+            city["海南"] = ("海口,三亚");
+            city["四川"] = ("成都,自贡,攀枝花,泸州,德阳,绵阳,广元,遂宁,内江,乐山,南充,宜宾,广安,达州,眉山,雅安,巴中,资阳,阿坝,甘孜,凉山");
+            city["贵州"] = ("贵阳,六盘水,遵义,安顺,铜仁地,毕节地,黔西南,黔东南,黔南");
+            city["云南"] = ("昆明,曲靖,玉溪,保山,昭通,思茅,临沧,丽江,文山,红河,西双版纳,楚雄,大理,德宏,怒江,迪庆");
+            city["西藏"] = ("拉萨,那曲,昌都,山南,日喀则,阿里,林芝");
+            city["陕西"] = ("西安,铜川,宝鸡,咸阳,渭南,延安,汉中,榆林,安康,商洛");
+            city["甘肃"] = ("兰州,金昌,白银,天水,嘉峪关,武威,张掖,平凉,酒泉,庆阳,定西,陇南,甘南,临夏");
+            city["青海"] = ("西宁,海东,海北,黄南,海南,果洛,玉树,海西");
+            city["宁夏"] = ("银川,石嘴山,吴忠,固原");
+            city["新疆"] = ("乌鲁木齐,克拉玛依,吐鲁番,哈密,和田,阿克苏,喀什,克孜勒苏,巴音郭楞,昌吉,博尔塔拉,伊犁,塔城,阿勒泰");
+            city["国外"] = ("国外");
+
+            var h = '<ul class="area" style="display: block;">';
+            for (k = 0; k < province.length; k++) {
+                var p = province[k][0];
+                h += "<li><span>" + p + "</span><div class='region'>";
+                for (g = 1; g < province[k].length; g++) {
+                    var ck = "";
+                    if (_province.indexOf(province[k][g]) > -1) {
+                        ck = "checked";
+                    }
+                    h += '<div><input name="acl[city][province][]" id="province_' + k + g + '" type="checkbox" value="' + province[k][g] + '" ' + ck + '/><label for="province_' + k + g + '">' + province[k][g] + '</label></div><ul style="display:none" class="p_city">';
+                    aa = city[province[k][g]].split(",");
+                    for (ak = 0; ak < aa.length; ak++) {
+                        var cks = "";
+                        if (_city.indexOf(aa[ak]) > -1) {
+                            cks = "checked";
+                        }
+                        h += '<li><input name="acl[city][data][]" id="city_' + k + g + '_' + ak + '" type="checkbox" value="' + aa[ak] + '" class="city_in"  ' + cks + '/><label for="city_' + k + g + '_' + ak + '">' + aa[ak] + '</label></li>';
+                    }
+                    h += '</ul>';
+                }
+                h += "</div><div class='clearfix'></div></li>";
+            }
+            return h+"</ul>";
+        }
+
+        function appendSiteClass(data) {
+            var $div = $("#siteClass");
+            $.each(data.class, function(i, obj){
+                $div.append($('<label><input type="checkbox" name="limitSiteClass" value="' + obj.id + '"/>' + obj.classname +  '</label>'));
+            });
+            $("#siteClass").append($div);
+        }
+
+        // 周期日程
+        function appendTimeSheet(){
+            var $div = $("#timeSheet");
+            var $table = $("<table></table>");
+            for (var i = 1; i <= 7; i++) {
+                var $trow = $("<tr></tr>");
+                $trow.append($("<td valign='top' width='80'><input type='checkbox' name='week' class='week' value='" + i + "' />星期 " + i + " </td>"));
+                var hours = "";
+                for (var j = 0; j <= 23; j++) {
+                    hours += "<td valign='center' width='30'><input type='checkbox' name='weekHours' class='weekHours' value='" + j +"' /><br>" + j + " </td>";
+                }
+                $trow.append($(hours));
+                $table.append($trow);
+            }
+            $div.append($table);
+        }
+
+        function clearForm(){
+            $("#uid").val("");
+            $("#planName").val("");
+            $("#payType").val("0");
+            $("input[name='isLimitDevice']").prop("checked", false);
+            $("input[name='limitdevice']").prop("checked", false);
+            $("input[name='limitMoney']").val("");
+            $("input[name='deduction']").val("");
+            $("input[name='limitDivHeight']").val("");
+        }
+
+        function initPlanData(){
+            var planId = $("#planId").val();
+            $.ajax({
+                type: "POST",
+                url: "/manage/getAdsPlanById",
+                async: true,
+                contentType: 'application/x-www-form-urlencoded',
+                dataType: "json",
+                data: {"planId": planId},
+                success: setPlanVal,
+                error: function(XMLHttpRequest, textStatus, errorThrown){}
+            });
+        }
+
+        function setPlanVal(data){
+            // 投放设备
+            if (data.limitDevice) {
+                $("input[name='isLimitDevice']")[1].checked = true;
+                for (var index = 0; index < data.limitDevice.length; index++) {
+                    $("input[name='limitdevice']").each(function(i, el){
+                        if (el.value == data.limitDevice[index]){
+                            el.checked = true;
+                        }
+                    });
+                }
+                $("#limitDeviceWrapper").show();
+            } else {
+                $("input[name='isLimitDevice']")[0].checked = true;
+            }
+            // ios price
+            if (data.price && data.price[2]) {
+                $("input[name='iosPriceAff']").val(data.price[2].aff);
+                $("input[name='iosPriceAdv']").val(data.price[2].adv);
+            }
+            // android price
+            if (data.price && data.price[3]) {
+                $("input[name='androidPriceAff']").val(data.price[3].aff);
+                $("input[name='androidPriceAdv']").val(data.price[3].adv);
+            }
+
+            // 是否跟踪效果
+            if ("Y" === data.plan.isnotify) {
+                $("#isnotify").prop("checked", "checked");
+            }
+
+            // 站长 price
+            if (data.price) {
+                for (var key in data.price) {
+                    if (key != 1 && key != 2 && key != 3 && key != 4) {
+                        $("#userPrice").append('<div><span>站长ID:</span><input type="input" class="input_text price-userId" value="'+ key +'"> '
+                            + '<span>出厂价:</span><input type="number" class="input_text userAdv" value="' + data.price[key].adv +'"/><span>元</span>'
+                            + '<span>会员价:</span><input type="number" class="input_text userAff" value="' + data.price[key].aff +'"/><span>元</span>'
+                            + '<span><a class="addUserPrice" href="javascript:void(0)">增加</a></span>'
+                            + '<span><a class="removeUserPrice" href="javascript:void(0)">移除</a></span>'
+                            + '</div>');
+                    }
+                }
+                if ($("#userPrice div").length < 1){
+                    $("#userPrice").append('<div><span>站长ID:</span><input type="input" class="input_text price-userId" value=""> '
+                        + '<span>出厂价:</span><input type="number" class="input_text userAdv" /><span>元</span>'
+                        + '<span>会员价:</span><input type="number" class="input_text userAff" /><span>元</span>'
+                        + '<span><a class="addUserPrice" href="javascript:void(0)">增加</a></span>'
+                        + '<span><a class="removeUserPrice" href="javascript:void(0)">移除</a></span>'
+                        + '</div>');
+                }
+            } else {
+                if ($("#userPrice div").length < 1){
+                    $("#userPrice").append('<div><span>站长ID:</span><input type="input" class="input_text price-userId" value=""> '
+                        + '<span>出厂价:</span><input type="number" class="input_text userAdv" /><span>元</span>'
+                        + '<span>会员价:</span><input type="number" class="input_text userAff" /><span>元</span>'
+                        + '<span><a class="addUserPrice" href="javascript:void(0)">增加</a></span>'
+                        + '<span><a class="removeUserPrice" href="javascript:void(0)">移除</a></span>'
+                        + '</div>');
+                }
+            }
+
+            // 站长限制
+            if (data.plan.limitUid) {
+                $("#resuids").show();
+            }
+
+            // 网站限制
+            if (data.plan.limitSite) {
+                $("#limitsiteids").show();
+            }
+
+            // 暗层显示
+            if (data.plan.limitDiv != '0' && data.plan.limitDiv != '1') {
+                $("#limitDivHeightWrapper").show();
+            }
+
+            // 投放地域
+            if (data.plan.limitArea) {
+                $("input[name='limitArea'][value='acls']").prop("checked", true);
+                $("#chinaArea").show();
+                // 勾选上DB中的省会
+                $("#chinaArea li input[id^='province']").each(function(i, ele){
+                    if (data.plan.limitArea.indexOf(ele.value) >= 0) {
+                        ele.checked = true;
+                        $(ele).parent().next().find('input[id^="city"]').prop("checked", true);
+                    }
+                });
+                // 勾选上DB中的城市
+                $("#chinaArea li input[id^='city']").each(function(i, ele){
+                    if (data.plan.limitArea.indexOf(ele.value) >= 0) {
+                        ele.checked = true;
+                        $(ele).parent().parent().prev().find('input[id^="province"]').prop("checked", true);
+                    }
+                });
+            }
+
+            // 网站类型
+            if (data.limitType){
+                $("input[name='needLimitSite']")[1].checked = true;
+                var typeArray = data.limitType.split(",");
+                for (var index = 0; index < typeArray.length; index++) {
+                    $("input[name='limitSiteClass']").each(function (i, el) {
+                        if (typeArray[index] == el.value)
+                            el.checked = true;
+                    });
+                }
+                $("#siteClass").show();
+            }
+
+            // 周期日程
+            if (data.limitTime) {
+                $("input[name='limitTime']")[1].checked = true;
+
+                $("input[name='week']").each(function(i, obj){
+                    for(var key in data.limitTime) {
+                        if (obj.value == key){
+                            obj.checked = true;
+                            $(obj).parent().parent().find(".weekHours").each(function(j, el){
+                                for(var index = 0; index < data.limitTime[key].length; index++) {
+                                    if (el.value == data.limitTime[key][index])
+                                        el.checked = true;
+                                }
+                            });
+                        }
+                    }
+                });
+                $("#timeSheet").show();
+            }
+        }
+
+        function init() {
+            if ($("#pageTitle").text() === "编辑计划"){
+                initPlanData();
+            } else {
+                clearForm();
+                if ($("#uidHidden").val()) {
+                    $("select#uid option[value=" + $("#uidHidden").val() +"]").prop("selected", true);
+                }
+                if ($("#userPrice div").length < 1){
+                    $("#userPrice").append('<div><span>站长ID:</span><input type="input" class="input_text price-userId" value=""> '
+                        + '<span>出厂价:</span><input type="number" class="input_text userAdv" /><span>元</span>'
+                        + '<span>会员价:</span><input type="number" class="input_text userAff" /><span>元</span>'
+                        + '<span><a class="addUserPrice" href="javascript:void(0)">增加</a></span>'
+                        + '<span><a class="removeUserPrice" href="javascript:void(0)">移除</a></span>'
+                        + '</div>');
+                }
+            }
+            // 初始化投放广告商成select2
+            $("#uid").select2();
+        }
+
+        // 获得页面数据绑定到对象
+        function getFormData() {
+            var planObj = {};
+            planObj.planId = $("#planId").val() || "";
+            planObj.uid = $("#uid").val();
+            planObj.title = $("#planName").val();
+            planObj.payType = $("#payType").val() || "";
+            planObj.isAudit = $("input[name='audit']").val();
+            planObj.pstatus = $("#pstatus").val() || 0;
+            planObj.clickRate = $("input[name='clickRate']").val() || 0;
+
+            if (!isNaN(planObj.clickRate)){
+                planObj.clickRate = parseFloat(planObj.clickRate).toFixed(2);
+            }
+
+            if($('#isnotify').prop('checked')) {
+                planObj.isnotify = "Y";
+            } else {
+                planObj.isnotify = "N";
+            }
+
+            // 投放设备
+            if ($("input[name='isLimitDevice']:checked").val() == "acls") {
+                var limitDevice = $("#limitDeviceWrapper input[name='limitdevice']:checked").map(function(){
+                    return this.value;
+                }).get().join(",");
+                planObj.limitDevice = limitDevice;
+            } else {
+                planObj.limitDevice = "";
+            }
+
+            // 广告地址
+            planObj.adsUrl = $("input[name='adsUrl']").val() || "";
+            // 权重
+            planObj.priority = $("input[name='priority']").val() || 5;
+            // 价格
+            planObj.price = {};
+            if ($("input[name='iosPriceAff']").val() && $("input[name='iosPriceAdv']").val()){
+                planObj.price[2] = {"aff": $("input[name='iosPriceAff']").val(), "adv": $("input[name='iosPriceAdv']").val()};
+            }
+            if ($("input[name='androidPriceAff']").val() && $("input[name='androidPriceAdv']").val()){
+                planObj.price[3] = {"aff": $("input[name='androidPriceAff']").val(), "adv": $("input[name='androidPriceAdv']").val()};
+            }
+            $ ("#userPrice div").each(function(i, el) {
+                var uid = $(this).find(".price-userId").val();
+                var uAdv = $(this).find(".userAdv").val();
+                var uAff = $(this).find(".userAff").val();
+                if (uid && uAdv && uAff) {
+                    planObj.price[uid] = {"aff": uAff, "adv": uAdv};
+                }
+            });
+
+            planObj.limitMoney = $("input[name='limitMoney']").val();
+            planObj.deduction = $("input[name='deduction']").val();
+            planObj.startTime = $("input[name='startTime']").val();
+            planObj.stopTime = $("input[name='stopTime']").val();
+
+            planObj.limitDiv = $("input[name='limitdiv']:checked").val();
+            planObj.limitDivHeight = $("input[name='limitDivHeight']").val() || 0;
+            planObj.limitPop = $("input[name='limitPop']:checked").val();
+
+            // 站长限制ID
+            if ($("input[name='restrictions']:checked").val() == 3) {
+                planObj.limitUid = $("#resuid").val();
+            } else {
+                planObj.limitUid = "";
+            }
+            // 限制网站ID
+            if ($("input[name='sitelimit']:checked").val() == 3) {
+                planObj.limitSite = $("#limitsiteid").val();
+            } else {
+                planObj.limitSite = "";
+            }
+
+            // 投放地区
+            if ($("input[name='limitArea']:checked").val() == "acls") {
+                var limitArea = {};
+                // 选择省份的checkbox
+                var provinces = $("input[id^='province']:checked");
+                // 遍历省份找寻该省份下面city
+                $.each(provinces, function(i, ele){
+                    var provinceID = ele.id.substring(8, 11);
+                    // 省份的value作为key
+                    var cityAll = $(ele).parent().next().find('input[id^="city"]').length;
+                    var cityList = $(ele).parent().next().find('input[id^="city'+ provinceID + '"]:checked');
+                    if (cityAll == cityList.length) {
+                        limitArea[ele.value] = ele.value;
+                    } else {
+                        limitArea[ele.value] = cityList.map(function(){
+                            return $(this).val();
+                        }).get().join(",");
+                    }
+                });
+                planObj.limitArea = limitArea;
+            }
+
+            // 网站类型
+            if ($("input[name='needLimitSite']:checked").val() == "acls") {
+                planObj.limitType = $("input[name='limitSiteClass']:checked").map(function () {
+                    return this.value;
+                }).get().join(",");
+            } else {
+                planObj.limitType = "";
+            }
+
+            planObj.limitTime = {};
+            if ($("input[name='limitTime']:checked").val() == "acls") {
+                $(".week:checked").each(function(i, el){
+                    var day = this.value;
+                    var hour = $(this).parent().parent().find("input[name='weekHours']:checked").map(function(){
+                        return this.value;
+                    }).get();
+                    planObj.limitTime[day] = hour;
+                });
+            }
+            return planObj;
+        }
+        /*]]>*/
+    </script>
+    <script type="application/javascript" th:inline="JavaScript">
+        /*<![CDATA[*/
+        $('#end-date .input-group.date').datepicker({
+            language : 'zh-CN',
+            todayBtn: "linked",
+            clearBtn: true,// 自定义属性,true 显示 清空按钮 false 隐藏 默认:true
+            format: "yyyy-mm-dd",
+            keyboardNavigation: true,
+            forceParse: false,
+            calendarWeeks: false,
+            autoclose: true
+        });
+        $('#start-date .input-group.date').datepicker({
+            language : 'zh-CN',
+            todayBtn: "linked",
+            clearBtn: true,// 自定义属性,true 显示 清空按钮 false 隐藏 默认:true
+            format: "yyyy-mm-dd",
+            keyboardNavigation: true,
+            forceParse: false,
+            calendarWeeks: false,
+            autoclose: true
+        });
+
+        // 省市初始化
+        var _province = '';
+        var _city = '';
+        var _c = acity();
+        $("#chinaArea").append(_c);
+
+        // 网站类型初始化
+        $.ajax({
+            type: "POST",
+            url: "/manage/getSiteClass",
+            async: true,
+            contentType: 'application/x-www-form-urlencoded',
+            dataType: "json",
+            success: function(data){
+                appendSiteClass(data);
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown){}
+        });
+
+        // 周期日程初始化
+        appendTimeSheet();
+        // 页面初始化
+        init();
+
+
+        /** page  bind events follows **/
+        $(".region >div").bind('mouseover', function () {
+            if ($(this).next(".p_city").find('li').length > 2) {
+                var v = $(this).find('input').val();
+                $(this).addClass("hover");
+                position = $(this).position();
+                poptop = position.top;
+                popleft = position.left + 66;
+                $(this).next().show().css("top", poptop + "px").css("left", popleft + "px");
+            }
+        }).bind('mouseleave', function () {
+            $(this).next().hide();
+            $(this).removeClass("hover");
+        });
+        $(".region >div").next().bind('mouseover', function () {
+            $(this).prev().addClass("hover");
+            $(this).show();
+        }).bind('mouseleave', function () {
+            $(this).hide();
+            $(this).prev().removeClass("hover");
+        });
+
+        $(".region >div>input").click(function () {
+
+            var a = $(this).prop("checked");
+            a = !a ? false : true;
+            $(this).parent().next().find(':input').each(function () {
+
+                $(this).prop("checked", a);
+            });
+        });
+
+        $(".city_in").click(function () {
+            var a = $(this).prop("checked");
+            a = !a ? false : true;
+            var v = $(this).attr("id");
+            id = v.split('_');
+
+            if ($(".city_in:checked").length >= 1) {
+                a = true;
+            } else {
+                a = false;
+            }
+
+            $("#province_" + id[1]).prop("checked", a);
+        });
+
+        // 周期 全选
+        $("#timeSheet .week").click(function(){
+            var a = $(this).prop("checked");
+            a = !a ? false : true;
+            $(this).parent().parent().find(".weekHours").each(function(){
+                $(this).prop("checked", a);
+            });
+        });
+
+        $("#timeSheet .weekHours").mouseover(function(e){
+            if (1 == e.which) {
+                $(this).prop("checked", !$(this).prop("checked"));
+                $(this).parent().parent().find(".week").prop("checked", $(this).parent().parent().find(".weekHours:checked").length >= 1);
+            }
+        });
+
+        $("#timeSheet .weekHours").click(function(){
+            var a = $(this).prop("checked");
+            a = !a ? false : true;
+
+            if ($(this).parent().parent().find(".weekHours:checked").length >= 1){
+                a = true;
+            } else {
+                a = false;
+            }
+            $(this).parent().parent().find(".week").prop("checked", a);
+        });
+
+        // 增加站长、移除站长
+        $("#userPrice").on("click", ".addUserPrice", function(){
+            $("#userPrice").append('<div><span>站长ID:</span><input type="input" class="input_text price-userId" /> '
+                + '<span>出厂价:</span><input type="number" class="input_text userAdv" /><span>元</span>'
+                + '<span>会员价:</span><input type="number" class="input_text userAff" /><span>元</span>'
+                + '<span><a class="addUserPrice" href="javascript:void(0)">增加</a></span>'
+                + '<span><a class="removeUserPrice" href="javascript:void(0)">移除</a></span>'
+                + '</div>');
+        });
+        $("#userPrice").on("click", ".removeUserPrice", function(){
+
+            if ($("#userPrice div").length > 1) {
+                $(this).parent().parent().remove();
+            } else {
+                $(this).parent().parent().find("input").val("");
+            }
+        });
+
+        // 投放设备 隐藏按钮
+        $("input[name='isLimitDevice']").on("click", function(){
+           this.value === "all" ? $("#limitDeviceWrapper").hide() : $("#limitDeviceWrapper").show();
+            if (this.value === "all") {
+                $("input[name='limitdevice']").prop("checked", false);
+            }
+        });
+
+        // 暗层限制
+        $("input[name='limitdiv']").on("click", function(){
+            (this.value == '0' || this.value == '1') ? $("#limitDivHeightWrapper").hide() : $("#limitDivHeightWrapper").show();
+            if (this.value == '0' || this.value == '1') {
+                $("#limitDivHeight").val("");
+            }
+        });
+
+        // 站长限制ID
+        $("input[name='restrictions']").on("click", function(){
+           if (this.value == 1){
+               $("#resuid").val("");
+               $("#resuids").hide();
+           } else {
+               $("#resuids").show();
+           }
+        });
+
+        // 网站限制ID
+        $("input[name='sitelimit']").on("click", function () {
+            if (this.value == 1) {
+                $("#limitsiteid").val("");
+                $("#limitsiteids").hide();
+            } else {
+                $("#limitsiteids").show();
+            }
+        });
+
+        // 投放地区 隐藏按钮
+        $("input[name='limitArea']").on("click", function () {
+            this.value === "all" ? $("#chinaArea").hide():$("#chinaArea").show();
+            if (this.value === "all") {
+                $("#chinaArea input[type='checkbox']").prop("checked", false);
+            }
+        });
+
+        // 网站类型 隐藏按钮
+        $("input[name='needLimitSite']").on("click", function () {
+            this.value === "all" ? $("#siteClass").hide() : $("#siteClass").show();
+            if (this.value === "all") {
+                $("input[name='limitSiteClass']").prop("checked", false);
+            }
+        });
+
+        // 周期日程 隐藏按钮
+        $("input[name='limitTime']").on("click", function(){
+           this.value === "all" ?  $("#timeSheet").hide() : $("#timeSheet").show();
+           if (this.value === "all"){
+                $("input[name='weekHours']").prop("checked", false);
+           }
+        });
+
+        // 提交
+        $("#f_submit").on("click", function(){
+            $this = $(this);
+            var planInfo = getFormData() || {};
+            $.ajax({
+                type: "POST",
+                url: "/manage/dataSave",
+                async: true,
+                contentType: 'application/json',
+                data: JSON.stringify(planInfo),
+                dataType: "json",
+                success: function(data){
+                    if (data.msg === "success") {
+                        alert("提交成功");
+                        $this.prop('disabled', true);
+                        window.location.href = "/manage/planlist";
+                    } else if(data.notEmpty) {
+                        var emptyArea = data.notEmpty.join("\n");
+                        alert("请完善如下数据: \n" + emptyArea);
+                    } else if (data.error) {
+                        alert(data.error);
+                    }
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown){
+                    alert("ajax error");
+                }
+            });
+        });
+        /*]]>*/
+    </script>
+</div>
+</body>
+</html>

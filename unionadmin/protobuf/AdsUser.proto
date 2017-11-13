@@ -1,0 +1,42 @@
+syntax = "proto3";
+package io.union.admin.common.proto;
+
+option java_package = "io.union.admin.common.proto";
+option java_outer_classname = "AdsUserProto";
+
+message AdsUserMessage {
+
+    uint64 uid = 1;
+    string username = 2;
+    string password = 3;
+    uint32 utype = 4;
+    string qq = 5;
+    string mobile = 6;
+    string idcard = 7;
+    string realname = 8;
+    string bankname = 9;
+    string bankbranch = 10;
+    string bankaccount = 11;
+    string banknum = 12;
+    uint64 regtime = 13;
+    string regip = 14;
+    uint64 logintime = 15;
+    string loginip = 16;
+    string deduction = 17;
+    double money = 18;
+    double daymoney = 19;
+    double weekmoney = 20;
+    double monthmoney = 21;
+    double xmoney = 22;
+    uint64 serviceid = 23;
+    uint32 limiturl = 24;
+    uint32 limitdiv = 25;
+    uint32 limitdivheight = 26;
+    uint32 limitpop = 27;
+    string limitplan = 28;
+    uint32 runtype = 29;
+    uint32 ustatus = 30;
+    string memo = 31;
+    uint32 paytype = 32;
+    uint32 chartype = 33;
+}

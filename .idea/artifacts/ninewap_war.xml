@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="ninewap:war">
+    <output-path>$PROJECT_DIR$/ninewap/target</output-path>
+    <root id="archive" name="ninewap.war">
+      <element id="artifact" artifact-name="ninewap:war exploded" />
+    </root>
+  </artifact>
+</component>

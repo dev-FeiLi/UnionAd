@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"  layout:decorator="${session.userContext.menuPos eq 'layout-top-nav' ? 'layoutTop' : 'layoutLeft'}">
+<head>
+    <title></title>
+</head>
+<body>
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper" layout:fragment="content">
+    <section class="content-header">
+        <h1>文章列表</h1>
+    </section>
+    <section class="content">
+        <div id="toolbar">
+            <button id="btn_create" type="button" style="vertical-align: top;" class="btn btn-default">
+                <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>新建文章
+            </button>
+            标题:<input id="title" class="form-control" style="display: inline-block;width: 48%;;" type="text" placeholder="标题"/>
+            <button id="search" class="btn btn-default" type="button" name="refresh" title="查询" style="vertical-align: top;float:right;">
+                <i class="glyphicon glyphicon-search icon-search"></i>
+            </button>
+        </div>
+        <table id="article-table" class="table"></table>
+    </section>
+
+</div>
+<div style="display: none;" layout:fragment="script">
+    <!-- form validate -->
+    <script src="https://cdn.bootcss.com/jquery-validate/1.16.0/jquery.validate.js"></script>
+    <script src="https://cdn.bootcss.com/jquery.form/4.2.1/jquery.form.js"></script>
+    <script type="application/javascript" th:inline="JavaScript">
+        function render(value, row, index){
+            if (!value) {
+                return "-";
+            }
+            var date = new Date(value.time);
+            var year = date.getFullYear();
+            var month = date.getMonth()+1;
+            var day = date.getDate();
+            return year + "-" + month + "-" + day + " " + value.hours + ":" + value.minutes + ":" + value.seconds;
+        }
+    </script>
+    <script type="application/javascript" th:inline="JavaScript">
+        /*<![CDATA[*/
+        var height = $(window).width() <= 767 ? $(window).height() - 115 : $(window).height() - 65;
+        $('#article-table').bootstrapTable({
+            url: '/manage/articleList',
+            uniqueId: "id",
+            striped: true,  // 表格显示条纹
+            pagination: true, // 启动分页
+            checkboxHeader: false,
+            showPaginationSwitch: false, // 是否显示 数据条数选择框
+            paginationLoop: false,
+            pageSize: 50,  // 每页显示的记录数
+            cache: false,// 是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性
+            pageNumber: 1, // 初始化加载第一页，默认第一页
+            pageList: [50, 100, 200],  // 记录数可选列表
+            search: false,  // 是否启用查询
+            sortable: false, // 是否启用排序
+            showHeader: true, // 是否显示列头
+            showFooter: true, // 是否显示列脚
+            showRefresh: false, // 是否显示 刷新按钮
+            singleSelect: false, //
+            toolbar: '#toolbar', //
+            stickyHeader: true, // 是否固定表头
+            sidePagination: "server", //分页方式：client客户端分页，server服务端分页（*）
+            queryParamsType: "undefined",// limit or undefined 设置为 'limit' 则会发送符合 RESTFul 格式的参数.
+            queryParams: function queryParams(params) {  //设置查询参数
+                var param = {
+                    //这里是在ajax发送请求的时候设置一些参数 params有什么东西，自己看看源码就知道了
+                    page: params.pageNumber - 1,
+                    size: params.pageSize
+                };
+                return param;
+            },
+            columns: [
+                {field: 'id', title: 'ID', align: 'center', valign: 'middle'},
+                {field: 'title', title: '标题', align: 'letf', valign: 'middle', width: '20%'},
+                {field: 'asort', title: '排序', align: 'center', valign: 'middle'},
+                {field: 'atop', title: '是否置顶', align: 'center', valign: 'middle',
+                    formatter: function(value, row, index){
+                        if (value === "Y") {
+                            return "是";
+                        } else {
+                            return "否";
+                        }
+                    }
+                },
+                {field: 'summary', title: '摘要', align: 'letf', valign: 'middle', width: '30%'},
+                {field: 'addTime', title: '添加时间', align: 'letf', valign: 'middle', formatter: render},
+                {field: 'beginTime', title: '开始时间', align: 'letf', valign: 'middle', formatter: render},
+                {field: 'endTime', title: '结束时间', align: 'letf', valign: 'middle', formatter: render},
+                {field: 'astatus', title: '状态', align: 'center', valign: 'middle',
+                    formatter: function(value, row, index){
+                        if (value === "Y") {
+                            return "<span class='label label-info'>正常</span>";
+                        } else {
+                            return "<span class='label label-danger'>删除</span>";
+                        }
+                    }
+                },
+                {field: '', title: '操作', align: 'center', valign: 'middle',
+                    formatter: function(value, row, index){
+                        return '<a href="/manage/adsArticleInfo?id=' + row.id + '" class="btn btn-info edit-article" articleId="' + row.id + '" pstatus="0" type="button"><i class="fa fa-paste"></i>编辑</a>';
+                    }
+                }
+            ]
+        });
+
+        /** bind events here **/
+        $("#search").on("click", function(){
+           var title = $("#title").val();
+           $("#article-table").bootstrapTable('refreshOptions',{url: '/manage/articleList?title=' + title});
+        });
+        $("#btn_create").on("click", function(){
+            window.location.href = "/manage/adsArticleInfo";
+        });
+        $(document).keydown(function(event){
+            if(event.keyCode == 13){
+                $("#search").trigger('click');
+            }
+        });
+
+        /*]]>*/
+    </script>
+</div>
+</body>
+</html>

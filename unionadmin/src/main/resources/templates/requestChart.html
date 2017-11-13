@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" layout:decorator="${session.userContext.menuPos eq 'layout-top-nav' ? 'layoutTop' : 'layoutLeft'}">
+<head>
+    <title></title>
+    <style>
+        #table tr td.sideline{
+            border-right:1px solid #0c0c0c;
+        }
+        #table tr td {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper" layout:fragment="content">
+    <section class="content-header">
+        <h1>请求趋势图</h1>
+    </section>
+    <section class="content">
+        <div class="col-md-12 form-group">
+            对比日期:<input type="text" id="date-compare" style="display: inline-block;max-width: 180px;background-color: #ffffff" class="form-control" readonly="true"/>
+            站长ID:<input id="uid" class="form-control" style="display: inline-block; width: auto" type="text" placeholder="搜索站长ID"/>
+            网站ID:<input id="siteid" class="form-control" style="display: inline-block; width: auto" type="text" placeholder="搜索网站ID"/>
+            计划ID:<input id="planid" class="form-control" style="display: inline-block; width: auto" type="text" placeholder="搜索计划ID"/>
+            <button id="search" class="btn btn-default" style="vertical-align: top;" type="button" name="refresh" title="查询">
+                <i class="glyphicon glyphicon-search icon-search"></i>
+            </button>
+        </div>
+        <!-- 曲线图 -->
+        <div id="main" style="width: 80%;height:400px;margin-top: 40px;"></div>
+        <div id="diff-time" class="panel panel-default" style="position:absolute; display:none;">
+            <div class="panel-heading">
+                <buton id="yesterday" class="btn btn-default">昨天</buton>
+                <buton id="today" class="btn btn-default">今天</buton>
+                <button id="clear" class="btn btn-default ">清空</button>
+                <button id="cancel" class="btn btn-default ">取消</button>
+                <button id="sure" class="btn btn-success ">确认</button>
+            </div>
+            <div class="panel-body col-md-12">
+                <input type="text" class="date" style="width: 220px;" id="starttime" name="starttime" /> vs
+                <input type="text" class="date" style="width: 220px;" id="endtime" name="endtime" />
+            </div>
+        </div>
+        <hr style="height: 3px;border:none;border-top: 3px groove skyblue;"/>
+        <table id="table" class="table table-striped" style="width: 80%;"></table>
+    </section>
+</div>
+<div style="display: none;" layout:fragment="script">
+    <!-- form validate -->
+    <script src="https://cdn.bootcss.com/jquery-validate/1.16.0/jquery.validate.js"></script>
+    <script src="https://cdn.bootcss.com/jquery.form/4.2.1/jquery.form.js"></script>
+    <script src="https://cdn.bootcss.com/echarts/3.7.1/echarts.min.js"></script>
+    <script type="application/javascript" th:inline="JavaScript">
+        /*<![CDATA[*/
+        $(document).ready(function(){
+
+
+            // 基于准备好的dom，初始化echarts实例
+            myChart = echarts.init(document.getElementById('main'));
+
+        });
+
+        $("#search").on("click", function () {
+            var params = {};
+            var dateCompare = undefined;
+            if ($("#date-compare").val().indexOf("vs") != -1) {
+                dateCompare = $("#date-compare").val().split(" vs ");
+            } else {
+                dateCompare = ["",""];
+            }
+
+            params.startDate = dateCompare[0];
+            params.endDate = dateCompare[1];
+            params.uid = $("#uid").val();
+            params.siteid = $("#siteid").val();
+            params.planid = $("#planid").val();
+            $.ajax({
+                type: "POST",
+                url: "/manage/searchRequestData",
+                async: true,
+                contentType: "application/json",
+                data: JSON.stringify(params),
+                dataType: "json",
+                success: drawImgCallback,
+                error: function(XMLHttpRequest, textStatus, errorThrown){
+                    alert("ajax error");
+                }
+            });
+        });
+
+        // 画图回调函数
+        function drawImgCallback(data) {
+            var legend = [];
+            var series = [];
+            if (data) {
+                for (var key in data) {
+                    if (key == "startDate" || key == "endDate") {
+                        continue;
+                    }
+                    legend.push(key);
+                    var seriesObj = {};
+                    seriesObj.name = key;
+                    seriesObj.type = "line";
+                    seriesObj.smooth = true;
+                    seriesObj.data = data[key];
+                    series.push(seriesObj);
+                }
+            }
+            option = {
+                title: {text: '请求趋势分析图'},
+                tooltip: {trigger: 'axis'},
+                legend: {data: legend},
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: ['',1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23]
+                },
+                yAxis: {type: 'value'},
+                series: series
+            };
+            // 使用刚指定的配置项和数据显示图表。
+            myChart.clear();
+            myChart.setOption(option);
+
+            // 画表格
+            $("#table").html("");
+            var time1 = data.startDate ? data.startDate : "所有时间";
+            var time2 = data.endDate ? data.endDate : "所有时间";
+            var thead = $("<thead><tr><td class='sideline' style='text-align: center' colspan='4'>" + time1 + "</td><td style='text-align: center' colspan='3'>"+ time2 +"</td></tr>"
+                    + "<tr><td>小时</td><td>PV</td><td>UV</td><td class='sideline'>IP</td><td>PV</td><td>UV</td><td>IP</td></tr>"
+                    + "</thead>");
+
+            var tbody = $("<tbody></tbody>");
+            var pv1Sum = 0, pv2Sum = 0, ip1Sum = 0, ip2Sum = 0, uv1Sum = 0, uv2Sum = 0;
+            for (var i = 0; i < 24; i++) {
+                var dataKeyPV1 = data.startDate + "pv";
+                var dataKeyUV1 = data.startDate + "uv";
+                var dataKeyIP1 = data.startDate + "ip";
+                var dataKeyPV2 = data.endDate + "pv";
+                var dataKeyUV2 = data.endDate + "uv";
+                var dataKeyIP2 = data.endDate + "ip";
+                var tr = $("<tr><td>" + i + "</td><td>"+ data[dataKeyPV1][i] +"</td><td>"+ data[dataKeyUV1][i] +"</td><td class='sideline'>"+ data[dataKeyIP1][i] + "</td>"
+                    + "<td>"+ data[dataKeyPV2][i] +"</td><td>"+ data[dataKeyUV2][i] +"</td><td>"+ data[dataKeyIP2][i] +"</td>"
+                    + "</tr>");
+                tbody.append(tr);
+
+                // 计算统计
+                pv1Sum += parseInt(data[dataKeyPV1][i]);
+                pv2Sum += parseInt(data[dataKeyPV2][i]);
+                uv1Sum += parseInt(data[dataKeyUV1][i]);
+                uv2Sum += parseInt(data[dataKeyUV2][i]);
+                ip1Sum += parseInt(data[dataKeyIP1][i]);
+                ip2Sum += parseInt(data[dataKeyIP2][i]);
+            }
+            var sum = $("<tr><td>总计</td><td>"+ pv1Sum +"</td><td>"+ uv1Sum +"</td><td class='sideline'>"+ ip1Sum + "</td>"
+                + "<td>"+ pv2Sum +"</td><td>"+ uv2Sum +"</td><td>"+ ip2Sum +"</td></tr>");
+            tbody.append(sum);
+
+            $("#table").append(thead).append(tbody);
+        }
+
+        $("#date-compare").on("click", function(){
+            $("#starttime.date,#endtime.date").datepicker({
+                language : 'zh-CN',
+                todayBtn: "linked",
+                clearBtn: true,// 自定义属性,true 显示 清空按钮 false 隐藏 默认:true
+                format: "yyyy-mm-dd",
+                keyboardNavigation: true,
+                forceParse: false,
+                calendarWeeks: false
+            });
+            $("#starttime.date").data('datepicker').hide = function () {};
+            $("#endtime.date").data('datepicker').hide = function () {};
+            var top = $(this).offset().top + $(this).outerHeight();
+            var left =  $(this).offset().left ;
+
+            var vsTime = $(this).val();
+            if (vsTime) {
+                var timeBeforeAndAfter = vsTime.split("vs");
+                $("#starttime").val(timeBeforeAndAfter[0].trim());
+                $("#endtime").val(timeBeforeAndAfter[1].trim());
+            } else {
+                $("#starttime").val("");
+                $("#endtime").val("");
+            }
+
+            var height = 420;
+            var width = 500;
+            $('#diff-time').css({'height': height, 'width': width , 'top': top, 'left': left, 'z-index': 999}).show();
+            $("#starttime.date").datepicker("show");
+            $("#endtime.date").datepicker("show");
+        });
+
+        $("#cancel").on("click", function(){
+            $("#starttime,#endtime").val("");
+            $('#diff-time').hide();
+            $(".datepicker ").hide();
+        });
+        $("#sure").on("click", function(){
+            if ($("#starttime").val() && $("#endtime").val()) {
+                $("#date-compare").val($("#starttime").val() + " vs " + $("#endtime").val());
+            }
+            $('#diff-time').hide();
+            $(".datepicker ").hide();
+        });
+        $("#yesterday").on("click", function(){
+            // 获得昨天时间
+            var date = new Date();
+            date.setDate(date.getDate() - 1);
+            var mon = date.getMonth() + 1;
+            var day = date.getDate();
+            var yesterday = date.getFullYear() + "-" + (mon < 10 ? "0" + mon : mon) + "-" + (day < 10 ? "0" + day : day);
+            $("#date-compare").val(yesterday + " vs " + yesterday);
+            $('#diff-time').hide();
+            $(".datepicker ").hide();
+        });
+        $("#today").on("click", function(){
+            var date = new Date();
+            var mon = date.getMonth() + 1;
+            var day = date.getDate();
+            var nowDay = date.getFullYear() + "-" + (mon < 10 ? "0" + mon : mon) + "-" + (day < 10 ? "0" + day : day);
+            $("#date-compare").val(nowDay + " vs " + nowDay);
+            $('#diff-time').hide();
+            $(".datepicker ").hide();
+        });
+        $("#clear").on("click", function(){
+            $("#date-compare").val("");
+            $('#diff-time').hide();
+            $(".datepicker ").hide();
+        });
+        /*]]>*/
+    </script>
+</div>
+</body>
+</html>

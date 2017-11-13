@@ -1,0 +1,58 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="afflayout">
+<head>
+    <title>点优移动传媒会员后台</title>
+</head>
+<body>
+<div id="page-main" layout:fragment="content">
+    <div class="row" th:if="${(successmsg ne null) or (errmsg ne null)}">
+        <div th:class="|alert ${successmsg ne null ? 'alert-success' : (errmsg ne null ? 'alert-danger' : '')} alert-dismissible|" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <strong th:text="${successmsg ne null ? successmsg : (errmsg ne null ? errmsg : '')}"/>
+        </div>
+    </div>
+    <div class="basicbox row">
+        <div class="basicin col-md-12 col-sm-12 col-xs-12">
+            <h1><b>修改密码</b></h1>
+            <form role="form" id="form" method="post" th:action="@{/aff/pass}" onsubmit="return checkform()">
+                <div class="basicside">
+                    <div class="form-group">
+                        <label for="loginpw">登录密码</label>
+                        <input type="password" class="form-control" id="loginpw" name="loginpw" />
+                        <p>请输入原登录密码</p>
+                    </div>
+                    <div class="form-group">
+                        <label for="newspw">新密码</label>
+                        <input type="password" class="form-control" id="newspw" name="newspw" />
+                        <p>6-20字母、数字、符号组成，不含空格键、[]及 {}</p>
+                    </div>
+                    <div class="form-group">
+                        <label for="affirmpw">确认密码</label>
+                        <input type="password" class="form-control" id="affirmpw" name="affirmpw" />
+                        <p>再次输入密码确认</p>
+                    </div>
+                </div>
+                <div class="basicbtn">
+                    <button class="btn btn-lg">修改</button>
+                    <span id="reset">重置信息</span>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div style="display: none;" layout:fragment="script">
+<script type="application/javascript" th:inline="javascript">
+/*<![CDATA[*/
+function checkform() {
+    var name = $('#loginpw').val().trim(),pass = $('#newspw').val().trim(),affirmpw = $('#affirmpw').val().trim();
+    if (!name) {$('#loginpw').focus();return false;}
+    if (!pass) {$('#newspw').focus();return false;}
+    if (!affirmpw) {$('#affirmpw').focus();return false;}
+    if (pass != affirmpw){$('#newspw').val('');$('#affirmpw').val('');return false;}
+}
+/*]]>*/
+</script>
+</div>
+</body>
+</html>

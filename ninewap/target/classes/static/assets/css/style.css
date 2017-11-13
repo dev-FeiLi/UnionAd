@@ -1,0 +1,149 @@
+.clearfix:before, .clearfix:after{visibility:hidden; display:block; content:"."; height:0;} .clearfix:after{clear:both;}.clearfix{*zoom:1;}
+.clearb{clear:both}
+
+.navbar-side{top: 0;}
+.navbar-side{background-color: #323643;}
+.liservice{width:100%; height: 90px; background-color: #1e2329; padding: 12px 0 0 20px;}
+.liservice > h1{font-size: 14px; color: #f2f4f9; margin: 0; padding: 0; line-height: 24px; padding-left: 20px;}
+.liservice > h2{font-size: 12px; color: #b2b5be;  margin: 0; padding: 0;  line-height: 22px;}
+.liservice > h2 > img{margin: -6px 8px 0 0;}
+.liservice > h3{font-size: 12px; color: #b2b5be; margin: 0; padding: 0; line-height: 22px;}
+.liservice > h3 > i{margin-right: 10px;}
+.active-menu, .active-menu i{background-color: #1e2329 !important; color: #ffffff !important;}
+.sidebar-collapse .nav > li > a:hover, .sidebar-collapse .nav > li > a:focus{background-color: #1e2329; color: #ffffff;}
+i.fa.fa-bars{margin: 0 10px 0 0;}
+.navname{width: 100%; padding-bottom: 30px;}
+.navname > p{color: #FFF; font-size: 14px; padding: 5px 10px; line-height: 30px; margin: 0;}
+.navname > p > i{font-size: 30px; color: #000000; padding: 8px;  text-align: center; margin: 0 10px 0 0;}
+.navname > p > span{display: inline-block;}
+.navname > h5{font-size: 12px; color: #7c7f89; margin: 0; padding: 0 15px; margin-bottom: 15px;}
+.navname  .input-group button{float: left; width: 15%; height: 34px; background-color: #494c55; color: #9ba0b0;}
+.navname .input-group input{float: left; width: 85%;  background-color: #494c55; border-color: #9ba0b0; color: #FFF;}
+#page-wrapper{top: 0; background-color: #f8fbfd; min-height: 1000px;}
+#page-main{width: 100%;  padding: 0 30px;}
+.pagetop{width: 100%; height: 70px; padding: 0 30px; background-color: #ffffff; border-bottom: 1px solid #e4e4e4;}
+.pagetop h1{margin: 0; font-size: 18px; color: #494c55; line-height: 70px; font-weight: 700; float: left; max-width: 40%; overflow: hidden;}
+.pagetop h1 i{font-size: 45px; margin-right: 18px; position: relative; top: 8px;}
+#sideNav{margin: 0 auto; width: auto; float: left; line-height: 1;}
+.pagetop a.logo{ float: right; line-height: 70px; max-width: 40%; overflow: hidden;}
+.pagetitle{height: 177px; width: 100%;}
+.pagetitle h5{font-size: 18px; color: #434d70; font-weight: 700; margin: 0; line-height: 18px; border-left: 4px solid #1f9be7; padding-left: 5px; margin: 20px 0 35px 0;}
+.pagetitle b{font-size: 34px; color: #f34816; line-height: 34px; margin-left: 25px;}
+.pagetitle h6{font-size: 14px; color: #727272; margin-top: 40px;}
+.pagetitle > div{height: 100%;}
+.timebox{ margin-top: 40px; }
+.timebox dd{float: left; line-height: 34px; margin: 0 10px; font-size: 12px; color: #727272}
+.chosetime{width: 150px; float: left; height: 34px;}
+.choseother{margin-top: 30px;}
+.choseother dd{float: left;  font-size: 12px; color: #727272 ; line-height: 28px; margin: 0 10px; }
+.selectch{float: left;}
+.choseother a{float: left; display: block; padding: 0 18px; line-height: 28px; font-size: 14px; color: #FFF; background-color: #7187b5; text-align: center; border-radius: 3px; margin-left: 15px;}
+.choseother a:hover{text-decoration: none;}
+.page-table{}
+.page-table th{font-size: 16px; color: #727272; background-color: #f4f4f4;}
+.page-table td{font-size: 14px; color: #727272}
+
+.page-table .panel-default{border: none; background-color: inherit; box-shadow: none;}
+.page-table .panel-body{padding: 0;}
+.page-info{margin-top: 60px;}
+.page-info p{padding: 0; margin: 0; font-size: 14px; color: #727272; line-height: 24px;}
+.page-info h1{color: #727272; font-size: 14px; line-height: 26px; font-weight: 700;}
+
+/*广告管理*/
+.pagetitle2{height: 177px;width: 100%;}
+.addad{display: inline-block; font-size: 18px; color: #FFF; line-height: 45px; padding: 0 20px; border-radius: 3px; background-color: #7187b5; margin: 28px 0 25px 0;}
+.addad:hover{text-decoration: none; color: #FFF;}
+.pagetitle2 span{float: left; font-size: 12px; color: #727272; line-height:24px; margin-right: 5px;}
+.pagetitle2 select{float: left; margin-right: 28px;}
+.adpage{padding-bottom: 25px;}
+.adpagein{ margin-top: 20px; }
+.adpagetop{height: 38px; width: 100%; border: 1px solid #e0e0e0; background-color: #f4f4f4;}
+.adpagetop b{float: left; font-size: 16px; color: #727272; line-height: 38px; margin-left: 20px;}
+.adpagetop a{float: right; font-size: 12px; color: #FFF; line-height: 26px; margin-top: 5px; margin-right: 20px; text-align: center; border-radius: 3px; width: 92px; background-color: #f6611f;}
+.adpagetop a:nth-of-type(1){background-color: #44c51c; width: 65px;}
+.adpagetop a:nth-of-type(2){background-color: #379ccf; width: 90px;}
+.adpagetop a i{margin-right: 5px;}
+.adpagetop a:hover{text-decoration: none;}
+.adpagetop a.choselist{float: left; background-color: #379ccf; margin-left: 22px;}
+.adpagein textarea{width: 100% !important; border: 1px solid #e0e0e0; border-top: none; height: 162px !important; background-color: #FFF;}
+.adpage-info{background-color: #f4f4f4;  padding: 15px 30px;}
+.adpage-info p{padding: 0; margin: 0 ; font-size: 12px; color: #4a4a4a; line-height: 24px;}
+.adpage-info p i{margin-right: 8px;}
+
+
+
+/*财务管理*/
+.fintop{width: 100%; height: 177px; text-align: center;}
+.fintop h1{font-size: 40px; color: #f88324; padding: 0; margin: 0;  line-height: 40px; margin: 50px 0 10px;}
+.fintop p{margin: 0; padding: 0;  font-size: 14px; color: #494c55; line-height: 14px;} 
+.fina{text-align: left; height: 100%;}
+.fina > a{display: inline-block;  padding: 0 20px; font-size: 18px; color: #ffffff; line-height: 37px; background-color: #7187b5;  border-radius: 3px; margin-top: 77px;}
+.fina > a:hover{text-decoration: none;}
+.fintable tr td:nth-of-type(3){color: #1f9be7;}
+
+/*基本信息*/
+.basicbox{margin: 0; margin-top: 28px;}
+.basicin{padding: 0;  background-color: #fcfcfc;}
+.basicin h1{background-color: #f4f4f4; border: 1px solid #e0e0e0; height: 35px; width: 100%; margin: 0; padding: 0; }
+.basicin h1 > b{color: #727272;  font-size: 16px; line-height: 35px; padding: 0 14px 0 28px; float: left;}
+.basicin h1 > span{font-size: 14px; color: #FFF; background-color: #60b91f; padding: 0 20px; border-radius: 3px;  line-height: 25px; float: left; margin-top: 5px;}
+.basicside{width: 100%; padding: 15px 60px 30px 60px; border: 1px solid #e0e0e0; border-top: none; }
+.basicside input{max-width: 295px;}
+.basicside input[name=email]{border: none; background-color: inherit; box-shadow: none;}
+.basicside input[name=type]{width: 90px;}
+.basicside input[type=file]{border: none; background-color: inherit; box-shadow: none; height: auto;}
+.basicside label{font-size: 14px; color: #727272; line-height: 44px; margin-bottom: 0;}
+.basicbtn{width: 100%; margin: 35px 0 55px 0;}
+.basicbtn button{font-size: 16px; color: #FFF; background-color: #379ccf; font-weight: 700; width: 106px; margin-left: 23px; letter-spacing: 5px;}
+.basicbtn button:hover{color: #FFF;}
+.basicbtn span{color: #727272; font-size: 12px; position: relative; top: 15px; left: 15px; cursor: pointer;}
+.basicside p{padding: 0; margin: 0; font-size: 12px; color: #9c9c9c;}
+
+/*数据报表*/
+.datatop{ background-color: #f4f4f4; border: 2px solid #e0e0e0; margin-top: 20px;text-align: center; padding: 0; border-radius: 5px;}
+.datatop li{list-style: none; bottom: -2px;}
+.datatop li div{width: 80%; margin: 0 auto; padding-top: 40px;}
+.datatop li .acitve{padding-top: 48px; margin-top: -8px; background-color: #FFF; border: 1px solid #e0e0e0; height: 140px; border-radius: 5px 5px 0 0; border-bottom: 0px;}
+.datatop h1{padding: 0; margin: 0; font-size: 16px; color: #bcbcbc; font-weight: 700; line-height: 16px;}
+.datatop span{font-size: 30px; color: #4a4a4a; font-weight: 700; line-height: 44px; display: block; margin-top: 10px; margin-bottom: 10px;}
+.datatop p{padding: 0; margin: 0; font-size: 14px; color: #8c8c8c; line-height: 22px;}
+.datable{text-align: center; font-size: 14px; color: #8c8c8c; margin: 45px 0;} 
+.datable th{text-align: center; font-size: 16px; color: #727272; background-color: #f4f4f4;}
+.datable .one td{color: #ffffff; font-weight: 700; background-color: #6d8b97;}
+
+
+/*结算记录*/
+.setab{margin: 30px 0;  text-align: center;}
+.setab th{text-align: center; font-size: 16px; color: #727272; font-weight: 700; background-color: #f4f4f4;}
+.setab tr td{font-size: 14px; color: #f6611f;}
+.setab tr td:first-of-type{color: #8c8c8c;}
+
+/*银行信息*/
+.bank .banksel{max-width:150px;}
+.bank #target .form-group{ display: inline-block;}
+.bank #target select{ max-width:150px; }
+
+/*登录 注册*/
+.bgimg{position: absolute; left: 0; top: 0; width: 100%; height: 100%; background: url(../img/bg.jpg) center top no-repeat; background-size: cover; overflow: auto;}
+.relog{width: 460px; margin: 100px auto; background: rgba(255,255,255,.5); padding: 0 40px 35px 40px;  box-shadow: 0px 10px 10px #333333; }
+.relog > h1{font-size: 38px; color: #434d70; font-weight: 700; line-height: 88px; text-align: center; margin: 0;}
+.relog-radio .radio3{width: 50%; float: left; text-align: center;}
+.relog-radio .radio3 label{font-size: 14px; color: #525252;  line-height: 20px;}
+.relog-radio .radio3 label::before{border: none; background-color: #FFF;}
+.relog-radio .radio3 input:checked + label::before{background-color: #f6611f; border: none;}
+.relog-radio .radio3 label::after, .relog-radio .radio3 label::before{left: 58px;}
+.relog-input{width: 100%; height: 46px; background-color: #ffffff; border-radius: 5em; margin-bottom: 25px;}
+.relog-input i{font-size: 24px; color: #dedfe2; line-height: 46px; width: 52px; text-align: center; float: left;}
+.relog-input input{width: 290px;  line-height: 22px; border: none; border-left: 1px solid #c8c8c8; float: left; margin-top: 11px; padding: 0 12px; font-size: 16px; letter-spacing: 1px;}
+.relog-code{width: 100%; height: 37px;}
+.relog-code input{float: left; width: 80px; height: 37px; line-height: 37px; margin: 0 20px; border: none; text-align: center; font-size: 18px; letter-spacing: 1px;}
+.code-img{float: left; width: 65px; height: 37px; background-color: #dbe2e7;}
+.relog-code span{float: left; font-size: 12px; color: #ffffff; line-height: 37px; margin-left: 10px; cursor: pointer;}
+.relog .checkbox3{width: 100%; margin: 0;}
+.relog .checkbox3 label{text-align: center; width: 100%; font-size: 12px; color: #ffffff;}
+/*.relog .checkbox3 label::after, .relog .checkbox3 label::before{left: 60px;}*/
+.relog-btnbox{text-align: center; margin-bottom: 30px;}
+.relog-btn{width: 310px; height: 60px; line-height: 60px; background-color: #f6611f; padding: 0; margin: 10px auto 0; font-size: 28px; color: #ffffff; border-radius: 5em; letter-spacing: 15px;}
+.relog-btn:hover{color: #FFF; }
+.relog-other{margin: 0 auto; text-align: center;} 
+.relog-other a{font-size: 14px; color: #FFF; padding: 0 10px;}

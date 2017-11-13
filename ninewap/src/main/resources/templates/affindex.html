@@ -1,0 +1,70 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" layout:decorator="afflayout">
+<head>
+    <title>点优移动传媒会员后台</title>
+</head>
+<body>
+<div id="page-main" layout:fragment="content">
+    <ul class="datatop row">
+        <li class="col-md-3 col-sm-3 col-xs-12">
+            <div class="acitve">
+                <h1>今天佣金</h1>
+                <span th:text="${'￥'+#numbers.formatDecimal(session.userContext.money, 1, 2)}"/>
+            </div>
+        </li>
+        <li class="col-md-3 col-sm-3 col-xs-12">
+            <div>
+                <h1>昨天佣金</h1>
+                <span th:text="${'￥'+#numbers.formatDecimal(session.userContext.daymoney, 1, 2)}"/>
+            </div>
+        </li>
+        <li class="col-md-3 col-sm-3 col-xs-12">
+            <div>
+                <h1>本周佣金</h1>
+                <span th:text="${'￥'+#numbers.formatDecimal(session.userContext.weekmoney, 1, 2)}"/>
+            </div>
+        </li>
+        <li class="col-md-3 col-sm-3 col-xs-12">
+            <div>
+                <h1>本月佣金</h1>
+                <span th:text="${'￥'+#numbers.formatDecimal(session.userContext.monthmoney, 1, 2)}"/>
+            </div>
+        </li>
+    </ul>
+    <div class="row">
+        <div class="page-table datable col-md-12 col-sm-12 col-xs-12">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered table-hover">
+                            <thead>
+                            <tr>
+                                <th>日期</th>
+                                <th>CPM</th>
+                                <th>CPV</th>
+                                <th>CPC</th>
+                                <th>CPS</th>
+                                <th>CPA</th>
+                                <th>小计</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="node : ${data}">
+                                <td th:text="${node.date}"/>
+                                <td th:text="${'￥'+ #numbers.formatDecimal(node.cpm, 1, 2)}"/>
+                                <td th:text="${'￥'+ #numbers.formatDecimal(node.cpv, 1, 2)}"/>
+                                <td th:text="${'￥'+ #numbers.formatDecimal(node.cpc, 1, 2)}"/>
+                                <td th:text="${'￥'+ #numbers.formatDecimal(node.cps, 1, 2)}"/>
+                                <td th:text="${'￥'+ #numbers.formatDecimal(node.cpa, 1, 2)}"/>
+                                <td th:text="${'￥'+ #numbers.formatDecimal(node.total, 1, 2)}"/>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

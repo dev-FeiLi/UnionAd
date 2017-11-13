@@ -1,0 +1,21 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" layout:decorator="afflayout">
+<head>
+    <title>点优移动传媒会员后台</title>
+</head>
+<body>
+<div id="page-main" layout:fragment="content">
+    <div class="pagetitle row">
+        <section class="aboutbg">
+            <div class="about-box center-wrap">
+                <title>Oops! 您来到了错误页</title>
+                <div class="about-char" style="text-align: center;">
+                    <p th:text="${errmsg}"/>
+                    <p>返回 <a href="index">首页</a> 继续操作</p>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+</body>
+</html>

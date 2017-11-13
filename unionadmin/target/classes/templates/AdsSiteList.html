@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" layout:decorator="${session.userContext.menuPos eq 'layout-top-nav' ? 'layoutTop' : 'layoutLeft'}">
+<head>
+    <title></title>
+</head>
+<body>
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper" layout:fragment="content">
+    <section class="content-header">
+        <h1>网站管理列表</h1>
+    </section>
+    <section class="content">
+        <div id="toolbar" class="btn-group">
+            <button id="all" type="button" class="btn btn-default plan-type">
+                <span class="glyphicon glyphicon-home" aria-hidden="true"></span>全部列表
+            </button>
+            <button id="btn_add" type="button" class="btn btn-default plan-type">
+                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>增加
+            </button>
+            <button id="locked" type="button" class="btn btn-default plan-type">
+                <span class="glyphicon glyphicon-lock" aria-hidden="true"></span>已锁定
+            </button>
+            <button id="normal" type="button" class="btn btn-default plan-type">
+                <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>正常
+            </button>
+        </div>
+        <table id="table" class="table"></table>
+        <input type="hidden" id="searchContent" th:value="${uid}" />
+    </section>
+    <div class="modal fade" id="modalDialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form role="form" th:action="@{/manage/addsite}" method="post" id="form">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title" id="myModalLabel">添加新网站</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group has-feedback">
+                            <label for="sitename">名称</label>
+                            <input type="text" class="form-control" id="sitename" name="sitename" placeholder="必填" maxlength="50"/>
+                        </div>
+                        <div class="form-group has-feedback">
+                            <label for="uid">UID</label>
+                            <input type="number" class="form-control" id="uid" name="uid" placeholder="必填" maxlength="8"/>
+                        </div>
+                        <div class="form-group has-feedback">
+                            <label for="siteurl">域名</label>
+                            <input type="text" class="form-control" id="siteurl" name="siteurl" placeholder="必填" maxlength="100"/>
+                        </div>
+                        <div class="form-group has-feedback">
+                            <label for="sitetype">类型</label>
+                            <select class="form-control" id="sitetype" name="sitetype">
+                                <option th:each="adsClasses : ${adsClassesList}" th:if="${adsClasses.cstatus eq 'Y'}" th:text="${adsClasses.classname}" th:value="${adsClasses.id}"/>
+                            </select>
+                        </div>
+                        <div class="form-group has-feedback">
+                            <label for="beian">备案</label>
+                            <input type="text" class="form-control" id="beian" name="beian" placeholder="选填" maxlength="50"/>
+                        </div>
+                        <div class="form-group has-feedback">
+                            <label for="dayip">日IP</label>
+                            <input type="number" class="form-control numberDay" id="dayip" name="dayip" placeholder="选填" maxlength="8"/>
+                        </div>
+                        <div class="form-group has-feedback">
+                            <label for="daypv">日PV</label>
+                            <input type="number" class="form-control numberDay" id="daypv" name="daypv" placeholder="选填" maxlength="8"/>
+                        </div>
+                        <div class="form-group has-feedback">
+                            <span id="errContainer" style="color:red;"/>
+                            <input type="hidden" id="siteid" name="siteid"/>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                        <button type="submit" class="btn btn-primary">提交</button>
+                    </div>
+                </form>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal -->
+    </div>
+    <div class="modal fade bs-example-modal-sm" tabindex="-1" id="models" role="dialog" aria-labelledby="mySmallModalLabel">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Info</h4>
+                </div>
+                <div class="modal-body">
+                    <span id="returnstatus"></span>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" data-dismiss="modal" class="btn btn-primary">YES</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div style="display: none;" layout:fragment="script">
+    <!-- form validate -->
+    <script src="https://cdn.bootcss.com/jquery-validate/1.16.0/jquery.validate.js"></script>
+    <script src="https://cdn.bootcss.com/jquery.form/4.2.1/jquery.form.js"></script>
+    <script type="application/javascript" th:inline="JavaScript">
+        function addSearchGroup(){
+            // 插入多选框、输入框、按钮
+            var searchBtnGroup = $('<div class="input-group pull-right"></div>');
+            var $button = $('<div class="columns pull-right search-button"><button id="search" class="btn btn-default form-control" type="button" name="refresh" title="查询">' +
+                '<i class="glyphicon glyphicon-search icon-search"></i></button></div>');
+            var $input = $('<div class="columns pull-right search-input"><input id="searchValue" class="form-control" type="text" placeholder="搜索内容"/></div>');
+            var $select = $('<div class="columns pull-right search-select"><select id="type" class="form-control">' +
+                '<option th:each="adsClasses : ${adsClassesList}" th:text="${adsClasses.classname}" th:value="${adsClasses.id}"/>' +
+                '<option value="0" selected="selected">所有类型</option></select></div>');
+            var $select2 = $('<div class="columns pull-right search-select"><select id="search-condition" class="form-control">' +
+                '<option value="siteurl">网站地址</option>' +
+                '<option value="username">站长名称</option>' +
+                '<option value="sitename">网站名称</option>' +
+                '<option value="uid">站长uid</option></select></div>');
+            searchBtnGroup.append($button,$input,$select2,$select);
+            $('.fixed-table-toolbar').append(searchBtnGroup);
+        }
+        /*<![CDATA[*/
+        var height = $(window).width() <= 767 ? $(window).height() - 115 : $(window).height() - 65;
+        //将得到的网站数据渲染到表单中
+        $('#table').bootstrapTable({
+            url: '/manage/adsSiteData',
+            striped: true,  //表格显示条纹
+            pagination: true, //启动分页
+            paginationLoop: false, //
+            pageSize: 50,  //每页显示的记录数
+            pageNumber: 1, //当前第几页
+            pageList: [50, 100, 200],  //记录数可选列表
+            search: false,  //是否启用查询
+            sortable: false, //是否启用排序
+            showHeader: true, //
+            showFooter: true, //
+            singleSelect: true, //
+            stickyHeader: true, // 是否固定表头
+            toolbar: '#toolbar', //
+            sidePagination: "server", //表示服务端请求
+            queryParamsType: "undefined",// limit or undefined
+            queryParams: function queryParams(params) {   //设置查询参数
+                var param = {
+                    //这里是在ajax发送请求的时候设置一些参数 params有什么东西，自己看看源码就知道了
+                    page: params.pageNumber - 1,
+                    size: params.pageSize
+                };
+                return param;
+            },
+            columns: [
+                {field: 'siteid', title: 'ID', align: 'center', valign: 'middle'},
+                {field: 'sitename', title: '网站名称', align: 'left', valign: 'middle',
+                    formatter: function (value, row, index) {
+                        return '<span style="color: #3c8dbc;cursor: pointer; "> ' + value + '</span>'
+                    }
+                },
+                {field: 'siteurl', title: '网站地址', align: 'left', valign: 'middle'},
+                {
+                    field: 'classname',
+                    title: '网站类型',
+                    align: 'center',
+                    valign: 'middle'
+                },
+                {
+                    field: 'username',
+                    title: '所属会员',
+                    align: 'left',
+                    valign: 'middle',
+                    formatter: function(value, row, index) {
+                        return "[" + row.uid + "]" + row.username;
+                    }
+                },
+                {field: 'dayip', title: '网站的日IP数', align: 'center', valign: 'middle'},
+                {field: 'daypv', title: '网站的日PV数', align: 'center', valign: 'middle'},
+                {field: 'beian', title: '网站备案号', align: 'left', valign: 'middle'},
+                {
+                    field: 'sstatus',
+                    title: '状态',
+                    align: 'center',
+                    valign: 'middle',
+                    formatter:function(value,row,index){
+                        if (value == 0) {
+                            return '<span class="label label-info">正常</span>';
+                        } else if(value==9) {
+                            return '<span class="label label-danger">锁定</span>';
+                        }
+                    }
+                }
+            ],
+            onClickCell: function (field, value, row, $element) {
+                var array = [];
+                array.push("<a href='javascript: void(0);' class='btn-edit'>修改</a>");
+                array.push("<a class='update-status' href='javascript:void(0);' sstatus='0'  siteid='" + row.siteid + "'>正常</a>");
+                array.push("<a class='update-status' href='javascript:void(0);' sstatus='9'  siteid='" + row.siteid + "'>锁定</a>");
+                array.push("<a class='update-status' href='javascript:void(0);' sstatus='8'  siteid='" + row.siteid + "'>删除</a>");
+                quickMenu((field === 'sitename'), array, $element);
+            }
+        });
+        $('#table').bootstrapTable("refresh");
+        addSearchGroup();
+        // 从网站主列表列表跳过来， 默认查询该站长下的网站
+        if ($("#searchContent").val()) {
+            $("#table").bootstrapTable('refreshOptions', {url: '/manage/adsSiteData?searchCondition=uid&searchValue=' +$("#searchContent").val() +'&searchType=0'});
+            addSearchGroup();
+        }
+        $('#modalDialog').modal({backdrop: false, keyboard: false, show: false});
+        //重置表单
+        $('#modalDialog').on('hide.bs.modal', function () {
+            document.forms["form"].reset();
+        });
+        //点击添加按钮时触发的事件
+        $('#btn_add').click(function () {
+            $('#modalDialog').modal('show');
+            document.getElementById("uid").readOnly="";
+        });
+        //点击修改按钮时触发的事件
+        $('#menu-panel').on("click", ".btn-edit", function () {
+            var index = $("#table").find("tr.info").data("index");
+            var selObj = $("#table").bootstrapTable('getData')[index];
+            document.getElementById("uid").readOnly="readonly";
+            $('#menu-panel').hide();
+            if (selObj) {
+                var row = selObj;
+                document.forms["form"].siteid.value = row.siteid;//隐藏的id
+                document.forms["form"].sitename.value = row.sitename;//网站名称
+                document.forms["form"].siteurl.value = row.siteurl;//网站地址
+                document.forms["form"].sitetype.value = row.sitetype;//网站类型
+                document.forms["form"].dayip.value = row.dayip;//网站的日IP数
+                document.forms["form"].daypv.value = row.daypv;//网站的日PV数
+                document.forms["form"].beian.value = row.beian;//网站备案号
+                document.forms["form"].uid.value = row.uid;//uid
+                $('#modalDialog').modal('show');
+            } else {
+                alert('至少选择一条记录');
+            }
+        });
+        //验证表单
+        $("#form").validate({
+            rules: {
+                sitename: {
+                    required :true,
+                    maxlength:64
+                },
+                uid:{
+                    required :true
+                },
+                siteurl:{
+                    required :true,
+                }
+            },
+            messages: {
+                sitename:{
+                    required: '网站名称不能空',
+                    maxlength:"最大长度不能超过50"
+                } ,
+                uid:{
+                    required: 'UID不能空',
+                },
+                siteurl:{
+                    required: '网站地址不能空',
+                }
+            },
+            focusCleanup: true,
+            focusInvalid: false,
+            onfocusin: function (element) {
+                $("#errContainer").html("");
+            },
+            errorPlacement: function (error, element) {
+                $("#errContainer").html("");
+                $("#errContainer").html($(error).text());
+            },
+            submitHandler: function (form) {
+                $(form).ajaxSubmit({
+                    success: function (responseText, statusText, xhr, $form) {
+                        var json = $.parseJSON(responseText);
+                        if (json.result == 'success') {
+                            window.location.reload();
+                        } else if(json.result=='没有该用户UID'){
+                            $("#models").modal("show");
+                            $("#returnstatus").text("没有这个站长编号或者该该编号被删除了！，请重新输入！");
+                        }else if(json.result=='daypv不能小于0'){
+                          alert("daypv不能小于0");
+                        }else if(json.result=='dayip不能小于0'){
+                            alert("dayip不能小于0");
+                        }
+                        else{
+                            alert("网址是唯一的！");
+                        }
+                    }
+                });
+            }
+        });
+        // 定义搜索框click 事件
+        $(".content").on("click",".search-button #search", function(){
+            var searchCondition = $("#search-condition").val();
+            var searchValue = $("#searchValue").val();
+            //得到网站类型的值
+            var searchType=$("#type").val();
+            //当搜索框为空值时，直接赋值searchCondition=sitetype
+            if(searchValue==""||searchValue==null){
+                var type ="sitetype";
+                $("#table").bootstrapTable('refreshOptions', {url: '/manage/adsSiteData?searchCondition=' + type
+                +'&&searchValue=' +searchType });
+            }
+            else{
+                $("#table").bootstrapTable('refreshOptions', {url: '/manage/adsSiteData?searchCondition=' + searchCondition
+                +'&&searchValue=' +searchValue
+                +'&&searchType='+searchType});
+            }
+            addSearchGroup();
+        });
+        // sstatus状态更新click 事件
+        $("#menu-panel").on("click", ".update-status", function () {
+            var siteid = $(this).attr("siteid");
+            var sstatus = $(this).attr("sstatus");
+            if(!confirm("你是否要做此操作？")){
+                return;
+            }
+            $.ajax({
+                type: 'POST',
+                url : '/manage/updateSstatus',
+                async: true,
+                contentType: 'application/x-www-form-urlencoded',
+                data: {"siteid": siteid, "sstatus": sstatus},
+                dataType: "json",
+                success: function(data){
+                    $("#menu-panel").hide();
+                    $("#table").bootstrapTable("refresh");
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown){}
+            });
+        });
+        // 点击全部查询事件
+        $("#all,#normal,#locked").on("click",function(){
+            if (this.id === "normal") {
+                $("#table").bootstrapTable('refreshOptions',{url: '/manage/findSstatus?sstatus=0'});
+            } else if (this.id === "locked") {
+                $("#table").bootstrapTable('refreshOptions', {url:'/manage/findSstatus?sstatus=9'});
+            } else if (this.id === "all") {
+                 $("#table").bootstrapTable('refreshOptions',{url: '/manage/adsSiteData'});
+            }
+            addSearchGroup();
+            $(".plan-type").removeClass('active');
+            $(this).addClass('active');
+        });
+        //判断输入的是否为整数
+        jQuery(".numberDay").blur(function(){
+            var value = jQuery(this).val();
+            if(value<0){
+                alert("不能是负数！");
+            }
+        });
+        //点击enter搜索
+        $(document).keydown(function (event) {
+            if(event.keyCode==13){
+                $("#search").trigger('click');
+            }
+        })
+        /*]]>*/
+    </script>
+</div>
+</body>
+</html>

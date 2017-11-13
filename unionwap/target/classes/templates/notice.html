@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" layout:decorator="waplayout">
+<head>
+    <title th:text="${wapTitle}"/>
+</head>
+<body>
+<div layout:fragment="content">
+    <section class="notban">
+        <title>稳健丰厚的收益 简单便捷的流程</title>
+    </section>
+    <section class="not-main">
+        <div class="center-wrap">
+            <ul>
+                <li th:each="node, nodeStat:${alist}">
+                    <div class="notime">
+                        <span th:text="${#dates.month(node.addTime)+'月'}"/>
+                        <b th:text="${#dates.day(node.addTime)}"/>
+                        <p th:text="${#dates.year(node.addTime)}"/>
+                    </div>
+                    <a th:href="@{'/detail/'+${node.id}}" class="notchar">
+                        <span th:text="${node.title}"/>
+                        <p th:text="${node.summary}"/>
+                    </a>
+                </li>
+            </ul>
+            <!-- 分页 -->
+            <div class="page"></div>
+        </div>
+    </section>
+</div>
+</body>
+</html>

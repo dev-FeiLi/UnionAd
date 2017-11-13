@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" layout:decorator="${session.userContext.menuPos eq 'layout-top-nav' ? 'layoutTop' : 'layoutLeft'}">
+<head>
+    <title></title>
+</head>
+<body>
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper" layout:fragment="content">
+    <section class="content-header">
+        <h1>管理首页</h1>
+        <small></small>
+        <ol></ol>
+    </section>
+    <section class="content">
+        <div class="row">
+            <div class="col-md-4 col-xs-12">
+                <div class="info-box">
+                    <span class="info-box-icon bg-aqua"><i class="glyphicon glyphicon-hand-up"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">JS请求</span>
+                        <span class="info-box-number" th:text="${totalreq?:'0'}"/>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-xs-12">
+                <div class="info-box">
+                    <span class="info-box-icon bg-aqua"><i class="glyphicon glyphicon-eye-open"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">PV请求</span>
+                        <span class="info-box-number" th:text="${totalpv?:'0'}"/>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-xs-12">
+                <div class="info-box">
+                    <span class="info-box-icon bg-aqua"><i class="glyphicon glyphicon-ok"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">结算量</span>
+                        <span class="info-box-number" th:text="${totalsettle?:'0'}"/>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-xs-12">
+                <div class="info-box">
+                    <span class="info-box-icon bg-aqua"><i class="glyphicon glyphicon-usd"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">应付总额</span>
+                        <span class="info-box-number" th:text="${totalpay?:'0'}"/>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-xs-12">
+                <div class="info-box">
+                    <span class="info-box-icon bg-aqua"><i class="glyphicon glyphicon-usd"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">应收总额</span>
+                        <span class="info-box-number" th:text="${totalincome?:'0'}"/>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-xs-12">
+                <div class="info-box">
+                    <span class="info-box-icon bg-aqua"><i class="glyphicon glyphicon-usd"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">目前盈利</span>
+                        <span class="info-box-number" th:text="${totalprofit?:'0'}"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-3 col-xs-6">
+                <!-- small box -->
+                <div class="small-box bg-yellow">
+                    <div class="inner">
+                        <h3 th:text="${affnewcomer?:'0'}"/>
+                        <p>新增网站主</p>
+                    </div>
+                    <div class="icon"><i class="ion ion-person-add"></i></div>
+                    <a href="/manage/userList" class="small-box-footer"> 点击立即处理 <i class="fa fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+            <div class="col-lg-3 col-xs-6">
+                <!-- small box -->
+                <div class="small-box bg-yellow">
+                    <div class="inner">
+                        <h3 th:text="${advnewcomer?:'0'}"/>
+                        <p>新增广告主</p>
+                    </div>
+                    <div class="icon"><i class="ion ion-person-add"></i></div>
+                    <a href="/manage/advPage" class="small-box-footer"> 点击立即处理 <i class="fa fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+            <div class="col-lg-3 col-xs-6">
+                <!-- small box -->
+                <div class="small-box bg-green">
+                    <div class="inner">
+                        <h3 th:text="${sitenewcomer?:'0'}"/>
+                        <p>待审核网站</p>
+                    </div>
+                    <div class="icon"><i class="glyphicon glyphicon-globe"></i></div>
+                    <a href="/manage/adsSite" class="small-box-footer"> 点击立即处理 <i class="fa fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+            <div class="col-lg-3 col-xs-6">
+                <!-- small box -->
+                <div class="small-box bg-green">
+                    <div class="inner">
+                        <h3 th:text="${adupdates?:'0'}"/>
+                        <p>被修改的广告</p>
+                    </div>
+                    <div class="icon"><i class="glyphicon glyphicon-font"></i></div>
+                    <a href="/manage/adslist" class="small-box-footer"> 点击立即处理 <i class="fa fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="box box-info">
+                <div class="box-header with-border">
+                    <h3 class="box-title">平台设置</h3>
+                    <button class="btn btn-info pull-right" id="platsubmit">更新</button>
+                </div>
+                <!-- /.box-header -->
+                <!-- form start -->
+                <form class="form-horizontal" id="platform">
+                    <div class="box-body">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="platformname" class="col-sm-2 control-label">平台名称</label>
+                                <div class="col-sm-10">
+                                    <input class="form-control" id="platformname" th:value="${wap_title}"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="platformurl" class="col-sm-2 control-label">官网网址</label>
+                                <div class="col-sm-10">
+                                    <input type="url" class="form-control" id="platformurl" th:value="${wap_url}"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.box-body -->
+                </form>
+            </div>
+        </div>
+        <div class="row">
+            <div class="box box-info">
+                <div class="box-header with-border">
+                    <h3 class="box-title">域名设置</h3>
+                    <button class="btn btn-info pull-right" id="hostsubmit">更新</button>
+                </div>
+                <!-- /.box-header -->
+                <!-- form start -->
+                <form class="form-horizontal" id="hostform">
+                    <div class="box-body">
+                        <div class="form-group">
+                            <div class="col-md-6">
+                                <label for="jsurl" class="col-sm-2 control-label">JS域名</label>
+                                <div class="col-sm-10">
+                                    <input type="url" class="form-control" id="jsurl" th:value="${js_server_domain}"/>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="imgurl" class="col-sm-2 control-label">图片域名</label>
+                                <div class="col-sm-10">
+                                    <input type="url" class="form-control" id="imgurl" th:value="${img_server_domain}"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-6">
+                                <label for="adimgurl" class="col-sm-2 control-label">"广告"图标</label>
+                                <div class="col-sm-10">
+                                    <input type="url" class="form-control" id="adimgurl" th:value="${ad_icon_url}"/>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="closeimgurl" class="col-sm-2 control-label">关闭按钮</label>
+                                <div class="col-sm-10">
+                                    <input type="url" class="form-control" id="closeimgurl" th:value="${close_image_url}"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-6">
+                                <label for="pvurl" class="col-sm-2 control-label">PV域名</label>
+                                <div class="col-sm-10">
+                                    <input type="url" class="form-control" id="pvurl" th:value="${pv_count_domain}"/>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="pvuri" class="col-sm-2 control-label">PV路径</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="pvuri" th:value="${pv_count_uri}"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-6">
+                                <label for="clickurl" class="col-sm-2 control-label">跳转域名</label>
+                                <div class="col-sm-10">
+                                    <input type="url" class="form-control" id="clickurl" th:value="${click_domain}"/>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="clickuri" class="col-sm-2 control-label">跳转路径</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="clickuri" th:value="${click_uri}"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.box-body -->
+                </form>
+            </div>
+        </div>
+        <div class="row">
+            <div class="box box-info">
+                <div class="box-header with-border">
+                    <h3 class="box-title">结算设置</h3>
+                    <button class="btn btn-info pull-right" id="settlesubmit">更新</button>
+                </div>
+                <!-- /.box-header -->
+                <!-- form start -->
+                <form class="form-horizontal" id="settleform">
+                    <div class="box-body">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="weekdate" class="col-sm-2 control-label">周结日</label>
+                                <div class="input-group col-sm-10">
+                                    <span class="input-group-addon">每周</span>
+                                    <select class="form-control" id="weekdate">
+                                        <option th:selected="${week_clear eq 'Monday'}" value="Monday">周一</option>
+                                        <option th:selected="${week_clear eq 'Tuesday'}" value="Tuesday">周二</option>
+                                        <option th:selected="${week_clear eq 'Wednesday'}" value="Wednesday">周三</option>
+                                        <option th:selected="${week_clear eq 'Thursday'}" value="Thursday">周四</option>
+                                        <option th:selected="${week_clear eq 'Friday'}" value="Friday">周五</option>
+                                        <option th:selected="${week_clear eq 'Saturday'}" value="Saturday">周六</option>
+                                        <option th:selected="${week_clear eq 'Sunday'}" value="Sunday">周日</option>
+                                    </select>
+                                    <span class="input-group-addon">结算</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="monthdate" class="col-sm-2 control-label">月结日</label>
+                                <div class="input-group col-sm-10">
+                                    <span class="input-group-addon">每月</span>
+                                    <select class="form-control" id="monthdate">
+                                        <option th:each="node : *{#numbers.sequence(1, 30)}" th:selected="${month_clear eq '' + node}" th:value="${node}" th:text="${node+'日'}"/>
+                                    </select>
+                                    <span class="input-group-addon">结算</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="minpay" class="col-sm-2 control-label">结算额</label>
+                                <div class="input-group col-sm-10">
+                                    <input type="number" class="form-control" id="minpay" th:value="${clear_min_pay}"/>
+                                    <span class="input-group-addon">元起</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.box-body -->
+                </form>
+            </div>
+        </div>
+        <div class="row">
+            <div class="box box-info">
+                <div class="box-header with-border"><h3 class="box-title">引擎设置</h3></div>
+                <!-- /.box-header -->
+                <!-- form start -->
+                <form class="form-horizontal">
+                    <div class="box-body">
+                        <div class="col-md-4 col-sm-12">
+                            <div class="form-group">
+                                <label for="logVisitSave" class="col-md-6 col-sm-6 control-label">记录PV</label>
+                                <div class="col-md-6 col-sm-6">
+                                    <input type="checkbox" class="form-control" id="logVisitSave"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-sm-12">
+                            <div class="form-group">
+                                <label for="monthdate" class="col-md-6 col-sm-6 control-label">记录点击</label>
+                                <div class="col-md-6 col-sm-6">
+                                    <input type="checkbox" class="form-control" id="logClickSave"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-sm-12">
+                            <div class="col-md-4 col-sm-6">
+                                <button type="button" id="removeBtn" class="btn btn-block btn-primary btn-lg">手动清理锁</button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.box-body -->
+                </form>
+            </div>
+        </div>
+    </section>
+    <!-- 模态框（Modal） -->
+    <div class="modal fade" id="modalDialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="box box-info box-solid">
+                    <div class="box-header"><h3 class="box-title">提示</h3></div>
+                    <div class="box-body">后台程序正在努力处理中 …………</div>
+                    <!-- /.box-body -->
+                    <!-- Loading (remove the following to stop the loading)-->
+                    <div class="overlay"><i class="fa fa-refresh fa-spin"></i></div>
+                    <!-- end loading -->
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
+</div>
+<div style="display: none;" layout:fragment="script">
+<script type="text/javascript" th:inline="JavaScript">
+/*<![CDATA[*/
+$('#modalDialog').modal({backdrop: false, keyboard: false, show: false});
+function ajaxform(url, data) {
+    $.ajax({
+        url: url,
+        dataType: 'json',
+        data:data,
+        type: 'POST',
+        success:function (result) {
+            $('#processModal').modal('hide');
+            window.location.reload();
+        },
+        error: function () {
+            $('#processModal').modal('hide');
+            alert('异常：可能没有权限，有需要的话找管理员开通');
+            window.location.reload();
+        }
+    });
+}
+var url = "/manage/updatesetting";
+$('#platsubmit').on("click", function () {
+   var data = "wap_title=" + $('#platformname').val() + "&wap_url=" + $('#platformurl').val();
+    $('#processModal').modal('show');
+    ajaxform(url, data);
+});
+$('#hostsubmit').on("click", function () {
+    var data = "js_server_domain=" + $('#jsurl').val() + "&img_server_domain=" + $('#imgurl').val()
+            + "&ad_icon_url=" + $('#adimgurl').val() + "&close_image_url=" + $('#closeimgurl').val()
+            + "&pv_count_domain=" + $('#pvurl').val() + "&pv_count_uri=" + $('#pvuri').val()
+            + "&click_domain=" + $('#clickurl').val() + "&click_uri=" + $('#clickuri').val();
+    $('#processModal').modal('show');
+    ajaxform(url, data);
+});
+$('#settlesubmit').on("click", function () {
+    var data = "week_clear=" + $('#weekdate').val() + "&month_clear=" + $('#monthdate').val() + "&clear_min_pay=" + $('#minpay').val();
+    $('#processModal').modal('show');
+    ajaxform(url, data);
+});
+$('#logVisitSave').bootstrapSwitch({
+    state: /*[[${log_visit_save eq "Y"}]]*/,
+    size: 'normal',
+    onSwitchChange: function (event, state) {
+        var data = "log_visit_save=" + (state?"Y":"N");
+        ajaxform(url, data);
+    }
+});
+$('#logClickSave').bootstrapSwitch({
+    state: /*[[${log_click_save eq "Y"}]]*/,
+    size: 'normal',
+    onSwitchChange: function (event, state) {
+        var data = "log_click_save=" + (state?"Y":"N");
+        ajaxform(url, data);
+    }
+});
+$('#removeBtn').on('click', function () {
+   ajaxform('/manage/removelock','');
+});
+/*]]>*/
+</script>
+</div>
+</body>
+</html>

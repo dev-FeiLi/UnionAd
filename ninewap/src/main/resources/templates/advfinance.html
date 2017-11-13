@@ -1,0 +1,41 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" layout:decorator="advlayout">
+<head>
+    <title>点优移动传媒会员后台</title>
+</head>
+<body>
+<div id="page-main" layout:fragment="content">
+    <div class="basicbox row">
+        <div class="page-table fintable col-md-12 col-sm-12 col-xs-12">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered table-hover">
+                            <thead>
+                            <tr>
+                                <th>日期</th>
+                                <th>金额</th>
+                                <th>类别</th>
+                                <th>说明</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="node : ${paylist}">
+                                <td th:text="*{#dates.format(node.addTime,'yyyy-MM-dd')}"/>
+                                <td th:text="*{#numbers.formatDecimal(node.money, 1, 2)}"/>
+                                <td>
+                                    <span class="label label-success" th:if="${node.paytype eq 1}" th:text="|充值|"/>
+                                    <span class="label label-danger" th:if="${node.paytype eq 2}" th:text="|返款|"/>
+                                </td>
+                                <td th:text="${node.payinfo}"/>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

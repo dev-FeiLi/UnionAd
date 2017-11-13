@@ -1,0 +1,26 @@
+syntax = "proto3";
+package io.union.admin.common.proto;
+
+option java_package = "io.union.admin.common.proto";
+option java_outer_classname = "AdsAdProto";
+
+message AdsAdMessage {
+
+    uint64 adid = 1;
+    string adname = 2;
+    uint64 planid = 3;
+    uint64 uid = 4;
+    uint32 adtype = 5;
+    string imageurl = 6;
+    string adurl = 7;
+    uint32 width = 8;
+    uint32 height = 9;
+    uint32 astatus = 10;
+    uint64 add_time = 11;
+    uint32 limitdiv = 12;
+    uint32 limitdivheight = 13;
+    uint32 limitpop = 14;
+    uint32 deduction = 15;
+    uint32 adeffect = 16;
+    uint32 data_type = 17;
+}

@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"  layout:decorator="${session.userContext.menuPos eq 'layout-top-nav' ? 'layoutTop' : 'layoutLeft'}">
+<head>
+    <title></title>
+</head>
+<body>
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper" layout:fragment="content">
+    <section class="content-header">
+        <h1>广告主充值</h1>
+    </section>
+    <section class="content">
+        <div id="toolbar" class="btn-group">
+            <div>
+                开始日期:<input type="text" id="start-date" style="display: inline-block;width: 20%;background-color: #ffffff" class="form-control date datepicker" readonly="true"/>
+                结束日期:<input type="text" id="end-date"   style="display: inline-block;width: 20%;background-color: #ffffff" class="form-control date datepicker" readonly="true"/>
+                用户ID:<input id="searchUid" class="form-control" style="display: inline-block;width: 10%;" type="text" placeholder="ID"/>
+                <button id="search" class="btn btn-default" type="button" name="refresh" title="查询" style="vertical-align: top;">
+                    <i class="glyphicon glyphicon-search icon-search"></i>
+                </button>
+                <button id="export" class="btn btn-default" type="button" name="refresh" title="导出" style="vertical-align: top;">
+                    <i class="fa fa-download"></i>导出
+                </button>
+            </div>
+            <div style="margin-top:3px;">
+                <button id="btn_add" type="button" class="btn btn-default">
+                    <span class="glyphicon glyphicon-add" aria-hidden="true"></span>增加
+                </button>
+            </div>
+
+        </div>
+        <table id="table" class="table"></table>
+        <input type="hidden" id="chargeTotal" th:value="${chargeTotal}" />
+    </section>
+    <!-- 模态框（Modal）start  -->
+    <div class="modal fade" id="modalDialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title" id="dialogTitle">新建</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="tf" class="form-horizontal">
+                        <div class="form-group">
+                            <label for="uid" class="col-sm-3 control-label">广告商:</label>
+                            <div class="col-sm-8">
+                                <select name="uid" id="uid" style="width: 100%" class="form-control">
+                                    <option value="">请选择</option>
+                                    <option th:each="user: ${advUser}" th:data="${user.username}" th:value="${user.uid}" th:text="${user.username}"></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="paytype" class="col-sm-3 control-label">充值类型:</label>
+                            <div class="col-sm-8">
+                                <input class="radio inline" type="radio" name="paytype" id="paytype" value="1" th:checked="true" />增加
+                                <input class="radio inline" type="radio" name="paytype" id="paytype" value="2" />扣除
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="tocard" class="col-sm-3 control-label">收款流向:</label>
+                            <div class="col-sm-8">
+                                <input class="form-control" name="tocard" id="tocard" placeholder="收款帐号说明" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="money" class="col-sm-3 control-label">金额:</label>
+                            <div class="col-sm-8">
+                                <input  type="number" class="form-control" id="money" name="money" placeholder="请输入金额"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="payinfo" class="col-sm-3 control-label">备注</label>
+                            <div class="col-sm-8">
+                                <textarea  class="form-control"  name="payinfo"  id="payinfo" placeholder="备注"></textarea>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" id="tsubmit" class="btn btn-primary">确认</button>
+                </div>
+            </div>
+        </div>
+    </div><!-- 模态框（Modal）end  -->
+</div>
+<div style="display: none;" layout:fragment="script">
+    <!-- form validate -->
+    <script src="https://cdn.bootcss.com/jquery-validate/1.16.0/jquery.validate.js"></script>
+    <script src="https://cdn.bootcss.com/jquery.form/4.2.1/jquery.form.js"></script>
+    <script type="application/javascript" th:inline="JavaScript">
+        /*<![CDATA[*/
+        function init() {
+            var height = $(window).width() <= 767 ? $(window).height() - 135 : $(window).height() - 75;
+            $('#table').bootstrapTable({
+                url: '/manage/getAdvPayList',
+                uniqueId: "id",
+                search: false, // 是否启用搜索框
+                striped: true,  // 表格显示条纹
+                pagination: true, // 启动分页
+                checkboxHeader: false,
+                showPaginationSwitch: false, // 是否显示 数据条数选择框
+                paginationLoop: false,
+                pageSize: 50,  // 每页显示的记录数
+                cache: false,// 是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性
+                pageNumber: 1, // 初始化加载第一页，默认第一页
+                pageList: [50, 100, 200],  //记录数可选列表
+                sortable: false, // 是否启用排序
+                showHeader: true, // 是否显示列头
+                showFooter: true, // 是否显示列脚
+                showRefresh: false, // 是否显示 刷新按钮
+                singleSelect: true, //
+                toolbar: '#toolbar', //
+                stickyHeader: true, // 是否固定表头
+                sidePagination: "server", //分页方式：client客户端分页，server服务端分页（*）
+                queryParamsType: "undefined",// limit or undefined 设置为 'limit' 则会发送符合 RESTFul 格式的参数.
+                queryParams: function queryParams(params) {  //设置查询参数
+                    var param = {
+                        //这里是在ajax发送请求的时候设置一些参数 params有什么东西，自己看看源码就知道了
+                        page: params.pageNumber - 1,
+                        size: params.pageSize
+                    };
+                    return param;
+                },
+                columns: [
+                    {field: 'uid', title: '用户ID', align: 'center', valign: 'middle',
+                        footerFormatter: function(){return "总计"}
+                    },
+                    {field: 'username', title: '广告主', align: 'left', valign: 'middle'},
+                    {field: 'money', title: '金额', align: 'center', valign: 'middle',
+                        footerFormatter: function (value) {
+                            var count = $("#chargeTotal").val();
+                            return count;
+                        }
+                    },
+                    {field: 'paytype', title: '支付类型', align: 'center', valign: 'middle',
+                        formatter: function(value, row, index){
+                            return value == 1 ? "增加" : "扣除";
+                        }
+                    },
+                    {field: 'tocard', title: '卡号', align: 'center', valign: 'middle'},
+                    {field: 'manId', title: '管理员', align: 'left', valign: 'middle',
+                        formatter: function(value, row, index) {
+                            return '[' + row.manId + ']' + row.manAccount;
+                        }
+                    },
+                    {field: 'addTime', title: '添加时间', align: 'left', valign: 'middle',
+                        formatter: function(value, row, index){
+                            try {return new Date(value.time).format('yyyy-MM-dd');}catch (e){}
+                        }
+                    },
+                    {field: 'payinfo', title: '说明', align: 'left', valign: 'middle'}
+                ]
+            });
+            $("#uid").select2();
+        }
+        /*]]>*/
+    </script>
+    <script type="application/javascript" th:inline="JavaScript">
+        /*<![CDATA[*/
+        init();
+
+        $.fn.modal.Constructor.prototype.enforceFocus = function () {};
+        /** page  bind events follows **/
+        // 新建提交按钮
+        $("#tsubmit").on("click", function(){
+            var jsonForm = $("#tf").serializeObject();
+            $.ajax({
+                type: "POST",
+                url: "/manage/adcRecharge",
+                async: false,
+                data: JSON.stringify(jsonForm),
+                contentType: 'application/json',
+                dataType: "json",
+                success: function(data){
+                    if (data.error) {
+                        alert(data.error);
+                    } else {
+                        alert("操作成功!");
+                        $('#modalDialog').modal('hide');
+                        $("#table").bootstrapTable("refresh");
+                    }
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown){
+                    alert("error occurred");
+                }
+            });
+        });
+
+        $('#btn_add').click(function () {
+            $('#modalDialog').modal({backdrop: 'static', keyboard: false, show: true});
+        });
+
+        $("#search").on("click", function(){
+            $.ajax({
+                type:"GET",
+                url: '/manage/searchAdvpay?startDate='+ $("#start-date").val() + '&endDate=' + $("#end-date").val() + '&searchUid=' + $("#searchUid").val(),
+                async: true,
+                dataType: "json",
+                success: function(data) {
+                    $('#table').bootstrapTable("destroy").bootstrapTable({
+                        data: data.rows,
+                        striped: true,  // 表格显示条纹
+                        pagination: true, // 启动分页
+                        checkboxHeader: false,
+                        showPaginationSwitch: false, // 是否显示 数据条数选择框
+                        paginationLoop: false,
+                        pageSize: 50,  // 每页显示的记录数
+                        cache: false,// 是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性
+                        pageNumber: 1, // 初始化加载第一页，默认第一页
+                        pageList: [50, 100, 200],  //记录数可选列表
+                        search: false,  // 是否启用查询
+                        sortable: false, // 是否启用排序
+                        showHeader: true, // 是否显示列头
+                        showFooter: true, // 是否显示列脚
+                        showRefresh: false, // 是否显示 刷新按钮
+                        singleSelect: true, //
+                        toolbar: '#toolbar', //
+                        sidePagination: "client",
+                        columns: [
+                            {field: 'uid', title: '用户ID', align: 'center', valign: 'middle',
+                                footerFormatter: function(){return "总计"}
+                            },
+                            {field: 'username', title: '广告主', align: 'left', valign: 'middle'},
+                            {field: 'money', title: '金额', align: 'center', valign: 'middle',
+                                footerFormatter: function (value) {
+                                    var count = data.totalMoney != 0 ? data.totalMoney : "";
+                                    return count;
+                                }
+                            },
+                            {field: 'paytype', title: '支付类型', align: 'center', valign: 'middle',
+                                formatter: function(value, row, index){
+                                    return value == 1 ? "增加" : "扣除";
+                                }
+                            },
+                            {field: 'tocard', title: '卡号', align: 'center', valign: 'middle'},
+                            {field: 'manId', title: '管理员', align: 'left', valign: 'middle',
+                                formatter: function(value, row, index) {
+                                    return '[' + row.manId + ']' + row.manAccount;
+                                }
+                            },
+                            {field: 'addTime', title: '添加时间', align: 'left', valign: 'middle',
+                                formatter: function(value, row, index){
+                                    try {return new Date(value.time).format('yyyy-MM-dd');}catch (e){}
+                                }
+                            },
+                            {field: 'payinfo', title: '说明', align: 'left', valign: 'middle'}
+                        ]
+                    });
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown){
+                    alert("error occurred");
+                }
+            });
+        });
+        $("#export").on("click", function(){
+            var url = "/manage/advpay/downloadExcel?startDate=" + $("#start-date").val() + "&endDate=" + $("#end-date").val() + "&searchUid=" + $("#searchUid").val();
+            var form = $("<form>");//定义一个form表单
+            form.attr("style","display:none");
+            form.attr("target","");
+            form.attr("method","post"); //请求类型
+            form.attr("action",url); //请求地址
+            $("body").append(form);//将表单放置在web中
+            form.submit(); //表单提交
+
+        });
+
+        // modal框高度调整
+        $('#modalDialog').on('show.bs.modal', function (e) {
+            $(this).find('.modal-dialog').css({
+                'margin-top': function () {
+                    var modalHeight = $('#modalDialog').find('.modal-dialog').height();
+                    return ($(window).height() / 3 - (modalHeight / 3));
+                }
+            });
+        });
+        $('#modalDialog').on('hidden.bs.modal', function (e) {
+            $("select#username").val("");
+            $("input[name='paytype']")[0].checked = true;
+            $("#tocard").val("");
+            $("#money").val("");
+            $("#payinfo").val("");
+        });
+
+        $("#start-date.date").datepicker({
+            language : 'zh-CN',
+            todayBtn: "linked",
+            clearBtn: true,// 自定义属性,true 显示 清空按钮 false 隐藏 默认:true
+            format: "yyyy-mm-dd",
+            keyboardNavigation: true,
+            forceParse: false,
+            calendarWeeks: false,
+            autoclose: true
+        });
+        $("#end-date.date").datepicker({
+            language : 'zh-CN',
+            todayBtn: "linked",
+            clearBtn: true,// 自定义属性,true 显示 清空按钮 false 隐藏 默认:true
+            format: "yyyy-mm-dd",
+            keyboardNavigation: true,
+            forceParse: false,
+            calendarWeeks: false,
+            autoclose: true
+        });
+
+        $.fn.serializeObject = function() {
+            var o = {};
+            var a = this.serializeArray();
+            $.each(a, function() {
+                if (o[this.name]) {
+                    if (!o[this.name].push) {
+                        o[this.name] = [ o[this.name] ];
+                    }
+                    o[this.name].push(this.value || '');
+                } else {
+                    o[this.name] = this.value || '';
+                }
+            });
+            return o;
+        }
+        /*]]>*/
+    </script>
+</div>
+</body>
+</html>

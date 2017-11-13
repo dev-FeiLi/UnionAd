@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="keywords" content="WAP广告联盟,WAP广告, wap广告平台,移动广告平台,移动广告联盟,广告联盟" />
+	<meta name="description" content="九点广告WAP广告联盟，致力打造国内最好的WAP广告联盟，优质丰富的广告媒体，多式多样的广告形式，精准高效的广告投放，合理透明的计费方式，确保您的每一分投入都能产生最大的价值。" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<title>九点广告-WAP广告联盟|最好的移动广告平台</title>
+	<link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css" />
+	<link rel="stylesheet" type="text/css" href="/css/nine_style.css" />
+	<script src="/js/jquery.min.js"></script>
+	<script src="/js/bootstrap.min.js"></script>
+</head>
+<body>
+<header class="header">
+	<div class="center-wrap clearfix">
+		<a href="/" class="logo"><img src="/images/nine/logo.png" width="179" height="44" alt="九点广告-WAP广告联盟|最好的移动广告平台"/></a>
+		<ul class="nav">
+			<li><a href="/" class="active">首页</a></li>
+			<li><a href="/nine_product">产品介绍</a></li>
+			<li><a href="/nine_flow">流量变现</a></li>
+			<li><a href="/nine_notice">公告动态</a></li>
+			<li><a href="/nine_about">关于我们</a></li>
+		</ul>
+		<div>
+			<a href="/nine_login" class="login btn">登录</a>
+			<a href="/reg/adv" class="register btn">广告主注册</a>
+			<a href="/reg/aff" class="register btn">网站主注册</a>
+		</div>
+	</div>
+</header>
+<title>提示九点广告-WAP广告联盟|最好的移动广告平台</title>
+<section class="bg_white">
+	<div class="errorbox">
+		<img src="/images/nine/img_ro.jpg" />
+		<div>
+			<p th:text="${errmsg}"></p>
+			<a href="/nine_login">返回首页登入</a>
+		</div>
+	</div>
+</section>
+
+<footer class="footer">
+	<div class="footertop">
+		<ul>
+			<li>帮助中心</li><li><a href="/nine_about">关于我们</a></li><li><a href="/nine_about">加入我们</a></li>
+		</ul>
+		<ul>
+			<li>联系我们</li>
+			<li>联系方式：186 8031 9370</li>
+			<li>上班时间：周一至周六 9:30-18:30</li>
+			<li>联系邮箱：119611506@qq.com</li>
+		</ul>
+		<div class="rqcode"><img src="/images/nine/rqcode.jpg" width="133" height="133" /></div>
+	</div>
+</footer>
+<footer class="footer2">
+	<p>COPYRIGHT &copy;2016-2017 ALL RIGHTS RESERVED. 深圳市蓝色思维网络科技有限公司 版权所有 <a href="http://www.miitbeian.gov.cn/" target="_blank" style="color:white;">粤ICP备16084038号</a></p>
+</footer>
+
+<div style="display:none">
+	<script type="text/javascript">
+        $('.carousel').carousel();
+	</script>
+</div>
+</body>
+</html>

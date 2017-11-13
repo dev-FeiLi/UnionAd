@@ -1,0 +1,38 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" layout:decorator="advlayout">
+<head>
+    <title>点优移动传媒会员后台</title>
+</head>
+<body>
+<div id="page-main" layout:fragment="content">
+    <div class="basicbox row">
+        <div class="basicin col-md-12 col-sm-12 col-xs-12">
+            <h1><b>广告信息</b></h1>
+            <form role="form" id="form" method="post" action="/adv/ad/save">
+                <div class="basicside">
+                    <input type="hidden" name="adid" th:value="${ad.adid}"/>
+                    <div class="form-group">
+                        <label for="adname">广告名称</label>
+                        <input type="text" class="form-control" id="adname" name="adname" readonly="true" th:value="${plan.title+'#'+ad.adname}" />
+                    </div>
+                    <div class="form-group">
+                        <label for="imageurl">广告图片</label>
+                        <input type="url" class="form-control" id="imageurl" name="imageurl" placeholder="只提供图片链接的更改"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="adurl">广告地址</label>
+                        <input type="url" class="form-control" id="adurl" name="adurl" th:value="${ad.adurl}" />
+                    </div>
+                </div>
+                <div class="basicbtn">
+                    <button class="btn btn-lg" type="submit">更新</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <img th:src="${ad.imgurl}" alt="" />
+    </div>
+</div>
+</body>
+</html>

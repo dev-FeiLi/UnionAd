@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"  layout:decorator="${session.userContext.menuPos eq 'layout-top-nav' ? 'layoutTop' : 'layoutLeft'}">
+<head>
+    <title></title>
+    <link href="/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.css" rel="stylesheet" />
+    <style type="text/css">
+        .form-horizontal .control-group {
+            margin-bottom: 14px;
+        }
+        .heading {
+            border-bottom: 1px solid #dcdcdc;
+            margin-bottom: 18px;
+            padding-bottom: 5px;
+            padding-left: 10px;
+        }
+        .formSep {
+            padding-bottom: 12px;
+            border-bottom: 1px dashed #dcdcdc;
+        }
+        .form-horizontal .control-label {
+            float: left;
+            width: 130px;
+            padding-top: 5px;
+            text-align: right;
+        }
+        .form-horizontal .controls {
+            margin-left: 30px;
+            padding-left: 130px;
+            margin-bottom: 0px;
+        }
+        select {
+            height: auto;
+            width: 100%;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 5px;
+            line-height: 20px;
+        }
+        .input_text {
+            height: 24px;
+            padding: 0px 6px;
+            margin-bottom: 10px;
+            font-size: 14px;
+            line-height: 20px;
+            color: #555;
+            vertical-align: middle;
+            -webkit-border-radius: 4px;
+            -moz-border-radius: 4px;
+            border-radius: 4px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
+            -moz-box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
+            box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
+            -webkit-transition: border linear .2s, box-shadow linear .2s;
+            -moz-transition: border linear .2s, box-shadow linear .2s;
+            -o-transition: border linear .2s, box-shadow linear .2s;
+            transition: border linear .2s, box-shadow linear .2s;
+        }
+
+        ul, ol {
+            padding: 0;
+            margin: 0;
+            display: block;
+            list-style: none;
+        }
+        .span30{
+            width: 30%;
+        }
+
+        ol, ul {
+            list-style: none;
+        }
+        .has-error{
+            color: #c73222 !important;
+        }
+    </style>
+
+</head>
+<body>
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper" layout:fragment="content">
+    <section class="content">
+        <div class="row-fluid">
+            <h3 class="heading"> 数据调整</h3>
+            <div class="row-fluid">
+                <div class="span8">
+                    <div class="alert alert-warning alert-dismissible">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                        <h4><i class="icon fa fa-warning"></i> 注意!</h4>
+                        A.导入之前，先看页面下方的“格式说明”和“日期说明”，有疑问及时咨询技术；<br/>
+                        B.现阶段结算的日期：周结(周<span th:text="${weekClear}"/>)，月结(<span th:text="${monthClear}"/>日)；<br/>
+                        C.现阶段系统每天在凌晨3点执行结算任务，所以凌晨3点之后要注意导入日期。
+                    </div>
+                    <form class="form-horizontal" method="post">
+                    <div class="control-group formSep st">
+                        <label class="control-label">目标计划</label>
+                        <div class="controls" style="width:420px">
+                            <select name="planid" id="planid">
+                                <option value=""> 请选择一个计划 </option>
+                                <optgroup label="CPC">
+                                    <option th:each="adPlan:${planOptions.cpcList}" th:value="${adPlan.planId}" th:text="${adPlan.title}"></option>
+                                </optgroup>
+                                <optgroup label="CPM">
+                                    <option th:each="adPlan:${planOptions.cpmList}" th:value="${adPlan.planId}" th:text="${adPlan.title}"></option>
+                                </optgroup>
+                                <optgroup label="CPV">
+                                    <option th:each="adPlan:${planOptions.cpvList}" th:value="${adPlan.planId}" th:text="${adPlan.title}"></option>
+                                </optgroup>
+                                <optgroup label="CPA">
+                                    <option th:each="adPlan:${planOptions.cpaList}" th:value="${adPlan.planId}" th:text="${adPlan.title}"></option>
+                                </optgroup>
+                            </select>
+                            <div class="clearfix"></div>
+                            <span class="has-error" id="planidError"></span>
+                        </div>
+                    </div>
+                    <div class="control-group formSep">
+                        <label class="control-label">来源 </label>
+                        <div class="controls">
+                            <label><input name="datatype" type="radio" id="datatype_t" value="text" checked=""/>
+                            手动输入</label>
+                            <!-- <input type="radio" name="datatype" id="datatype_f" value="file"/>
+                            导入文件 <span>导入文件的格式只能是Excel格式 </span> -->
+                        </div>
+                    </div>
+                    <div id="datatype_text">
+                        <div class="control-group formSep htmltemplate">
+                            <label class="control-label">数据<br/>
+                            </label>
+                            <div class="controls">
+                                <textarea name="postdata" class="input_text span30" id="data" style="overflow: hidden; word-wrap: break-word;   height: 200px;width: 500px;"></textarea>
+                                <button class="btn btn-default f_button" type="button" style="" id="aa">验证格式</button>
+                            </div>
+                            <div class="controls verify_html" style="color:#FF0000; margin-top:10px;"></div>
+                            <span class="has-error" style="display: none" id="dataError"></span>
+                        </div>
+                        <div class="control-group formSep">
+                            <div class="controls">
+                                <button class="btn btn-primary" type="button" id="f_submit">提交</button>
+                            </div>
+                        </div>
+                        <div class="control-group formSep">
+                            <label class="control-label">格式说明 </label>
+                            <div class="controls"> 采用“<font color="#FF0000">|</font>”为分割符，一行一条,格式如下<br/>
+                                <br/>
+                                日期|网站主ID|网站主结算数|广告主结算数|设备(1PC,2iOS,3Android,4WinPhone)<br/>
+                                <br/>
+                                2017-09-08|1001|1000|100000|2
+                                <br/>
+                                或者
+                                <br/>
+                                2017-09-08|1001|1000|100000
+                                <br/><br/>
+                                注意：上述格式中“设备”可以是空，当“设备”为空时，将优先查询计划是否设置了“会员单价”，有则采用“会员单价”；
+                                <br/>
+                                没有设置“会员单价”，则采用计划单价中首个单价，也许是iOS单价，也许是安卓单价；
+                            </div>
+                        </div>
+                        <div class="control-group formSep">
+                            <label class="control-label">日期说明 </label>
+                            <div class="controls">目标日期不能跨越两个结算日子<br/>
+                                <br/>
+                                A、对于目标会员是日结的话，那就不允许把数据导入到昨日或昨日之前的日期；
+                                <br/>
+                                B、对于目标会员是周结的话，那就不允许把数据导入到周结日期之前；
+                                <br/>
+                                比如现在现在设置的周结日期是周二，当前日期是周四，那数据就不能导入到周二之前的日期了，但可以导入到周二，周三，周四；
+                                <br/>
+                                C、对于目标会员是周结的话，那就不允许把数据导入到月结日期之前；
+                                <br/>
+                                比如现在系统设置的月结日期是3号，当前是16号，那数据就不能导入到3号之前的日期了，3号之后就没问题；
+                                <br/>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="datatype_file" style="display:none">
+                        <div class="control-group formSep htmltemplate">
+                            <label class="control-label">数据<br/>
+                            </label>
+                            <div class="controls">
+                                <input name="files" type="file" id="files"/>
+                            </div>
+                        </div>
+                        <div class="control-group formSep">
+                            <label class="control-label">格式说明 </label>
+                            <div class="controls"> 第一行为标题，第二行开始为数据,格式如下<br/>
+                                <br/>
+                                <img src="/dist/img/excel.png" alt="" class="user_avatar"/> <br/><br/>
+                                <H2 style="color:red">注意：工作簿的名称要为Sheet1</H2>
+                            </div>
+                        </div>
+                    </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+<div style="display: none;" layout:fragment="script">
+    <!-- form validate -->
+    <script src="https://cdn.bootcss.com/jquery-validate/1.16.0/jquery.validate.js"></script>
+    <script src="https://cdn.bootcss.com/jquery.form/4.2.1/jquery.form.js"></script>
+    <script src="/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.all.js"></script>
+    <script src="/dist/js/xls.js"></script>
+    <script type="application/javascript" th:inline="JavaScript">
+        /*<![CDATA[*/
+        $("#planid").select2();
+        //当radio改变值的时候出发的事件
+        $('input:radio[name="datatype"]').change(function () {
+            if ($(this).val() == "text") {
+                $("#datatype_text").show();
+                $("#datatype_file").hide();
+            } else {
+                $("#datatype_file").show();
+                $("#datatype_text").hide();
+            }
+        });
+        $("#planid").on("change", function () {
+            $("#planidError").text("");
+        });
+        // 提交
+        $("#f_submit").on("click", function () {
+            var data = $("#data").val();//拿到用户输入的值
+            var planid = $("#planid").val();//计划id
+            if (planid == "" || planid == null) {
+                $("#planidError").text("请选择一个计划!");
+                return;
+            }
+            if (data == "" || data == null) {
+                $(".verify_html").text("data不能为空");
+                return;
+            }
+            var formData = {};
+            formData.planid = planid;
+            formData.data = data;
+            $("#f_submit").prop('disabled', true);//禁用按钮
+            $.ajax({
+                type: "POST",
+                url: "/manage/saveAdsImport",
+                async: true,
+                contentType: "application/json",
+                dataType: "json",
+                data: JSON.stringify(formData),
+                success: function (data) {
+                    if (data.error) {
+                        alert(data.error);
+                        $("#f_submit").prop('disabled', false);//禁用按钮
+                    } else {
+                        alert("操作成功");
+                        window.location.href = "/manage/adsImportList";
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert("error occurred");
+                }
+            });
+        });
+        //校验data数据
+        $("#aa").click(function () {
+            verificationData();
+        });
+
+        function verificationData() {
+            var reg = new RegExp("^[0-9]*$");//正则表达式全是数字
+            var data = $("#data").val();//拿到用户输入的值
+            var planid = $("#planid").val();//计划id
+            if (planid == "" || planid == null) {
+                $("#planidError").text("请选择一个计划!");
+                return;
+            } else {
+                $("#planidError").text("");
+            }
+            if (data == "" || data == null) {
+                $(".verify_html").text("data不能为空");
+                return;
+            } else {
+                $(".verify_html").text("");
+//                (/\s/g, "");//去掉所有空串包括换行符
+                data = data.trim().replace(/\ +/g, "");//去掉空串
+                var strList = data.split("\n");//先换行符分割
+                for (var i = 0; i < strList.length; i++) {
+                    var str = strList[i];
+                    dange(str, i);
+                }
+            }
+        }
+
+        //foreach里面的单个数据
+        function dange(data, i) {
+            var str = data.split("\|");//分割字符串
+            //判断分割后的长度大小，如果小于O或者大于6的直接给return
+            if (str.length > 5 || str.length < 4) {
+                $(".verify_html").text("第" + (i + 1) + "行格式不正确");
+                return;
+            } else {
+                $(".verify_html").text("");
+            }
+            var reg = new RegExp("^[0-9]*$");//正则表达式全是数字
+            //日期格式yyyy-mm-dd
+            if (!str[0].match(/^(\d{4})-(0\d{1}|1[0-2])-(0\d{1}|[12]\d{1}|3[01])$/)) {
+                $(".verify_html").text("第" + (i + 1) + "行格式不正确");
+                return;
+            } else {
+                $(".verify_html").text("");
+            }
+            //验证数字
+            if (!reg.test(str[1]) || !reg.test(str[2]) || !reg.test(str[3]) || !reg.test(str[4])) {
+                $(".verify_html").text("第" + (i + 1) + "行格式不正确");
+                return;
+            } else {
+                $(".verify_html").text("");
+            }
+            //如果第六个不为空，才去校验
+            if (str[5] != "" && str[5] != null) {
+                if (!reg.test(str[5])) {
+                    $(".verify_html").text("第" + (i + 1) + "行格式不正确");
+                    return;
+                }
+                else {
+                    $(".verify_html").text("");
+                }
+            }
+            // existUid(str[1], 1, str[2], 2);
+        }
+
+        //提取数据转化代码
+        var xlf = document.getElementById('files');  //<input type="file" id="xlf" />
+        if (xlf.addEventListener) xlf.addEventListener('change', handleFile, false);
+
+        function handleFile(e) {
+            if (e.target.files[0].name.indexOf(".xls") < 0) {
+                alert("请选择.xls格式文件！");
+                return;
+            }
+            //saveLoading('show');
+            rABS = false;
+            use_worker = false;
+            var files = e.target.files;
+            var output = "";
+            var f = files[0];
+            {
+                var reader = new FileReader();
+                var name = f.name;
+                reader.onload = function (e) {
+                    if (typeof console !== 'undefined') console.log("onload", new Date(), rABS, use_worker);
+                    var data = e.target.result;
+                    if (use_worker) {
+                        xw(data, process_wb);
+                    } else {
+                        var wb;
+                        if (rABS) {
+                            wb = XLS.read(data, {type: 'binary'});
+                        } else {
+                            var arr = fixdata(data);
+                            wb = XLS.read(btoa(arr), {type: 'base64'});
+                        }
+                        output = process_wb(wb, "json");
+                        ReadExcel(output);
+                    }
+                };
+                if (rABS) reader.readAsBinaryString(f);
+                else reader.readAsArrayBuffer(f);
+            }
+        }
+
+        function to_json(workbook) {
+            var result = {};
+            workbook.SheetNames.forEach(function (sheetName) {
+                var roa = XLS.utils.sheet_to_row_object_array(workbook.Sheets[sheetName]);
+                if (roa.length > 0) {
+                    result[sheetName] = roa;
+                }
+            });
+            return result;
+        }
+
+        function fixdata(data) {
+            var o = "", l = 0, w = 10240;
+            for (; l < data.byteLength / w; ++l) o += String.fromCharCode.apply(null, new Uint8Array(data.slice(l * w, l * w + w)));
+            o += String.fromCharCode.apply(null, new Uint8Array(data.slice(l * w)));
+            return o;
+        }
+
+        function process_wb(wb, type) {
+            var output = "";
+            switch (type) {
+                case "json":
+                    output = JSON.stringify(to_json(wb), 2, 2);
+                    break;
+                case "form":
+                    output = to_formulae(wb);
+                    break;
+                default:
+                    output = to_csv(wb);
+            }
+            return output;
+        }
+
+        // 例子 根据实际你删掉一些  然后传到后台进行处理
+        function ReadExcel(out) {
+            var exlData = JSON.parse(out);
+            var regCode = /^[1-9]\d*$/;
+            var regQty = /^\d*$/;
+            var ids = [];
+            var msg = "";
+            console.log(out);
+            console.log("exlData.Sheet1" + exlData.Sheet1);
+            if (exlData.Sheet1 == null || exlData.Sheet1 == undefined) {
+                alert("未查询到Excel文件中的数据！或者工作簿的名称不是Sheet1");
+                $("#files").val("");
+                return;
+            }
+            if (planid == "" || planid == null) {
+                alert("请选择一个计划!");
+                $("#files").val("");
+                return;
+            }
+            var execldate = "";
+            for (var i = 0; i < exlData.Sheet1.length; i++) {
+                var dataTime = exlData.Sheet1[i].导入的日期;
+                var affuid = exlData.Sheet1[i].网站主ID == undefined ? "" : exlData.Sheet1[i].网站主ID;
+                var advuid = exlData.Sheet1[i].广告主ID == undefined ? "" : exlData.Sheet1[i].广告主ID;
+                var affnum = exlData.Sheet1[i].网站主结算数;
+                var advnum = exlData.Sheet1[i].广告主结算数;
+                var limitdevice = exlData.Sheet1[i].设备 == undefined ? "" : exlData.Sheet1[i].设备;
+                if (limitdevice == undefined) {
+                    limitdevice = "";
+                }
+                else if (dataTime == undefined || dataTime == "") {
+                    alert("导入的时间不可为空！");
+                    $("#files").val("");
+                    return;
+                }
+                else if (!dataTime.match(/^(\d{4})-(0\d{1}|1[0-2])-(0\d{1}|[12]\d{1}|3[01])$/)) {
+                    alert("时间格式不正确");
+                    $("#files").val("");
+                    return;
+                }
+                else if (affuid == undefined || affuid == "") {
+                    alert("网站主Id不可以为空！");
+                    $("#files").val("");
+                    return;
+                }
+                else if (advuid == undefined) {
+                    alert("广告主Id不可以为空！");
+                    $("#files").val("");
+                    return;
+                }
+                else if (affnum == undefined || affnum == "") {
+                    alert("网站主结算数不可为空！");
+                    $("#files").val("");
+                    return;
+                }
+                else if (advnum == undefined || advnum == "") {
+                    alert("广告主结算数不可为空！");
+                    $("#files").val("");
+                    return;
+                }
+                else if (isNaN(affuid) || isNaN(advuid) || isNaN(affnum) || isNaN(advnum) || isNaN(limitdevice)) {
+                    alert("数量的信息包含非数字");
+                    $("#files").val("");
+                    return;
+                }
+                execldate += dataTime + "|" + affuid + "|" + advuid + "|" + affnum + "|" + advnum + "|" + limitdevice + "\n";
+            }
+            var formData = {};
+            formData.planid = $("#planid").val();
+            formData.data = execldate;
+            $.ajax({
+                type: "POST",
+                url: "/manage/saveAdsImport",
+                async: true,
+                contentType: "application/json",
+                dataType: "json",
+                data: JSON.stringify(formData),
+                success: function (data) {
+                    if (data.error) {
+                        alert(data.error);
+                    } else {
+                        alert("导入成功！");
+                        window.location.href = "/manage/adsImportList";
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert("error occurred");
+                }
+            });
+        }
+        /*]]>*/
+    </script>
+</div>
+</body>
+</html>

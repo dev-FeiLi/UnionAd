@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8" />
+<title th:text="${wapTitle}"/>
+<link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="/css/nine_style.css" />
+<script src="/js/jquery.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+</head>
+<body>
+	<header class="header">
+		<div class="center-wrap clearfix">
+			<a href="/nine_index" class="logo"><img src="/images/nine/logo.png" width="179" height="44" /></a>
+			<ul class="nav">
+				<li><a href="/nine_index">首页</a></li>
+				<li><a href="/nine_product">产品介绍</a></li>
+				<li><a href="/nine_flow">流量变现</a></li>
+				<li><a href="/nine_notice">公告动态</a></li>
+				<li><a href="/nine_about" class="active">关于我们</a></li>
+			</ul>
+			<a href="/nine_login" class="login btn">登录</a>
+			<a href="/reg/adv" class="register btn">广告主注册</a>
+			<a href="/reg/aff" class="register btn">网站主注册</a>
+		</div>
+	</header>
+	<section id="myCarousel" class="carousel slide banner">
+	<!-- 轮播（Carousel）指标 -->
+	<ol class="carousel-indicators">
+		<li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+        <li data-target="#myCarousel" data-slide-to="1"></li>
+	</ol>
+	<!-- 轮播（Carousel）项目 -->
+		<div class="carousel-inner">
+			<div class="item active">
+				<img src="/images/nine/banner4.jpg" alt="First slide" />
+			</div>
+			<div class="item">
+            	<img src="/images/nine/banner4.jpg" alt="Second slide" />
+        	</div>
+		</div>
+	</section>
+	<section class="bg_gray">
+		<div class="center-wrap about">
+			<div class="index_title">
+				<h1>公司简介</h1>
+				<b></b>
+			</div>
+			<div class="abinfo">
+				<div class="char">
+					<p>九点广告平台隶属于深圳蓝色思维传媒有限公司，自2016年开始筹备上线运营以来，发展极为迅速，合作会员累计达上万家，并以每天上百家的速度递增。已为数百家游戏厂商及知名品牌企业进行广告推广，成功塑造了企业形象和产品品牌，与多家知名企业建立了长久战略合作关系。</p>
+					<p>在九点移动广告平台上您可以定时，定量，定区域，定行业的进行广告投放。</p>
+					<p>在九点移动广告平台可以为客户量身定做整个移动网络广告宣传过程，全程检测广告效果，为每一个点击负责，真正做到效果营销，准确定位。经过长期的研发和经验积累，我们已经建立最完善的付费机制，拥有众多高质量的网站群、开发者群、提供双方交换信息及进行操作的系统，并提供长期稳定的技术支持、根据用户的需求定期对系统进行升级、执行完善的作弊检查！高标准，高要求，高效率，高效果，是九点人所追求的目标。</p>
+					<p>我们希望通过努力给您带来实实在在的效果，让每一次点击能产生最大的价值，我们为自己代言！</p>
+				</div>
+				<img src="/images/nine/map.jpg" width="1064" height="485" />
+				<h1>公司地址：深圳市南山区粤海路5号（深圳动漫园）4栋306</h1>
+			</div>
+		</div>
+	</section>
+	<footer class="footer">
+		<div class="footertop">
+			<ul>
+				<li>帮助中心</li><li><a href="/nine_about">关于我们</a></li><li><a href="/nine_about">加入我们</a></li>
+			</ul>
+			<ul>
+				<li>广告主客服</li>
+				<li th:each="node,nodeStat:${services}" th:if="${(node.utype eq 4) and (node.ustatus eq 1)}">
+					<a th:href="@{tencent://message/(uin=${node.qq},Site=${wapUrl},Menu=yes)}" th:text="${node.realname + '(' + node.qq + ')'}"/>
+				</li>
+			</ul>
+			<ul>
+				<li>网站主客服</li>
+				<li th:each="node,nodeStat:${services}" th:if="${(node.utype eq 3) and (node.ustatus eq 1)}">
+					<a th:href="@{tencent://message/(uin=${node.qq},Site=${wapUrl},Menu=yes)}" th:text="${node.realname + '(' + node.qq + ')'}"/>
+				</li>
+			</ul>
+			<ul>
+				<li>联系我们</li>
+				<li>联系方式：0751-89569130</li>
+				<li>上班时间：周一至周五9：00-18：00</li>
+				<li>联系邮箱：1372751327@qq.com</li>
+			</ul>
+			<div class="rqcode"><img src="/images/nine/rqcode.jpg" width="133" height="133" /></div>
+		</div>
+	</footer>
+	<footer class="footer2">
+		<p>COPYRIGHT @2016 深圳市蓝色思维网络科技有限公司 ALL RIGHTS RESERVED.版权所有</p>
+	</footer>
+<script type="text/javascript">
+	  $('.carousel').carousel();
+</script>
+</body>
+</html>

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"  layout:decorator="${session.userContext.menuPos eq 'layout-top-nav' ? 'layoutTop' : 'layoutLeft'}">
+<head>
+    <title></title>
+</head>
+<body>
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper" layout:fragment="content">
+    <section class="content-header">
+        <h1>数据调整列表</h1>
+    </section>
+    <section class="content">
+        <div id="toolbar" class="btn-group">
+            <div>
+                开始日期:<input type="text" id="start-date" style="display: inline-block;width: 20%;background-color: #ffffff" class="form-control date datepicker" readonly="true"/>
+                结束日期:<input type="text" id="end-date"   style="display: inline-block;width: 20%;background-color: #ffffff" class="form-control date datepicker" readonly="true"/>
+                <select id="searchType" class="form-control" style="width: 15%;display: inline-block;">
+                    <option value="uid">网站主ID</option>
+                    <option value="advid">广告主ID</option>
+                    <option value="planid">计划ID</option>
+                </select>
+                <input id="searchId" class="form-control" style="display: inline-block;width: 15%;" type="number"/>
+                <button id="search" class="btn btn-default " type="button" name="refresh" title="查询" style="width: 40px;vertical-align: top;">
+                    <i class="glyphicon glyphicon-search icon-search"></i>
+                </button>
+            </div>
+            <div style="margin-top:3px;">
+                <button id="btn_add" type="button" class="btn btn-default">
+                    <span class="glyphicon glyphicon-plus" aria-hidden="true">增加</span>
+                </button>
+            </div>
+        </div>
+        <table id="table" class="table"></table>
+    </section>
+</div>
+<div style="display: none;" layout:fragment="script">
+    <!-- form validate -->
+    <script src="https://cdn.bootcss.com/jquery-validate/1.16.0/jquery.validate.js"></script>
+    <script src="https://cdn.bootcss.com/jquery.form/4.2.1/jquery.form.js"></script>
+    <script type="application/javascript" th:inline="JavaScript">
+        /*<![CDATA[*/
+        var height = $(window).width() <= 767 ? $(window).height() - 135 : $(window).height() - 75;
+        $('#table').bootstrapTable({
+            url: '/manage/adsImportData',
+            uniqueId: "addTime",
+            search: false, // 是否启用搜索框
+            striped: true,  // 表格显示条纹
+            pagination: true, // 启动分页
+            checkboxHeader: false,
+            showPaginationSwitch: false, // 是否显示 数据条数选择框
+            paginationLoop: false,
+            pageSize: 50,  // 每页显示的记录数
+            cache: false,// 是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性
+            pageNumber: 1, // 初始化加载第一页，默认第一页
+            pageList: [50, 100, 200],  //记录数可选列表
+            sortable: false, // 是否启用排序
+            showHeader: true, // 是否显示列头
+            stickyHeader: true, // 是否固定表头
+            showFooter: true, // 是否显示列脚
+            showRefresh: false, // 是否显示 刷新按钮
+            singleSelect: true, //
+            toolbar: '#toolbar', //
+//            height: height,//
+            sidePagination: "server", //分页方式：client客户端分页，server服务端分页（*）
+            queryParamsType: "undefined",// limit or undefined 设置为 'limit' 则会发送符合 RESTFul 格式的参数.
+            queryParams: function queryParams(params) {  //设置查询参数
+                var param = {
+                    //这里是在ajax发送请求的时候设置一些参数 params有什么东西，自己看看源码就知道了
+                    page: params.pageNumber - 1,
+                    size: params.pageSize
+                };
+                return param;
+            },
+            columns: [
+                {field: 'uid', title: '网站主', align: 'left', valign: 'middle',
+                    formatter:function(value, row, index){
+                        return '['+row.uid+']'+row.affname;
+                    }
+                },
+                {field: 'advid', title: '广告主', align: 'left', valign: 'middle',
+                    formatter:function (value, row, index) {
+                        return "["+ row.advid +"]"+row.advname;
+                    }
+                },
+                {field: 'planid', title: '计划', align: 'left', valign: 'middle',
+                    formatter:function(value, row, index){
+                        return " [ "+ row.planid +" ]"+row.title;
+                    }
+                },
+                {field: 'affnum', title: '结算', align: 'center', valign: 'middle'},
+                {field: 'advnum', title: '扣量', align: 'center', valign: 'middle'},
+                {field: 'sumpay', title: '应支', align: 'center', valign: 'middle'},
+                {field: 'sumadvpay', title: '应收', align: 'center', valign: 'middle'},
+                {field: 'sumprofit', title: '盈利', align: 'center', valign: 'middle', visible: false},
+                {field: 'data', title: '数据', align: 'left', valign: 'middle'},
+                {field: 'addTime', title: '日期', align: 'center', valign: 'middle',
+                    formatter: function (value, row, index) {
+                        return $.format.date(value.time, 'yyyy-MM-dd HH:mm:ss');
+                    }
+                },
+                {field: '', title: '操作', align: 'center', valign: 'middle',width: '7%',
+                    formatter: function(value, row, index) {
+                        var operate = '<div class="btn-group">';
+                        if (row.istatus==0){
+                           operate += '<a class="btn btn-info update-istatus" id="'
+                               + row.id + '" istatus="9" type="button"><i class="fa fa-undo"></i>撤销</a></div>';
+                        }else if( row.istatus == 9) {
+                            operate += '<a class="btn btn-danger update-istatus" id="'
+                                + row.id + '" istatus="8" type="button"><i class="fa fa-trash"></i>删除</a></div>';
+                        }
+                        return operate;
+                    }
+                }
+            ]
+        });
+        // istatus状态更新click 事件
+        $("#table").on("click", ".update-istatus", function () {
+            var id = $(this).attr("id");
+            var istatus = $(this).attr("istatus");
+            if(!confirm("你是否要做此操作？")){
+                return;
+            }
+            $.ajax({
+                type: 'POST',
+                url : '/manage/updateIstatus',
+                async: true,
+                contentType: 'application/x-www-form-urlencoded',
+                data: {"id": id, "istatus": istatus},
+                dataType: "json",
+                success: function(data){
+                    if(data.error){
+                        alert(data.error);
+                    }
+                    else{
+                        alert("操作成功！");
+                        $("#table").bootstrapTable("refresh");
+                    }
+
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown){}
+            });
+        });
+        $("#search").on("click", function(){
+            $("#table").bootstrapTable("refreshOptions",{sidePagination:'client', url: "/manage/searchAdsImport?startDate="+ $("#start-date").val() + "&endDate=" + $("#end-date").val()
+            + "&searchId=" + $("#searchId").val() + "&searchType=" + $("#searchType").val()})
+        });
+        $("#start-date.date").datepicker({
+            language : 'zh-CN',
+            todayBtn: "linked",
+            clearBtn: true,// 自定义属性,true 显示 清空按钮 false 隐藏 默认:true
+            format: "yyyy-mm-dd",
+            keyboardNavigation: true,
+            forceParse: false,
+            calendarWeeks: false,
+            autoclose: true
+        });
+        $("#end-date.date").datepicker({
+            language : 'zh-CN',
+            todayBtn: "linked",
+            clearBtn: true,// 自定义属性,true 显示 清空按钮 false 隐藏 默认:true
+            format: "yyyy-mm-dd",
+            keyboardNavigation: true,
+            forceParse: false,
+            calendarWeeks: false,
+            autoclose: true
+        });
+        $("#btn_add").click(function (){
+            window.location.href = "/manage/addAdsImport";
+        });
+        /*]]>*/
+    </script>
+</div>
+</body>
+</html>

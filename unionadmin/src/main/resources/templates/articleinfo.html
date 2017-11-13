@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"  layout:decorator="${session.userContext.menuPos eq 'layout-top-nav' ? 'layoutTop' : 'layoutLeft'}">
+<head>
+    <title></title>
+    <link href="/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.css" rel="stylesheet" />
+    <style type="text/css">
+        .form-horizontal .control-group {
+            margin-bottom: 14px;
+        }
+        .heading {
+            border-bottom: 1px solid #dcdcdc;
+            margin-bottom: 18px;
+            padding-bottom: 5px;
+            padding-left: 10px;
+        }
+        .formSep {
+            padding-bottom: 12px;
+            border-bottom: 1px dashed #dcdcdc;
+        }
+        .form-horizontal .control-label {
+            float: left;
+            width: 130px;
+            padding-top: 5px;
+            text-align: right;
+        }
+        .form-horizontal .controls {
+            margin-left: 30px;
+            padding-left: 130px;
+            margin-bottom: 0px;
+        }
+        select {
+            height: auto;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 5px;
+            line-height: 20px;
+        }
+        .input_text {
+            height: 24px;
+            padding: 0px 6px;
+            margin-bottom: 10px;
+            font-size: 14px;
+            line-height: 20px;
+            color: #555;
+            vertical-align: middle;
+            -webkit-border-radius: 4px;
+            -moz-border-radius: 4px;
+            border-radius: 4px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
+            -moz-box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
+            box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
+            -webkit-transition: border linear .2s, box-shadow linear .2s;
+            -moz-transition: border linear .2s, box-shadow linear .2s;
+            -o-transition: border linear .2s, box-shadow linear .2s;
+            transition: border linear .2s, box-shadow linear .2s;
+        }
+        .form-horizontal .controls span {
+            color: #666;
+            padding-left: 10px;
+        }
+        ul, ol {
+            padding: 0;
+            margin: 0;
+            display: block;
+            list-style: none;
+        }
+        .span30{
+            width: 30%;
+        }
+        ol, ul {
+            list-style: none;
+        }
+    </style>
+
+</head>
+<body>
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper" layout:fragment="content">
+    <section class="content">
+        <form id="tf" class="form-horizontal" th:method="post">
+            <h3 class="heading" id="pageTitle" th:utext="${initType}"></h3>
+            <input type="hidden" name="id" id="id" th:value="${article.id}" />
+            <input type="hidden" name="addTime" id="addTime" th:value="${article.addTime}"/>
+            <div class="control-group formSep">
+                <label class="control-label">标题</label>
+                <div class="controls">
+                    <input name="title" type="text" class="input_text span30" id="title" th:value="${article.title}" />
+                </div>
+            </div>
+            <div class="control-group formSep">
+                <label class="control-label">摘要</label>
+                <div class="controls">
+                    <textarea name="summary" style="height: 100px;" class="input_text span30" id="summary" th:text="${article.summary}"></textarea>
+                </div>
+            </div>
+            <div class="control-group formSep">
+                <label class="control-label">置顶</label>
+                <div class="controls">
+                    置顶 <input name="atop" id="atop" value="Y" type="radio" th:checked="${article.atop} ? ${article.atop} == 'Y' : 'true'" />
+                    不置顶 <input name="atop" id="atop" value="N" type="radio" th:checked="${article.atop} == 'N'" />
+                </div>
+            </div>
+            <div class="control-group formSep">
+                <label class="control-label">状态</label>
+                <div class="controls">
+                    正常 <input name="astatus" id="astatus" value="Y" type="radio" th:checked="${article.astatus} ? ${article.astatus} == 'Y' : 'true'" />
+                    删除 <input name="astatus" id="astatus" value="N" type="radio" th:checked="${article.astatus} == 'N'"/>
+                </div>
+            </div>
+            <div class="control-group formSep">
+                <label class="control-label">开始时间</label>
+                <div class="controls" id="start-date">
+                    <input style="display: inline-block" name="beginTime" id="beginTime" class="input_text input-group date" th:value="${article.beginTime}? ${#dates.format(article.beginTime, 'yyyy-MM-dd')}:''" readonly="true"/>
+                    <label style="display: inline-block;" class="fa fa-calendar"></label>
+                </div>
+            </div>
+            <div class="control-group formSep">
+                <label class="control-label">结束时间</label>
+                <div class="controls" id="end-date">
+                    <input style="display: inline-block" name="endTime" id="endTime" class="input_text input-group date" th:value="${article.endTime}? ${#dates.format(article.endTime, 'yyyy-MM-dd')}:''" readonly="true"/>
+                    <label style="display: inline-block;" class="fa fa-calendar"></label>
+                </div>
+            </div>
+            <div class="control-group formSep">
+                <label class="control-label">排序</label>
+                <div class="controls">
+                    <input name="asort" id="asort" class="input_text span30" th:value="${article.asort}" /><span>数字越大越靠前</span>
+                </div>
+            </div>
+            <div class="control-group formSep">
+                <label class="control-label">内容</label>
+                <div class="controls">
+                    <!--<textarea id="content" name="content" th:text="${article.content}" style="width: 100%;"></textarea>-->
+                    <textarea id="content" name="content" th:text="${article.content}" style="width: 50%; height: 450px;"></textarea>
+                </div>
+            </div>
+        </form>
+        <!-- 提交按钮 -->
+        <div class="control-group" style="height:50px; margin-bottom:30px; margin-left: 158px;">
+            <div class="controls">
+                <button class="btn btn-primary" id="f_submit" style="">提交</button>
+            </div>
+        </div>
+    </section>
+</div>
+
+
+
+<div style="display: none;" layout:fragment="script">
+    <!-- form validate -->
+    <script src="https://cdn.bootcss.com/jquery-validate/1.16.0/jquery.validate.js"></script>
+    <script src="https://cdn.bootcss.com/jquery.form/4.2.1/jquery.form.js"></script>
+    <script src="/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.all.js"></script>
+    <script type="application/javascript" th:inline="JavaScript">
+        /*<![CDATA[*/
+        $('#end-date .input-group.date').datepicker({
+            language : 'zh-CN',
+            todayBtn: "linked",
+            clearBtn: true,// 自定义属性,true 显示 清空按钮 false 隐藏 默认:true
+            format: "yyyy-mm-dd",
+            keyboardNavigation: true,
+            forceParse: false,
+            calendarWeeks: false,
+            autoclose: true
+        });
+        $('#start-date .input-group.date').datepicker({
+            language : 'zh-CN',
+            todayBtn: "linked",
+            clearBtn: true,// 自定义属性,true 显示 清空按钮 false 隐藏 默认:true
+            format: "yyyy-mm-dd",
+            keyboardNavigation: true,
+            forceParse: false,
+            calendarWeeks: false,
+            autoclose: true
+        });
+        function setFormVal(data){
+
+        }
+
+        function init() {
+            if ($("#pageTitle").text() === "编辑广告"){
+                var adid = $("#adid").val();
+                $.ajax({
+                    type: "POST",
+                    url: "/manage/getAdInfoById",
+                    async: true,
+                    contentType: 'application/x-www-form-urlencoded',
+                    dataType: "json",
+                    data: {"adid": adid},
+                    success: setFormVal,
+                    error: function(XMLHttpRequest, textStatus, errorThrown){
+                        console.log("getAdInfoById error...");
+                    }
+                });
+            } else {
+                $("#hiddenPlanId").val() && $("form #planid").val($("#hiddenPlanId").val());
+            }
+        }
+        /*]]>*/
+    </script>
+    <script type="application/javascript" th:inline="JavaScript">
+        /*<![CDATA[*/
+
+        /** page  bind events follows **/
+        // 提交
+        $("#f_submit").on("click", function(){
+           var formData = $("#tf").serializeObject();
+           var $this = $(this);
+            $.ajax({
+                type: 'POST',
+                url: '/manage/saveArticle',
+                async: true,
+                contentType: 'application/json',
+                data: JSON.stringify(formData),
+                dataType: "json",
+                success: function (data) {
+                    if (data.errorMsg) {
+                        alert(data.errorMsg);
+                    } else {
+                        $this.prop("disabled", true);
+                        alert("提交成功");
+                    }
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown){alert("error occurred");}
+            });
+
+        });
+
+
+
+        $("#content").wysihtml5({
+            toolbar: {
+                "font-styles": true, //Font styling, e.g. h1, h2, etc. Default true
+                "emphasis": true, //Italics, bold, etc. Default true
+                "lists": true, //(Un)ordered lists, e.g. Bullets, Numbers. Default true
+                "html": false, //Button which allows you to edit the generated HTML. Default false
+                "link": true, //Button to insert a link. Default true
+                "image": false, //Button to insert an image. Default true,
+                "color": false, //Button to change color of font
+                "blockquote": true, //Blockquote
+            }
+        });
+
+        $.fn.serializeObject = function() {
+            var o = {};
+            var a = this.serializeArray();
+            $.each(a, function() {
+                if (o[this.name]) {
+                    if (!o[this.name].push) {
+                        o[this.name] = [ o[this.name] ];
+                    }
+                    o[this.name].push(this.value || '');
+                } else {
+                    o[this.name] = this.value || '';
+                }
+            });
+            return o;
+        }
+        /*]]>*/
+    </script>
+</div>
+</body>
+</html>

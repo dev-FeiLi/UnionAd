@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" layout:decorator="${session.userContext.menuPos eq 'layout-top-nav' ? 'layoutTop' : 'layoutLeft'}">
+<head>
+    <title></title>
+    <style>
+        #table tr td.sideline {
+            border-right:1px solid #0c0c0c;
+        }
+        #table tr td {
+            text-align: center;
+        }
+    </style>
+    <link href="/plugins/daterangepicker/daterangepicker.css" rel="stylesheet"/>
+</head>
+<body>
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper" layout:fragment="content">
+    <section class="content-header">
+        <h1>IP报表</h1>
+    </section>
+    <section class="content">
+        <div class="col-md-12 form-group">
+            <form th:action="${'/manage/logVisitAnalysis'}" method="post">
+            IP地址:<input id="cusIp" name="cusIp" th:value="${cusIp}" class="form-control" style="display: inline-block; width: auto" type="text" placeholder="IP地址" />
+            会员ID:<input id="uid" name="uid" th:value="${uid}" class="form-control" style="display: inline-block; width: auto" type="text" placeholder="会员ID"/>
+            广告ID:<input id="adid" name="adid" th:value="${adid}" class="form-control" style="display: inline-block; width: auto" type="text" placeholder="广告ID"/>
+            计划ID:<input id="planid" name="planid" th:value="${planid}" class="form-control" style="display: inline-block; width: auto" type="text" placeholder="计划ID"/>
+            日期:<input type="text" id="date" name="date" th:value="${date}" style="display: inline-block;max-width: 180px;background-color: #ffffff" class="form-control" readonly="true"/>
+            <button class="btn btn-default" style="vertical-align: top;" type="submit" title="查询">
+                <i class="glyphicon glyphicon-search icon-search"></i>
+            </button>
+            </form>
+        </div>
+        <table id="tableIp" class="table table-striped table-hover"></table>
+        <div id="cover" style="position: fixed;top: 0;left: 0;height: 100%;width: 100%;z-index: 9999999;background-color: rgba(0,0,0,0.3);">
+            <img style="width: 100px;height: 100px;background: transparent;position: fixed;margin: auto;left: 0;right: 0;top: 0;bottom: 0;
+            z-index: 1;" src="/dist/img/load.gif" />
+        </div>
+    </section>
+</div>
+<div style="display: none;" layout:fragment="script">
+    <!-- form validate -->
+    <script src="https://cdn.bootcss.com/jquery-validate/1.16.0/jquery.validate.js"></script>
+    <script src="https://cdn.bootcss.com/jquery.form/4.2.1/jquery.form.js"></script>
+    <script src="/plugins/daterangepicker/daterangepicker.js"></script>
+    <script src="/plugins/daterangepicker/moment.min.js"></script>
+
+    <script type="application/javascript" th:inline="JavaScript">
+        /*<![CDATA[*/
+        $(document).ready(function(){
+            $('#tableIp').bootstrapTable({
+                url: "/manage/logVisitData",
+                striped: true,  //表格显示条纹
+                pagination: true, //启动分页
+                paginationLoop: false, //
+                cache: false,
+                pageSize: 50,  //每页显示的记录数
+                pageNumber: 1, //当前第几页
+                pageList: [50, 100],  //记录数可选列表
+                search: false,  //是否启用查询
+                sortable: false, //是否启用排序
+                showHeader: true, //
+                showFooter: false, //
+                singleSelect: true, //
+                toolbar: '#toolbar', //
+                stickyHeader: true, // 是否固定表头
+                sidePagination: "server", //表示服务端请求
+                queryParamsType: "undefined",// limit or undefined
+                queryParams: function queryParams(params) {   //设置查询参数
+                    var param = {
+                        //这里是在ajax发送请求的时候设置一些参数 params有什么东西，自己看看源码就知道了
+                        cusIp :  /*[[${cusIp}]]*/,
+                        uid :   /*[[${uid}]]*/,
+                        adid :  /*[[${adid}]]*/,
+                        planid :  /*[[${planid}]]*/,
+                        date : /*[[${date}]]*/,
+                        page : params.pageNumber - 1,
+                        size : params.pageSize
+                    };
+                    return param;
+                },
+                detailView : true,
+                detailFormatter : function (index, row) {
+                    var image = '<div class="detail" style="text-align: left; padding-left: 25px;">'
+                        + '<p>AGENT: '+ row.brwUa + '</p>'
+                        + '<p>投放页面: '+ row.sitePage + '</p>'
+                        + '<p>浏览器: '+ row.brwName + '</p>'
+                        + '<p>屏幕: '+ row.cusScreen + '</p>'
+                        + '<p>页面标题: '+ row.pageTitle + '</p>'
+                        + '<p>来路: '+ row.refererUrl + '</p>'
+                        + '<p>重复(pv)/ip: '+ row.pvnum + '(一个ip对应的pv第'+ row.pvnum +'次重复)</p>'
+                        + '<p>重复(uv)/ip: '+ row.uvnum + '(一个ip对应的uv第'+ row.uvnum +'次重复)</p>'
+                        + '<p>重复(url)/ip: '+ row.urlnum + '(一个ip对应的url第'+ row.urlnum +'次重复)</p>'
+                        + '<p>重复(pv)/uv: '+ row.uvpvnum + '(一个uv对应的pv第'+ row.uvpvnum +'次重复)</p>'
+                        + '<p>重复(ip)/uv: '+ row.uvipnum + '(一个uv对应的ip第'+ row.uvipnum +'次重复)</p>'
+                        + '<p>重复(url)/uv: '+ row.uvurlnum + '(一个uv对应的url第'+ row.uvurlnum +'次重复)</p>'
+                        + '</div>';
+                    return image;
+                },
+                columns: [
+                    {field: 'cusIp', title: 'IP', align: 'left', valign: 'middle', formatter:function(value, row, index){
+                        var result = "<a href='/manage/logVisitAnalysis?cusIp="+ value +"'>"+ value +"</a>";
+                        return result;
+                    }},
+                    {title: '属性', align: 'left', valign: 'middle', formatter: function(value, row, index){
+                        var img = row.brwName + ".png";
+                        var result = "<img src='/dist/img/"+ row.cusOs +".jpg'  width='14' height='14' title='"+ row.cusOs +"'/>"
+                            + "<img src='/dist/img/"+ img +"' width='14' height='14' alt='"+ row.brwName +"' title='"+ row.brwName + ' ' +row.cusScreen +"' />";
+
+                        if (row.cusCookie === 'Y') {
+                            result += "<img src='/dist/img/cookie.gif' width='14' height='14' title='支持Cookie' />";
+                        }
+                        if (row.cusJava === 'Y') {
+                            result += "<img src='/dist/img/java.gif' width='14' height='14' title='支持Java' />"
+                        }
+                        if (row.doubt === 'Y') {
+                            result += "<span style='color: #FF0000'>!可疑</span>"
+                        }
+                        return result;
+                    }},
+                    {title: '地域', align: 'left', valign: 'middle', formatter: function(value, row, index){
+                        return row.cusProvince + '/' + row.cusCity + '/' + row.cusIsp;
+                    }},
+                    {field: 'username', title: '会员名称', align: 'center', valign: 'middle', formatter: function(value, row, index){
+                        return "<a href='/manage/userList?uid="+ row.uid +"'>"+ row.username +"</a>"
+                    }},
+                    {field: 'planname', title: '计划名称', align: 'center', valign: 'middle', formatter: function (value, row, index) {
+                        return "<a href='/manage/planlist?planId="+ row.planid +"'>"+ row.planname +"</a>"
+                    }},
+                    {field: 'paytype', title: '类型', align: 'center', valign: 'middle', formatter: function(value, row, index){
+                        var type = "";
+                        switch (value) {
+                            case 1 :
+                                type = "Cpm";break;
+                            case 2:
+                                type = "Cpv";break;
+                            case 3:
+                                type = "Cpc";break;
+                            case 4:
+                                type = "Cpa";break;
+                            case 5:
+                                type = "Cps";break;
+                            default:
+                                type = value;break;
+                        }
+                        return type;
+                    }},
+                    {field: 'adid', title: '广告ID', align: 'center', valign: 'middle', formatter: function(value, row, index){
+                        return "<a href='/manage/adslist?adsid="+ row.adid +"'>"+ row.adid +"</a>"
+                    }},
+                    {field: 'deduction', title: '有效', align: 'center', valign: 'middle', formatter: function(value, row, index){
+                        return value === "Y" ? "<span style='color: #FF0000'>扣量</span>" : "有效";
+                    }},
+                    {field: 'pvnum', title: '重复(pv)/ip', align: 'center', valign: 'middle', visible: false},
+                    {field: 'uvnum', title: '重复(uv)/ip', align: 'center', valign: 'middle', visible: false},
+                    {field: 'urlnum', title: '重复(url)/ip', align: 'center', valign: 'middle', visible: false},
+                    {field: 'uvpvnum', title: '重复(pv)/uv', align: 'center', valign: 'middle', visible: false},
+                    {field: 'uvipnum', title: '重复(ip)/uv', align: 'center', valign: 'middle', visible: false},
+                    {field: 'uvurlnum', title: '重复(url)/uv', align: 'center', valign: 'middle', visible: false},
+                    {field: 'addTime', title: '日期', align: 'center', valign: 'middle', formatter: function(value, row, index){
+                        return value.substr(0, 19);
+                    }}
+                ],
+                onLoadSuccess: function(){
+                    $("#cover").hide();
+                    console.log("加载数据成功");
+                },
+                onPageChange: function(){
+                    $("#cover").show();
+                    console.log("页面跳转..");
+                },
+                onLoadError: function () {
+                    $("#cover").hide();
+                    console.log("没有加载到数据");
+                }
+            });
+        });
+
+        $('#date').datepicker({
+            language : 'zh-CN',
+            todayBtn: "linked",
+            clearBtn: true,// 自定义属性,true 显示 清空按钮 false 隐藏 默认:true
+            format: "yyyy-mm-dd",
+            keyboardNavigation: true,
+            forceParse: false,
+            calendarWeeks: false,
+            autoclose: true
+        });
+
+//        $('#date').daterangepicker(
+//            {
+//                maxDate : moment(), //最大时间
+//                dateLimit : {
+//                    days : 6 //起止时间的最大间隔
+//                },
+//                showDropdowns : true,
+//                showWeekNumbers : false, // 是否显示第几周
+//                timePicker : false, // 是否显示小时和分钟
+//                timePicker12Hour : false, //是否使用12小时制来显示时间
+//                ranges : {
+//                    //'最近1小时': [moment().subtract('hours',1), moment()],
+//                    '今日': [moment().startOf('day'), moment()],
+//                    '昨日': [moment().subtract('days', 1).startOf('day'), moment().subtract('days', 1).endOf('day')],
+//                    '最近7日': [moment().subtract('days', 6), moment()]
+//                },
+//                opens : 'left', //日期选择框的弹出位置
+//                buttonClasses : [ 'btn btn-default' ],
+//                applyClass : 'btn-small btn-primary blue',
+//                cancelClass : 'btn-small',
+//                locale : {
+//                    format : 'YYYY-MM-DD', //控件中from和to 显示的日期格式
+//                    separator: ' to ',
+//                    applyLabel : '确定',
+//                    cancelLabel : '取消',
+//                    fromLabel : '起始时间',
+//                    toLabel : '结束时间',
+//                    customRangeLabel : '自定义',
+//                    daysOfWeek : [ '日', '一', '二', '三', '四', '五', '六' ],
+//                    monthNames : [ '一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月' ],
+//                    firstDay : 1
+//                }
+//            }, function(start, end, label) {
+//                //格式化日期显示框
+//                $('#date span').html(start.format('YYYY-MM-DD') + ' - ' + end.format('YYYY-MM-DD'));
+//            });
+
+        /*]]>*/
+    </script>
+</div>
+</body>
+</html>

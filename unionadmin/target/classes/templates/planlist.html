@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"  layout:decorator="${session.userContext.menuPos eq 'layout-top-nav' ? 'layoutTop' : 'layoutLeft'}">
+<head>
+    <title></title>
+    <style type="text/css">
+        .plan-status{
+            margin:15px;
+        }
+        .user-items{
+            list-style: none;
+            padding: 0;
+        }
+    </style>
+
+</head>
+<body>
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper" layout:fragment="content">
+    <section class="content-header">
+        <h1>计划列表</h1>
+    </section>
+    <section class="content">
+        <div id="toolbar" class="btn-group">
+            <button id="btn_all_search" type="button" class="btn btn-default plan-type">
+                <span class="glyphicon glyphicon-add" aria-hidden="true"></span>全部列表
+            </button>
+            <button id="btn_cpc_search" type="button" class="btn btn-default plan-type">
+                <span class="glyphicon glyphicon-add" aria-hidden="true"></span>CPC计划
+            </button>
+            <button id="btn_cpm_search" type="button" class="btn btn-default plan-type">
+                <span class="glyphicon glyphicon-add" aria-hidden="true"></span>CPM计划
+            </button>
+            <button id="btn_cpv_search" type="button" class="btn btn-default plan-type">
+                <span class="glyphicon glyphicon-add" aria-hidden="true"></span>CPV计划
+            </button>
+            <button id="btn_cpa_search" type="button" class="btn btn-default plan-type">
+                <span class="glyphicon glyphicon-add" aria-hidden="true"></span>CPA计划
+            </button>
+            <button id="btn_create" type="button" class="btn btn-default">
+                <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>新建计划
+            </button>
+            <div>
+                <span class="plan-status"><a class="pstatus" pstatus="0" href="javascript:void(0);">正常</a></span>
+                <span class="plan-status"><a class="pstatus" pstatus="1" href="javascript:void(0);">限额</a></span>
+                <span class="plan-status"><a class="pstatus" pstatus="2" href="javascript:void(0);">余额不足</a></span>
+                <span class="plan-status"><a class="pstatus" pstatus="9" href="javascript:void(0);">锁定</a></span>
+            </div>
+        </div>
+        <table id="table" class="table table-striped "></table>
+        <input type="hidden" id="planIdHidden" th:value="${planId}" />
+        <input type="hidden" id="uidHidden" th:value="${uid}" />
+    </section>
+</div>
+<div style="display: none;" layout:fragment="script">
+    <!-- form validate -->
+    <script src="https://cdn.bootcss.com/jquery-validate/1.16.0/jquery.validate.js"></script>
+    <script src="https://cdn.bootcss.com/jquery.form/4.2.1/jquery.form.js"></script>
+    <script type="application/javascript" th:inline="JavaScript">
+        function addSearchGroup(){
+            // 插入多选框、输入框、按钮
+            var searchBtnGroup = $('<div class="input-group pull-right"></div>');
+            var $button = $('<div class="columns pull-right search-button"><button id="search" class="btn btn-default form-control" type="button" name="refresh" title="查询">' +
+                '<i class="glyphicon glyphicon-search icon-search"></i></button></div>');
+            var $input = $('<div class="columns pull-right search-input"><input id="searchValue" class="form-control" type="text" placeholder="搜索内容"/></div>');
+            var $select = $('<div class="columns pull-right search-select"><select id="search-condition" class="form-control"></select></div>');
+
+            // 插入select搜索下拉框
+            var selectDom = $select.find('select');
+            selectDom.append('<option value="planName">计划名称</option>');
+            selectDom.append('<option value="planId">计划ID</option>');
+            selectDom.append('<option value="uid">广告商ID</option>');
+            searchBtnGroup.append($button,$input,$select);
+            $('.fixed-table-toolbar').append(searchBtnGroup);
+        }
+    </script>
+    <script type="application/javascript" th:inline="JavaScript">
+        /*<![CDATA[*/
+        var height = $(window).width() <= 767 ? $(window).height() - 135 : $(window).height() - 75;
+        $('#table').bootstrapTable({
+            url: '/manage/planData',
+            uniqueId: "planId",
+            striped: true,  // 表格显示条纹
+            pagination: true, // 启动分页
+            checkboxHeader: true,
+            showPaginationSwitch: false, // 是否显示 数据条数选择框
+            paginationLoop: false,
+            pageSize: 50,  // 每页显示的记录数
+            cache: false,// 是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性
+            pageNumber: 1, // 初始化加载第一页，默认第一页
+            pageList: [50, 100, 200],  // 记录数可选列表
+            search: false,  // 是否启用查询
+            sortable: false, // 是否启用排序
+            showHeader: true, // 是否显示列头
+            showFooter: false, // 是否显示列脚
+            stickyHeader: true, // 是否固定表头
+            showRefresh: false, // 是否显示 刷新按钮
+            singleSelect: false, //
+            toolbar: '#toolbar', //
+//            height: height, // 去掉高度后表格数据内容与表头能对齐
+            sidePagination: "server", //分页方式：client客户端分页，server服务端分页（*）
+            queryParamsType: "undefined",// limit or undefined 设置为 'limit' 则会发送符合 RESTFul 格式的参数.
+            queryParams: function queryParams(params) {   //设置查询参数
+                var param = {
+                    //这里是在ajax发送请求的时候设置一些参数 params有什么东西，自己看看源码就知道了
+                    page: params.pageNumber - 1,
+                    size: params.pageSize
+                };
+                return param;
+            },
+            columns: [
+                {field: 'planId', title: 'ID', align: 'center', valign: 'middle',
+                    formatter: function(value, row, index) {
+                        return "<a href='/manage/initPlan?planId="+ value +"'>" + value +"</a>"
+                    }
+                },
+                {field: 'title', title: '计划名称', align: 'left', valign: 'middle',
+                    formatter: function(value, row, index) {
+                    return "<span style='color: #3c8dbc;cursor: pointer;'>" + value + "</span>";
+                    }
+                },
+                {field: 'payType', title: '类型', align: 'center', valign: 'middle',
+                    formatter: function(value, row, index){
+                        if (row.payType == 1) {
+                            return "Cpm";
+                        } else if (row.payType == 2) {
+                            return "Cpv";
+                        } else if (row.payType == 3) {
+                            return "Cpc";
+                        } else if (row.payType == 4) {
+                            return "Cpa";
+                        } else if (row.payType == 5) {
+                            return "Cps";
+                        }
+                        return row.payType;
+                    }},
+                {title: '广告商', align: 'left', valign: 'middle',
+                    formatter: function(value, row, index){
+                        return "<a href='/manage/advPage?uid=" + row.uid +"'>" + "[" + row.uid + "]" + row.userName +  "</a>";
+                    }},
+                {field: 'price', title: '会员单价', align: 'center', valign: 'middle',
+                    formatter: function(value, row, index) {
+                        var div = "<div>";
+                        var ul = "<ul class='user-items'>";
+                        for (var key in row.price) {
+                            switch (key) {
+                                case '1':
+                                    div += '<span class="fa fa-desktop"></span>: <span>' + row.price[key].aff + '</span><br/>';
+                                    break;
+                                case '2':
+                                    div += '<span class="fa fa-apple"></span>: <span>' + row.price[key].aff + '</span><br/>';
+                                    break;
+                                case '3':
+                                    div += '<span class="fa fa-android"></span>: <span>' + row.price[key].aff + '</span><br/>';
+                                    break;
+                                case '4':
+                                    div += '<span class="fa fa-windows"></span>: <span>' + row.price[key].aff + '</span><br/>';
+                                    break;
+                                default:
+                                    ul += '<li class="user-item">'+ key+ ': ' + row.price[key].aff + '</li>'
+                                    break;
+                            }
+                        }
+                        ul = ul + '</ul>';
+                        return div + ul + "</div>";
+                    }
+                },
+                {field: 'price', title: '厂商出价', align: 'center', valign: 'middle',
+                    formatter: function(value, row, index) {
+                        var div = "<div>";
+                        var ul = "<ul class='user-items'>";
+                        for (var key in row.price) {
+                            switch (key) {
+                                case '1':
+                                    div += '<span class="fa fa-desktop"></span>: ' + '<span>' + row.price[key].adv + '</span><br/>';
+                                    break;
+                                case '2':
+                                    div += '<span class="fa fa-apple"></span>: ' + '<span> ' + row.price[key].adv + '</span><br/>';
+                                    break;
+                                case '3':
+                                    div += '<span class="fa fa-android"></span>: ' + '<span> ' + row.price[key].adv + '</span><br/>';
+                                    break;
+                                case '4':
+                                    div += '<span class="fa fa-windows"></span>: ' + '<span>' + row.price[key].adv + '</span><br/>';
+                                    break;
+                                default:
+                                    ul += '<li class="user-item">'+ key+ ': ' + row.price[key].adv + '</li>'
+                                    break;
+                            }
+                        }
+                        ul = ul + "</ul>";
+                        return div + ul + "</div>";
+                    }
+                },
+                {field: 'limitMoney', title: '限额', align: 'center', valign: 'middle'},
+                {field: 'deduction', title: '扣量', align: 'center', valign: 'middle',
+                    formatter: function(value, row, index){
+                        return row.deduction + '%';
+                    }
+                },
+                {field: 'limitTime', title: '限时', align: 'center', valign: 'middle', formatter: function(value, row, index){
+                    return  value ? "限时" : "不限";
+                }},
+                {field: 'pstatus', title: '状态', align: 'center', valign: 'middle',
+                    formatter: function(value, row, index){
+                        if (row.pstatus == 9) {
+                            return '<span class="label label-danger">锁定</span>';
+                        } else if (row.pstatus == 0) {
+                            return '<span class="label label-info">正常</span>';
+                        } else if (row.pstatus == 1) {
+                            return '<span class="label label-warning">限额</span>';
+                        } else if (row.pstatus == 2) {
+                            return '<span class="label label-warning">余额不足</span>';
+                        }
+                        return row.pstatus;
+                    }
+                }
+            ],
+            onClickCell: function (field, value, row, $element) {
+                var array = [];
+                array.push("<a href='/manage/initAd?planId=" + row.planId + "'>新建广告</a>");
+                array.push("<a href='/manage/adslist?planId=" + row.planId + "'>查看广告</a>");
+                array.push("<a href='/manage/planstatlist?searchField=planid&searchValue=" + row.planId + "'>查看报表</a>");
+                array.push("<a href='/manage/logVisitAnalysis?planid="+ row.planId +"'>当天IP信息</a>");
+                array.push("<a href='/manage/subSideInfoList?planid="+ row.planId +"'>子站信息</a>");
+                array.push("<a class='update-pstatus' href='javascript:void(0);' pstatus='0'  planid='" + row.planId + "'>激活</a>");
+                array.push("<a class='update-pstatus' href='javascript:void(0);' pstatus='9'  planid='" + row.planId + "'>锁定</a>");
+                quickMenu((field === 'title'), array, $element);
+            }
+        });
+        $('#table').bootstrapTable("refresh");
+        addSearchGroup();
+
+        // 从广告列表点击计划名称过来时， 初始化
+        if ($("#planIdHidden").val()) {
+            $("#table").bootstrapTable('refreshOptions', {url: '/manage/planDataSearch?type=all'
+            + '&searchCondition=planId&searchValue=' + $("#planIdHidden").val()});
+        }
+        // 从广告商列表跳过来， 自动查询当下的计划
+        if ($("#uidHidden").val()) {
+            $("#table").bootstrapTable('refreshOptions', {url: '/manage/planDataSearch?type=all'
+            + '&searchCondition=uid&searchValue=' + $("#uidHidden").val()});
+        }
+
+
+        // 定义计划类型查询事件
+        $("#btn_all_search,#btn_cpc_search,#btn_cpm_search,#btn_cpv_search,#btn_cpa_search").on("click",function(){
+           if (this.id === "btn_all_search") {
+               $("#table").bootstrapTable('refreshOptions',{url: '/manage/planData'});
+           } else if (this.id === "btn_cpc_search") {
+               $("#table").bootstrapTable('refreshOptions', {url:'/manage/planDataSearch?type=cpc'});
+           } else if (this.id === "btn_cpm_search") {
+               $("#table").bootstrapTable('refreshOptions', {url:'/manage/planDataSearch?type=cpm'});
+           } else if (this.id === "btn_cpv_search") {
+               $("#table").bootstrapTable('refreshOptions', {url:'/manage/planDataSearch?type=cpv'});
+           } else if (this.id === "btn_cpa_search") {
+               $("#table").bootstrapTable('refreshOptions', {url:'/manage/planDataSearch?type=cpa'});
+           }
+           addSearchGroup();
+           $(".plan-type").removeClass('active');
+           $(this).addClass('active');
+        });
+
+        // 定义搜索框click 事件
+        $(".content").on("click",".search-button #search", function(){
+            // 获得类型条件
+            var activeId = $("#toolbar button.active").attr("id")
+            var type = activeId ? $(".plan-type.active").attr("id").substring(4, 7) : "all";
+            // 获得计划状态条件
+            var pstatus = $("#toolbar a.active").attr("pstatus") || "";
+            // 下拉框查询条件
+            var searchCondition = $("#search-condition").val() || "";
+            // input框查询value
+            var searchValue = $("#searchValue").val() || "";
+            $("#table").bootstrapTable('refreshOptions', {url: '/manage/planDataSearch?type=' + type
+                + '&searchCondition=' + searchCondition + '&searchValue=' + searchValue
+                + '&pstatusCondition=' + pstatus
+            });
+            addSearchGroup();
+            $("#"+activeId).addClass('active');
+            $("#search-condition").val(searchCondition);
+        });
+
+        // pstatus状态查询click 事件
+        $(".pstatus").on("click", function(){
+            var activeId = $("#toolbar .active").attr("id");
+            var type = activeId ? activeId.substring(4, 7) : "all";
+            var searchValue = $(this).attr('pstatus');
+            $("#table").bootstrapTable('refreshOptions', {url: '/manage/planDataSearch?type=' + type
+                + '&searchCondition=pstatus&searchValue=' + searchValue});
+            addSearchGroup();
+            $("#"+activeId).addClass('active');
+            $("#toolbar a.pstatus").removeClass('active');
+            $(this).addClass('active');
+        });
+
+        // pstatus状态更新click 事件
+        $("body").on("click", "a.update-pstatus", function () {
+            var planId = $(this).attr("planid");
+            var pstatus = $(this).attr("pstatus");
+            if(!confirm("你是否要做此操作？")){
+                return;
+            }
+            $('#menu-panel').hide();
+            $.ajax({
+                type: 'POST',
+                url : '/manage/adsPlanSaveStatus',
+                async: true,
+                contentType: 'application/x-www-form-urlencoded',
+                data: {"planId": planId, "pstatus": pstatus},
+                dataType: "json",
+                success: function(data){
+                    data.error ? alert(data.error) : $("#table").bootstrapTable("refresh");
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown){}
+            });
+        });
+
+        // 定义计划create 事件
+        $("#btn_create").on("click", function () {
+            window.open("/manage/initPlan", "_self");
+        });
+
+        $("#table").on("mouseenter", ".planNameWrap", function(){
+            $(this).children("div").show();
+        });
+        $("#table").on("mouseleave", ".planNameWrap", function(){
+            $(this).children("div").hide();
+        });
+
+        $(document).keydown(function(event){
+            if(event.keyCode == 13){
+                 $("#search").trigger('click');
+            }
+        });
+        /*]]>*/
+    </script>
+</div>
+</body>
+</html>

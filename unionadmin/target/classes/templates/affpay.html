@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"  layout:decorator="${session.userContext.menuPos eq 'layout-top-nav' ? 'layoutTop' : 'layoutLeft'}">
+<head>
+    <title></title>
+    <style type="text/css">
+        .has-error{
+            color: #c73222!important;
+        }
+    </style>
+</head>
+<body>
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper" layout:fragment="content">
+    <section class="content-header">
+        <h1>网站主支付</h1>
+    </section>
+    <section class="content">
+        <div id="toolbar" class="btn-group">
+            <div>
+            开始日期:<input type="text" id="start-date" style="display: inline-block;width: 20%; background-color: #ffffff" class="form-control date datepicker" readonly="true"/>
+            结束日期:<input type="text" id="end-date"   style="display: inline-block;width: 20%; background-color: #ffffff" class="form-control date datepicker" readonly="true"/>
+            用户ID:<input id="searchUid" class="form-control" style="display: inline-block;width: 10%;" type="text" placeholder="ID"/>
+            状态:
+            <select id="searchPstatus" class="form-control" style="width: 10%;display: inline-block;">
+                <option value="all">全部</option>
+                <option value="0">未支付</option>
+                <option value="1">已支付</option>
+                <option value="2">支付失败</option>
+                <option value="3">拒绝支付</option>
+                <option value="9">撤销</option>
+            </select>
+            <button id="search" class="btn btn-default " type="button" name="refresh" title="查询" style="width: 40px;vertical-align: top;">
+                <i class="glyphicon glyphicon-search icon-search"></i>
+            </button>
+            <button id="export" class="btn btn-default" type="button" name="refresh" title="导出" style="vertical-align: top;">
+                <i class="fa fa-download"></i>导出
+            </button>
+            </div>
+            <div style="margin-top:3px;">
+                批量操作:
+                <select name="multiStatus" id="multiStatus">
+                    <option value="0">未支付</option>
+                    <option value="1">已支付</option>
+                    <option value="2">支付失败</option>
+                    <option value="3">拒绝支付</option>
+                    <option value="9">撤销</option>
+                </select>
+                <button id="btn_submit" type="button" class="btn btn-default">
+                    <span class="glyphicon glyphicon-add" aria-hidden="true">提交</span>
+                </button>
+                <button id="btn_add" type="button" class="btn btn-default">
+                    <span class="glyphicon glyphicon-plus" aria-hidden="true">增加</span>
+                </button>
+                <button id="btn_edit" type="button" class="btn btn-default">
+                    <span class="glyphicon glyphicon-pencil" aria-hidden="true">编辑</span>
+                </button>
+            </div>
+        </div>
+        <table id="table" class="table"></table>
+        <input type="hidden" id="moneySum" th:value="${moneySum}" />
+        <input type="hidden" id="realMoneySum" th:value="${realMoneySum}" />
+    </section>
+    <!-- 模态框（Modal）start -->
+    <div class="modal fade" id="modalDialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title" id="dialogTitle">新建</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="tf" class="form-horizontal">
+                        <div class="form-group">
+                            <label for="uid" class="col-sm-3 control-label">网站主ID:</label>
+                            <div class="col-sm-8">
+                                <input type="text" name="uid" id="uid" class="form-control"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="username" class="col-sm-3 control-label">网站主:</label>
+                            <div class="col-sm-8">
+                                <input type="text" name="username" id="username" class="form-control" readonly="true"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="xmoney" class="col-sm-3 control-label">未结算金额:</label>
+                            <div class="col-sm-8">
+                                <input type="number" name="xmoney" id="xmoney" class="form-control"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="money" class="col-sm-3 control-label">支付金额:</label>
+                            <div class="col-sm-8">
+                                <input  type="number" class="form-control" id="money" name="money" placeholder="请输入支付金额"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="payinfo" class="col-sm-3 control-label">备注:</label>
+                            <div class="col-sm-8">
+                                <textarea  class="form-control"  name="payinfo"  id="payinfo" placeholder="备注"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="pstatus" class="col-sm-3 control-label">状态:</label>
+                            <div class="col-sm-8">
+                                <input type="radio" name="pstatus" id="pstatus" class="radio inline" value="0"/>未支付
+                                <input type="radio" name="pstatus" id="pstatus" class="radio inline" value="1"/>已支付
+                                <input type="radio" name="pstatus" id="pstatus" class="radio inline" value="2"/>支付失败
+                                <input type="radio" name="pstatus" id="pstatus" class="radio inline" value="3"/>拒绝支付
+                                <input type="radio" name="pstatus" id="pstatus" class="radio inline" value="9"/>撤销
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="paytype" class="col-sm-3 control-label">结算周期:</label>
+                            <div class="col-sm-8">
+                                <input type="radio" name="paytype" id="paytype" class="radio inline" value="1"/>日结
+                                <input type="radio" name="paytype" id="paytype" class="radio inline" value="2"/>周结
+                                <input type="radio" name="paytype" id="paytype" class="radio inline" value="3"/>月结
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" id="tsubmit" class="btn btn-primary">确认</button>
+                </div>
+            </div>
+        </div>
+    </div><!-- 模态框（Modal）end -->
+    <!-- 模态框（Modal）start -->
+    <div class="modal fade" id="modalDialogEdit" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title" id="dialogTitleEdit">编辑</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="tfEdit" class="form-horizontal">
+                        <div class="form-group">
+                            <label for="uidEdit" class="col-sm-3 control-label">网站主ID:</label>
+                            <div class="col-sm-8">
+                                <input type="text" name="uidEdit" id="uidEdit" class="form-control" readonly="true"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="usernameEdit" class="col-sm-3 control-label">网站主:</label>
+                            <div class="col-sm-8">
+                                <input type="text" name="usernameEdit" id="usernameEdit" class="form-control" readonly="true"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="xmoneyEdit" class="col-sm-3 control-label">未结算金额:</label>
+                            <div class="col-sm-8">
+                                <input type="number" name="xmoneyEdit" id="xmoneyEdit" class="form-control" readonly="true"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="moneyEdit" class="col-sm-3 control-label">支付金额:</label>
+                            <div class="col-sm-8">
+                                <input  type="number" class="form-control" id="moneyEdit" name="moneyEdit" placeholder="请输入支付金额"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="payinfoEdit" class="col-sm-3 control-label">备注:</label>
+                            <div class="col-sm-8">
+                                <textarea  class="form-control"  name="payinfoEdit"  id="payinfoEdit" placeholder="备注"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="pstatusEdit" class="col-sm-3 control-label">状态:</label>
+                            <div class="col-sm-8">
+                                <input type="radio" name="pstatusEdit" id="pstatusEdit" class="radio inline" value="0" disabled="true"/>未支付
+                                <input type="radio" name="pstatusEdit" id="pstatusEdit" class="radio inline" value="1" disabled="true"/>已支付
+                                <input type="radio" name="pstatusEdit" id="pstatusEdit" class="radio inline" value="2" disabled="true"/>支付失败
+                                <input type="radio" name="pstatusEdit" id="pstatusEdit" class="radio inline" value="3" disabled="true"/>拒绝支付
+                                <input type="radio" name="pstatusEdit" id="pstatusEdit" class="radio inline" value="9" disabled="true"/>撤销
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="paytypeEdit" class="col-sm-3 control-label">结算周期:</label>
+                            <div class="col-sm-8">
+                                <input type="radio" name="paytypeEdit" id="paytypeEdit" class="radio inline" value="1" disabled="true"/>日结
+                                <input type="radio" name="paytypeEdit" id="paytypeEdit" class="radio inline" value="2" disabled="true"/>周结
+                                <input type="radio" name="paytypeEdit" id="paytypeEdit" class="radio inline" value="3" disabled="true"/>月结
+                            </div>
+                        </div>
+                        <input type="hidden" id="affpayid" name="affpayid" />
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" id="tsubmitEdit" class="btn btn-primary">确认</button>
+                </div>
+            </div>
+        </div>
+    </div><!-- 模态框（Modal）end -->
+</div>
+
+<div style="display: none;" layout:fragment="script">
+    <!-- form validate -->
+    <script src="https://cdn.bootcss.com/jquery-validate/1.16.0/jquery.validate.js"></script>
+    <script src="https://cdn.bootcss.com/jquery.form/4.2.1/jquery.form.js"></script>
+    <script type="application/javascript" th:inline="JavaScript">
+        /*<![CDATA[*/
+        function init() {
+            var height = $(window).width() <= 767 ? $(window).height() - 135 : $(window).height() - 75;
+            $('#table').bootstrapTable({
+                url: '/manage/getAffPayList',
+                uniqueId: "id",
+                search: true, // 是否启用搜索框
+                striped: true,  // 表格显示条纹
+                pagination: true, // 启动分页
+                checkboxHeader: true,
+                showPaginationSwitch: false, // 是否显示 数据条数选择框
+                paginationLoop: false,
+                pageSize: 50,  // 每页显示的记录数
+                cache: false,// 是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性
+                pageNumber: 1, // 初始化加载第一页，默认第一页
+                pageList: [50, 100, 200],  //记录数可选列表
+                search: false,  // 是否启用查询
+                sortable: false, // 是否启用排序
+                showHeader: true, // 是否显示列头
+                showFooter: true, // 是否显示列脚
+                showRefresh: false, // 是否显示 刷新按钮
+                singleSelect: false, //
+                clickToSelect: true,
+                checkboxHeader: true,
+                toolbar: '#toolbar', //
+                stickyHeader: true, // 是否固定表头
+                sidePagination: "server", //分页方式：client客户端分页，server服务端分页（*）
+                queryParamsType: "undefined",// limit or undefined 设置为 'limit' 则会发送符合 RESTFul 格式的参数.
+                queryParams: function queryParams(params) {  //设置查询参数
+                    var param = {
+                        //这里是在ajax发送请求的时候设置一些参数 params有什么东西，自己看看源码就知道了
+                        page: params.pageNumber - 1,
+                        size: params.pageSize
+                    };
+                    return param;
+                },
+                columns: [
+                    {checkbox: true, align: 'center', valign: 'middle'},
+                    {field: 'uid', title: '网站主ID', align: 'center', valign: 'middle',
+                        footerFormatter: function(){return "总计"}
+                    },
+                    {field: 'username', title: '网站主帐号', align: 'left', valign: 'middle'},
+                    {field: 'money', title: '应付', align: 'left', valign: 'middle',
+                        footerFormatter: function(){return $("#moneySum").val();}
+                    },
+                    {field: 'realmoney', title: '实付', align: 'left', valign: 'middle',
+                        footerFormatter: function(){return $("#realMoneySum").val()}
+                    },
+                    {field: 'manId', title: '管理员', align: 'left', valign: 'middle',
+                        formatter: function(value, row, index) {
+                            return '[' + row.manId + ']' + row.manAccount;
+                        }
+                    },
+                    {field: 'paytime', title: '支付时间', align: 'left', valign: 'middle',
+                        formatter: function(value, row, index){
+                            if (!value) {
+                                return "-";
+                            }
+                            try {return new Date(value.time).format('yyyy-MM-dd');}catch (e){}
+                        }
+                    },
+                    {field: 'addTime', title: '添加时间', align: 'left', valign: 'middle',
+                        formatter: function(value, row, index){
+                            try {return new Date(value.time).format('yyyy-MM-dd');}catch (e){}
+                        }
+                    },
+                    {field: 'pstatus', title: '状态', align: 'center', valign: 'middle',
+                        formatter: function(value, row, index) {
+                            var status = '';
+                            switch (value) {
+                                case 0:
+                                    status = '未支付';
+                                    break;
+                                case 1:
+                                    status = '已支付';
+                                    break;
+                                case 2:
+                                    status = '支付失败';
+                                    break;
+                                case 3:
+                                    status = '拒绝支付';
+                                    break;
+                                case 9:
+                                    status = '撤销';
+                                    break;
+                                default :
+                                    break;
+                            }
+                            return status;
+                        }
+                    },
+                    {field: 'payinfo', title: '说明', align: 'center', valign: 'middle'}
+                ]
+            });
+        }
+        function clearForm() {
+            $("input[name='uid']").val("");
+            $("input[name='username']").val("");
+            $("input[name='xmoney']").val("");
+            $("input[name='money']").val("");
+            $("input[name='payinfo']").val("");
+        }
+        /*]]>*/
+    </script>
+    <script type="application/javascript" th:inline="JavaScript">
+        /*<![CDATA[*/
+        init();
+        /** page  bind events follows **/
+        $('#btn_add').click(function () {
+            $('#modalDialog').modal({backdrop: 'static', keyboard: false, show: true});
+        });
+        // modal框高度调整
+        $('#modalDialog,#modalDialogEdit').on('show.bs.modal', function (e) {
+            $(this).find('.modal-dialog').css({
+                'margin-top': function () {
+                    var modalHeight = $('#modalDialog').find('.modal-dialog').height();
+                    return ($(window).height() / 4 - (modalHeight / 4));
+                }
+            });
+        });
+        // modal隐藏事件
+        $('#modalDialog').on('hidden.bs.modal', function (e) {
+            clearForm();
+        });
+        $("input[name='uid']").on("blur", function(){
+            var uid = $(this).val();
+            $.ajax({
+                type: 'POST',
+                url: '/manage/getUserByUid',
+                async: true,
+                data: {"uid": uid},
+                dataType: "json",
+                success: function (data) {
+                    if (data.user){
+                        $("input[name='username']").val(data.user.username);
+                        $("input[name='xmoney']").val(data.user.xmoney);
+                        $("input[name='username']").removeClass('has-error');
+                    } else {
+                        if (data.error) {
+                            $("input[name='username']").addClass('has-error').val(data.error);
+                            $("input[name='xmoney']").val("");
+                        }
+                    }
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown){
+                    alert("error occurred");
+                }
+            });
+        });
+        // 编辑按钮set值
+        $("#btn_edit").on("click", function(){
+            var selObj = $('#table').bootstrapTable('getSelections');
+            if (selObj.length <= 0) {
+                alert("请选择一条记录");
+                return;
+            } else if (selObj.length > 1) {
+                alert("请确认选择一条需要编辑的数据。");
+                return;
+            }
+            $('#modalDialogEdit').modal({backdrop: 'static', keyboard: false, show: true});
+            if (selObj[0]) {
+                $("#uidEdit").val(selObj[0].uid);
+                $("#usernameEdit").val(selObj[0].username);
+                $("#xmoneyEdit").val(selObj[0].money);
+                $("#moneyEdit").val(selObj[0].realmoney);
+                $("#payinfoEdit").val(selObj[0].payinfo);
+                $("input[name='pstatusEdit'][value='" + selObj[0].pstatus + "']").prop("checked", true);
+                $("input[name='paytypeEdit'][value='" + selObj[0].paytype + "']").prop("checked", true);
+                $("#affpayid").val(selObj[0].id);
+            }
+        });
+        // 批量更新提交功能
+        $("#btn_submit").on("click", function(){
+            var selObj = $('#table').bootstrapTable('getSelections');
+            if (selObj.length <= 0) {
+                alert("请选择一条记录");
+                return;
+            }
+            if (!confirm("您是否确认要进行批量操作？")) {
+                return ;
+            }
+            var pstatus = $("#multiStatus").val();
+            var jsonForm = {};
+            jsonForm.affpayIds = selObj;
+            jsonForm.pstatus = pstatus;
+            $.ajax({
+                type: 'POST',
+                url: '/manage/batchUpdateStatus',
+                async: false,
+                data: JSON.stringify(jsonForm),
+                contentType: 'application/json',
+                dataType: "json",
+                success: function (data) {
+                    if (data.errorMsg) {
+                        alert(data.errorMsg);
+                    } else {
+                        alert("操作成功");
+                        $('#table').bootstrapTable('refresh');
+                    }
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown){
+                    alert("error occurred");
+                }
+            });
+        });
+
+        // search 按钮
+        $("#search").on("click", function(){
+            $.ajax({
+                type:"GET",
+                url: "/manage/searchAffpay?startDate="+ $("#start-date").val() + "&endDate=" + $("#end-date").val()
+                + "&uid=" + $("#searchUid").val() + "&pstatus=" + $("#searchPstatus").val(),
+                async: true,
+                dataType: "json",
+                success: function(data){
+                    $('#table').bootstrapTable("destroy").bootstrapTable({
+                        data: data.rows,
+                        striped: true,  // 表格显示条纹
+                        pagination: true, // 启动分页
+                        checkboxHeader: true,
+                        showPaginationSwitch: false, // 是否显示 数据条数选择框
+                        paginationLoop: false,
+                        pageSize: 50,  // 每页显示的记录数
+                        cache: false,// 是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性
+                        pageNumber: 1, // 初始化加载第一页，默认第一页
+                        pageList: [50, 100, 200],  //记录数可选列表
+                        search: false,  // 是否启用查询
+                        sortable: false, // 是否启用排序
+                        showHeader: true, // 是否显示列头
+                        showFooter: true, // 是否显示列脚
+                        showRefresh: false, // 是否显示 刷新按钮
+                        singleSelect: false, //
+                        clickToSelect: true,
+                        checkboxHeader: true,
+                        toolbar: '#toolbar', //
+                        sidePagination: "client",
+                        columns: [
+                            {checkbox: true, align: 'center', valign: 'middle'},
+                            {field: 'uid', title: '网站主ID', align: 'center', valign: 'middle',
+                                footerFormatter: function(){return "总计"}
+                            },
+                            {field: 'username', title: '网站主帐号', align: 'left', valign: 'middle'},
+                            {field: 'money', title: '应付', align: 'left', valign: 'middle',
+                                footerFormatter: function(){
+                                    return data.totalMoney != 0 ? data.totalMoney : "";
+                                }
+                            },
+                            {field: 'realmoney', title: '实付', align: 'left', valign: 'middle',
+                                footerFormatter: function(){
+                                    return data.realMoneyTotal != 0 ? data.realMoneyTotal : "";
+                                }
+                            },
+                            {field: 'manId', title: '管理员', align: 'left', valign: 'middle',
+                                formatter: function(value, row, index) {
+                                    return '[' + row.manId + ']' + row.manAccount;
+                                }
+                            },
+                            {field: 'paytime', title: '支付时间', align: 'left', valign: 'middle',
+                                formatter: function(value, row, index){
+                                    if (!value) {
+                                        return "-";
+                                    }
+                                    try {return new Date(value.time).format('yyyy-MM-dd');}catch (e){}
+                                }
+                            },
+                            {field: 'addTime', title: '添加时间', align: 'left', valign: 'middle',
+                                formatter: function(value, row, index){
+                                    if (!value) {
+                                        return "-";
+                                    }
+                                    try {return new Date(value.time).format('yyyy-MM-dd');}catch (e){}
+                                }
+                            },
+
+                            {field: 'pstatus', title: '状态', align: 'center', valign: 'middle',
+                                formatter: function(value, row, index) {
+                                    var status = '';
+                                    switch (value) {
+                                        case 0:
+                                            status = '未支付';
+                                            break;
+                                        case 1:
+                                            status = '已支付';
+                                            break;
+                                        case 2:
+                                            status = '支付失败';
+                                            break;
+                                        case 3:
+                                            status = '拒绝支付';
+                                            break;
+                                        case 9:
+                                            status = '撤销';
+                                            break;
+                                        default :
+                                            break;
+                                    }
+                                    return status;
+                                }
+                            },
+                            {field: 'payinfo', title: '说明', align: 'center', valign: 'middle'}
+                        ]
+                    });
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown){
+                    alert("error occurred");
+                }
+            });
+        });
+        $("#export").on("click", function(){
+            var url = "/manage/affpay/downloadExcel?startDate=" + $("#start-date").val() + "&endDate="
+                + $("#end-date").val() + "&uid=" + $("#searchUid").val() + "&pstatus=" + $("#searchPstatus").val();
+            var form = $("<form>");//定义一个form表单
+            form.attr("style","display:none");
+            form.attr("target","");
+            form.attr("method","post"); //请求类型
+            form.attr("action",url); //请求地址
+            $("body").append(form);//将表单放置在web中
+            form.submit(); //表单提交
+        });
+
+        // ajax提交 更新
+        $("#tsubmit").on("click", function(){
+           var jsonForm = $("#tf").serializeObject();
+            $.ajax({
+                type: "POST",
+                url: "/manage/affPayMoney",
+                async: false,
+                data: JSON.stringify(jsonForm),
+                contentType: 'application/json',
+                dataType: "json",
+                success: function(data){
+                    if (data.error) {
+                        alert(data.error);
+                    } else {
+                        alert("操作成功!");
+                        $('#modalDialog').modal('hide');
+                        $("#table").bootstrapTable("refresh");
+                    }
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown){
+                    alert("error occurred");
+                }
+            });
+        });
+        // 编辑 提交按钮
+        $("#tsubmitEdit").on("click", function(){
+            var jsonForm = $("#tfEdit").serializeObject();
+            $.ajax({
+                type: "POST",
+                url: "/manage/affPayMoneyEdit",
+                async: false,
+                data: JSON.stringify(jsonForm),
+                contentType: 'application/json',
+                dataType: "json",
+                success: function(data){
+                    if (data.error) {
+                        alert(data.error);
+                    } else {
+                        alert("操作成功!");
+                        $('#modalDialogEdit').modal('hide');
+                        $("#table").bootstrapTable("refresh");
+                    }
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown){
+                    alert("error occurred");
+                }
+            });
+        });
+        $("#start-date.date").datepicker({
+            language : 'zh-CN',
+            todayBtn: "linked",
+            clearBtn: true,// 自定义属性,true 显示 清空按钮 false 隐藏 默认:true
+            format: "yyyy-mm-dd",
+            keyboardNavigation: true,
+            forceParse: false,
+            calendarWeeks: false,
+            autoclose: true
+        });
+        $("#end-date.date").datepicker({
+            language : 'zh-CN',
+            todayBtn: "linked",
+            clearBtn: true,// 自定义属性,true 显示 清空按钮 false 隐藏 默认:true
+            format: "yyyy-mm-dd",
+            keyboardNavigation: true,
+            forceParse: false,
+            calendarWeeks: false,
+            autoclose: true
+        });
+
+        $.fn.serializeObject = function() {
+            var o = {};
+            var a = this.serializeArray();
+            $.each(a, function() {
+                if (o[this.name]) {
+                    if (!o[this.name].push) {
+                        o[this.name] = [ o[this.name] ];
+                    }
+                    o[this.name].push(this.value || '');
+                } else {
+                    o[this.name] = this.value || '';
+                }
+            });
+            return o;
+        }
+        /*]]>*/
+    </script>
+</div>
+</body>
+</html>

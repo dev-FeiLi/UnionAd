@@ -1,0 +1,36 @@
+syntax = "proto3";
+package io.union.log.common.proto;
+
+option java_package = "io.union.log.common.proto";
+option java_outer_classname = "AdsPlanProto";
+
+message AdsPlanMessage {
+
+    uint64 planid = 1;
+    string title = 2;
+    uint64 uid = 3;
+    string username = 4;
+    string price = 5;
+    uint32 usertotal = 6;
+    double limitmoney = 7;
+    uint32 paytype = 8;
+    string isaudit = 9;
+    uint32 deduction = 10;
+    string limitarea = 11;
+    string limittime = 12;
+    string limitdevice = 13;
+    string limituid = 14;
+    string limitsite = 15;
+    uint32 limitpop = 16;
+    uint32 limitdiv = 17;
+    uint32 limitdivheight = 18;
+    string limittype = 19;
+    uint64 starttime = 20;
+    uint64 stoptime = 21;
+    uint32 pstatus = 22;
+    uint64 addTime = 23;
+    string ads_url = 24;
+    uint32 priority = 25;
+    string isnotify = 26;
+    double click_rate = 27;
+}

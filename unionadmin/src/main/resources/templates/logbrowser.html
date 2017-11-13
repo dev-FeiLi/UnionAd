@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" layout:decorator="${session.userContext.menuPos eq 'layout-top-nav' ? 'layoutTop' : 'layoutLeft'}">
+<head>
+    <title></title>
+    <style>
+        #table tr td.sideline{
+            border-right:1px solid #0c0c0c;
+        }
+        #table tr td {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper" layout:fragment="content">
+    <section class="content-header">
+        <h1>客户端属性</h1>
+    </section>
+    <section class="content">
+        <div class="col-md-12 form-group">
+            日期: <input id="searchDate" class="form-control date" style="display: inline-block; width: auto" type="text" />
+            站长ID:<input id="uid" class="form-control" style="display: inline-block; width: auto" type="text" placeholder="搜索站长ID"/>
+            <button id="search" class="btn btn-default" style="vertical-align: top;" type="button" name="refresh" title="查询">
+                <i class="glyphicon glyphicon-search icon-search"></i>
+            </button>
+        </div>
+        <!-- 饼状图 -->
+        <div id="main" style="width: 80%;height:400px;margin-top: 40px;"></div>
+        <hr style="height: 3px;border:none;border-top: 3px groove skyblue;"/>
+        <table id="table" class="table table-striped" style="width: 80%;"></table>
+    </section>
+</div>
+<div style="display: none;" layout:fragment="script">
+    <!-- form validate -->
+    <script src="https://cdn.bootcss.com/jquery-validate/1.16.0/jquery.validate.js"></script>
+    <script src="https://cdn.bootcss.com/jquery.form/4.2.1/jquery.form.js"></script>
+    <script src="https://cdn.bootcss.com/echarts/3.7.1/echarts.min.js"></script>
+    <script type="application/javascript" th:inline="JavaScript">
+        /*<![CDATA[*/
+        $(document).ready(function(){
+            // 基于准备好的dom，初始化echarts实例
+            myChart = echarts.init(document.getElementById('main'));
+        });
+
+        $("#search").on("click", function(){
+            var params = {};
+            params.searchDate = $("#searchDate").val();
+            params.uid = $("#uid").val();
+            $.ajax({
+                type: "POST",
+                url: "/manage/logBrowserSearch",
+                async: true,
+                contentType: "application/json",
+                data: JSON.stringify(params),
+                dataType: "json",
+                success: drawImgCallback,
+                error: function(XMLHttpRequest, textStatus, errorThrown){
+                    alert("ajax error");
+                }
+            });
+        });
+
+        function drawImgCallback(data) {
+            var keyArray = [];
+            var dataArray = [];
+            if (data) {
+                for (var key in data) {
+                    keyArray.push(key);
+                    var obj = {};
+                    obj.value = data[key].brwNum;
+                    obj.name = key;
+                    dataArray.push(obj);
+                }
+            }
+
+            var option = {
+                title : {text: '搜索引擎分布', x:'center'},
+                tooltip : {trigger: 'item', formatter: "{a} <br/>{b} : {c} ({d}%)"},
+                legend: {orient: 'vertical', left: 'left', data: keyArray},
+                series : [
+                    {
+                        name: '访问来源',
+                        type: 'pie',
+                        radius : '55%',
+                        center: ['50%', '60%'],
+                        data: dataArray,
+                        itemStyle: {
+                            emphasis: {
+                                shadowBlur: 10,
+                                shadowOffsetX: 0,
+                                shadowColor: 'rgba(0, 0, 0, 0.5)'
+                            }
+                        }
+                    }
+                ]
+            };
+
+            // 使用刚指定的配置项和数据显示图表。
+            myChart.clear();
+            myChart.setOption(option);
+
+            // 画表格
+            drawTableInfo(data);
+        }
+
+        function drawTableInfo(data){
+            var thead = $("<thead><tr><td>日期</td><td>搜索引擎</td><td>平台</td><td>数量</td></tr></thead>");
+            var tbody = $("<tbody></tbody>");
+            for (var key in data) {
+                var tr = $("<tr><td>"+  $.format.date(data[key].addTime, 'yyyy-MM-dd') + "</td><td>"+ data[key].brwName +"</td><td>"+ data[key].brwPlat
+                    +"</td><td>"+ data[key].brwNum +"</td></tr>")
+                tbody.append(tr);
+            }
+            $("#table").html("");
+            $("#table").append(thead).append(tbody);
+        }
+
+        $("#searchDate.date").datepicker({
+            language : 'zh-CN',
+            todayBtn: "linked",
+            clearBtn: true,// 自定义属性,true 显示 清空按钮 false 隐藏 默认:true
+            format: "yyyy-mm-dd",
+            keyboardNavigation: true,
+            forceParse: false,
+            calendarWeeks: false,
+            autoclose: true
+        });
+
+        /*]]>*/
+    </script>
+</div>
+</body>
+</html>

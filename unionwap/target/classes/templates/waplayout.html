@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout">
+<head>
+    <title th:text="${wapTitle}"/>
+    <meta charset="utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="keywords" content="WAP广告联盟,WAP广告, wap广告平台,移动广告平台,移动广告联盟,广告联盟" />
+    <meta name="description" content="点优移动传媒WAP广告联盟，致力打造国内最好的WAP广告联盟，优质丰富的广告媒体，多式多样的广告形式，精准高效的广告投放，合理透明的计费方式，确保您的每一分投入都能产生最大的价值。" />
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" href="/css/style.css"/>
+</head>
+<body>
+<header class="header">
+    <div class="center-wrap">
+        <a href="/" class="logo"><img src="/images/logo.png" alt="" /></a>
+        <ul class="header-nav clearfix">
+            <li th:class="${menu eq 'index' ? 'acitve':''}"><a href="/">首页</a></li>
+            <li th:class="${menu eq 'product' ? 'acitve':''}"><a href="/product">产品服务</a></li>
+            <li th:class="${menu eq 'notice' ? 'acitve':''}"><a href="/notice">公告动态</a></li>
+            <li th:class="${menu eq 'service' ? 'acitve':''}"><a href="/service">服务条款</a></li>
+            <li th:class="${menu eq 'about' ? 'acitve':''}"><a href="/about">关于我们</a></li>
+        </ul>
+    </div>
+</header>
+<div layout:fragment="content"></div>
+<footer class="footer">
+    <div class="center-wrap">
+        <a href="javascript:void(0);" class="logo"><img src="/images/logo2.png" alt="" /></a>
+        <div class="footer-info">
+            <ul class="clearfix">
+                <li><a href="/about">关于我们</a></li>
+                <li><a href="/service">服务条款</a></li>
+            </ul>
+            <p>COPYRIGHT &copy;2016-2017 ALL RIGHTS RESERVED. 镇江蓝色思维网络科技有限公司 版权所有 <a href="http://www.miitbeian.gov.cn/" target="_blank" style="color: #fff;">粤ICP备16084038号</a></p>
+        </div>
+    </div>
+</footer>
+<script src="/js/jquery.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<script type="text/javascript">
+/*<![CDATA[*/
+//新闻图片轮播
+$('.carousel').carousel({
+    interval: 5000
+})
+/*]]>*/
+</script>
+<div style="display: none;" layout:fragment="script"></div>
+</body>
+</html>

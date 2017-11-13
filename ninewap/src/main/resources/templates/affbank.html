@@ -1,0 +1,65 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="afflayout">
+<head>
+    <title>点优移动传媒会员后台</title>
+</head>
+<body>
+<div id="page-main" layout:fragment="content">
+    <div class="row" th:if="${(successmsg ne null) or (errmsg ne null)}">
+        <div th:class="|alert ${successmsg ne null ? 'alert-success' : (errmsg ne null ? 'alert-danger' : '')} alert-dismissible|" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <strong th:text="${successmsg ne null ? successmsg : (errmsg ne null ? errmsg : '')}"/>
+        </div>
+    </div>
+    <div class="basicbox bank row">
+        <div class="basicin col-md-12 col-sm-12 col-xs-12">
+            <h1><b>银行信息设置</b></h1>
+            <form role="form" id="form" th:action="@{/aff/bank}" method="post" onsubmit="return checkform()">
+                <div class="basicside">
+                    <div class="form-group">
+                        <label for="bankname">收款银行</label>
+                        <select class="form-control banksel" name="bankname" id="bankname">
+                            <option th:value="|中国银行|" th:selected="${session.userContext.bankname eq '中国银行'}">中国银行</option>
+                            <option th:value="|农业银行|" th:selected="${session.userContext.bankname eq '农业银行'}">农业银行</option>
+                            <option th:value="|工商银行|" th:selected="${session.userContext.bankname eq '工商银行'}">工商银行</option>
+                            <option th:value="|建设银行|" th:selected="${session.userContext.bankname eq '建设银行'}">建设银行</option>
+                            <option th:value="|招商银行|" th:selected="${session.userContext.bankname eq '招商银行'}">招商银行</option>
+                            <option th:value="|支付宝|" th:selected="${session.userContext.bankname eq '支付宝'}" th:if="${session.userContext.bankname eq '支付宝'}">支付宝</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="openbank">开户支行</label>
+                        <input type="text" class="form-control" id="openbank" name="bankbranch" th:value="${session.userContext.bankbranch}" placeholder="非支付宝需填写详细支行" />
+                    </div>
+                    <div class="form-group">
+                        <label for="bankaccount">开户姓名</label>
+                        <input type="text" class="form-control" id="bankaccount" name="bankaccount" th:value="${session.userContext.bankaccount}" placeholder="必填" />
+                    </div>
+                    <div class="form-group">
+                        <label for="banknum">银行帐号</label>
+                        <input type="number" class="form-control" id="banknum" name="banknum" th:value="${session.userContext.banknum}" placeholder="必填" th:if="${session.userContext.bankname ne '支付宝'}"/>
+                        <input type="text" class="form-control" id="banknum" name="banknum" th:value="${session.userContext.banknum}" placeholder="必填" th:if="${session.userContext.bankname eq '支付宝'}"/>
+                    </div>
+                </div>
+                <div class="basicbtn">
+                    <button class="btn btn-lg">修改</button>
+                    <span id="reset">重置信息</span>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div style="display: none;" layout:fragment="script">
+<script type="application/javascript" th:inline="javascript">
+/*<![CDATA[*/
+function checkform() {
+    var name = $('#bankaccount').val().trim(),num = $('#banknum').val().trim();
+    if (!name) {$('#bankaccount').focus();return false;}
+    if (!num) {$('#banknum').focus();return false;}
+}
+/*]]>*/
+</script>
+</div>
+</body>
+</html>

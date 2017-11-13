@@ -1,0 +1,57 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="${wapTitle}"/>
+    <meta charset="utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="keywords" content="WAP广告联盟,WAP广告, wap广告平台,移动广告平台,移动广告联盟,广告联盟"/>
+    <meta name="description" content="点优移动传媒WAP广告联盟，致力打造国内最好的WAP广告联盟，优质丰富的广告媒体，多式多样的广告形式，精准高效的广告投放，合理透明的计费方式，确保您的每一分投入都能产生最大的价值。"/>
+    <!-- Bootstrap Styles-->
+    <link href="/assets/css/bootstrap.css" rel="stylesheet"/>
+    <!-- FontAwesome Styles-->
+    <link href="/assets/css/font-awesome.css" rel="stylesheet"/>
+    <!-- checkbox -->
+    <link href="/assets/css/checkbox3.min.css" rel="stylesheet"/>
+    <link href="/assets/css/style.css" rel="stylesheet"/>
+</head>
+<body>
+<div class="bgimg" style="padding-top: 10%;">
+    <div class="relog">
+        <h1>登录点优后台</h1>
+        <form role="form" th:action="@{/logcheck}" method="post" onsubmit="return checkform();">
+            <div class="form-group relog-input">
+                <i class="fa fa-user"></i>
+                <input type="text" name="username" value="" placeholder="请输入用户名，以字母开头" id="username"/>
+            </div>
+            <div class="form-group relog-input">
+                <i class="fa fa-lock"></i>
+                <input type="password" name="password" value="" placeholder="6-20字符作为登录密码" id="password"/>
+            </div>
+            <div class="form-group relog-btnbox">
+                <button class="btn relog-btn" type="submit">登陆</button>
+            </div>
+            <div class="relog-other">
+                <a href="/">返回首页</a>
+                <a href="/reg/aff">注册账号</a>
+                <a href="javascript:void(0);" onclick="javascript:alert('请联系专属客服可找回密码');">找回密码</a>
+            </div>
+        </form>
+    </div>
+</div>
+<!-- /. WRAPPER  -->
+<!-- JS Scripts-->
+<!-- jQuery Js -->
+<script src="/assets/js/jquery-1.10.2.js"></script>
+<!-- Bootstrap Js -->
+<script src="/assets/js/bootstrap.min.js"></script>
+<script type="application/javascript">
+/*<![CDATA[*/
+function checkform() {
+   var name = $('#username').val().trim(),pass = $('#password').val().trim();
+   if (!name) {$('#username').focus();return false;}
+   if (!pass) {$('#password').focus();return false;}
+}
+/*]]>*/
+</script>
+</body>
+</html>

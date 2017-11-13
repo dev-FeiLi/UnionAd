@@ -1,0 +1,38 @@
+syntax = "proto3";
+package io.union.log.common.proto;
+
+option java_package = "io.union.log.common.proto";
+option java_outer_classname = "StatHourMoneyProto";
+
+message StatHourMoneyMessage {
+
+    uint64 id = 1;
+    uint64 uid = 2;
+    uint64 siteid = 3;
+    uint64 planid = 4;
+    uint64 add_time = 5;
+    double hour0 = 6;
+    double hour1 = 7;
+    double hour2 = 8;
+    double hour3 = 9;
+    double hour4 = 10;
+    double hour5 = 11;
+    double hour6 = 12;
+    double hour7 = 13;
+    double hour8 = 14;
+    double hour9 = 15;
+    double hour10 = 16;
+    double hour11 = 17;
+    double hour12 = 18;
+    double hour13 = 19;
+    double hour14 = 20;
+    double hour15 = 21;
+    double hour16 = 22;
+    double hour17 = 23;
+    double hour18 = 24;
+    double hour19 = 25;
+    double hour20 = 26;
+    double hour21 = 27;
+    double hour22 = 28;
+    double hour23 = 29;
+}

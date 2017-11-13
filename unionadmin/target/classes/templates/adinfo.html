@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"  layout:decorator="${session.userContext.menuPos eq 'layout-top-nav' ? 'layoutTop' : 'layoutLeft'}">
+<head>
+    <title></title>
+    <style type="text/css">
+        .form-horizontal .control-group {
+            margin-bottom: 14px;
+        }
+        .heading {
+            border-bottom: 1px solid #dcdcdc;
+            margin-bottom: 18px;
+            padding-bottom: 5px;
+            padding-left: 10px;
+        }
+        .formSep {
+            padding-bottom: 12px;
+            border-bottom: 1px dashed #dcdcdc;
+        }
+        .form-horizontal .control-label {
+            float: left;
+            width: 130px;
+            padding-top: 5px;
+            text-align: right;
+        }
+        .form-horizontal .controls {
+            margin-left: 30px;
+            padding-left: 130px;
+            margin-bottom: 0px;
+        }
+        select {
+            height: auto;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 5px;
+            line-height: 20px;
+        }
+        .input_text {
+            height: 24px;
+            padding: 0px 6px;
+            margin-bottom: 10px;
+            font-size: 14px;
+            line-height: 20px;
+            color: #555;
+            vertical-align: middle;
+            -webkit-border-radius: 4px;
+            -moz-border-radius: 4px;
+            border-radius: 4px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
+            -moz-box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
+            box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
+            -webkit-transition: border linear .2s, box-shadow linear .2s;
+            -moz-transition: border linear .2s, box-shadow linear .2s;
+            -o-transition: border linear .2s, box-shadow linear .2s;
+            transition: border linear .2s, box-shadow linear .2s;
+        }
+        .form-horizontal .controls span {
+            color: #666;
+            padding-left: 10px;
+        }
+        ul, ol {
+            padding: 0;
+            margin: 0;
+            display: block;
+            list-style: none;
+        }
+        .span30{
+            width: 30%;
+        }
+
+        ol, ul {
+            list-style: none;
+        }
+        .has-error{
+            color: #c73222!important;
+        }
+    </style>
+
+</head>
+<body>
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper" layout:fragment="content">
+
+    <section class="content">
+        <form id="tf" class="form-horizontal" th:method="post">
+            <div>
+                <h3 class="heading" id="pageTitle" th:utext="${initType}"></h3>
+                <div class="control-group formSep">
+                    <label class="control-label">所属广告计划</label>
+                    <div class="controls">
+                        <select name="planid" id="planid">
+                            <option value=""> 请选择一个计划 </option>
+                            <optgroup label="CPC">
+                                <option th:each="adPlan:${planOptions.cpcList}" th:value="${adPlan.planId}" th:text="${adPlan.title}"></option>
+                            </optgroup>
+                            <optgroup label="CPM">
+                                <option th:each="adPlan:${planOptions.cpmList}" th:value="${adPlan.planId}" th:text="${adPlan.title}"></option>
+                            </optgroup>
+                            <optgroup label="CPV">
+                                <option th:each="adPlan:${planOptions.cpvList}" th:value="${adPlan.planId}" th:text="${adPlan.title}"></option>
+                            </optgroup>
+                            <optgroup label="CPA">
+                                <option th:each="adPlan:${planOptions.cpaList}" th:value="${adPlan.planId}" th:text="${adPlan.title}"></option>
+                            </optgroup>
+                        </select>
+                        <span class="has-error" style="display: none" id="planidError"></span>
+                    </div>
+                </div>
+                <div class="control-group formSep">
+                    <label class="control-label">广告名称</label>
+                    <div class="controls">
+                        <input name="adname" id="adname" class="input_text" placeholder="广告名称" th:value="${adInfo.adname}" style="width: 400px;"/>
+                        <span class="has-error" style="display: none" id="adnameError"></span>
+                    </div>
+                </div>
+                <div class="control-group formSep">
+                    <label class="control-label">广告类型</label>
+                    <div class="controls">
+                        <select name="adtype" id="adtype" class="input_text">
+                            <option value="">请选择</option>
+                            <option value="1" th:selected="${adInfo.adtype} == 1">移动弹窗</option>
+                            <option value="2" th:selected="${adInfo.adtype} == 2">移动悬浮</option>
+                            <option value="3" th:selected="${adInfo.adtype} == 3">移动横幅</option>
+                        </select>
+                        <span class="has-error" style="display: none" id="adtypeError"></span>
+                    </div>
+                </div>
+                <div class="control-group formSep">
+                    <label class="control-label">显示尺寸</label>
+                    <div class="controls">
+                        <!-- 显示尺寸 option 通过js 来联动 -->
+                        <select name="size" id="size" class="input_text">
+                            <option value="640*200">640x200 &nbsp;</option>
+                            <option value="640*150">640x150 &nbsp;</option>
+                            <option value="640*100">640x100 &nbsp;</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="control-group formSep">
+                    <label class="control-label">数据来源</label>
+                    <div class="controls">
+                        <!-- 显示尺寸 option 通过js 来联动 -->
+                        <select name="dataType" id="dataType" class="input_text">
+                            <option value="0" th:selected="${adInfo.dataType eq 0}">默认 &nbsp;</option>
+                            <option value="1" th:selected="${adInfo.dataType eq 1}">接入的JS &nbsp;</option>
+                            <option value="2" th:selected="${adInfo.dataType eq 2}">接入的Json &nbsp;</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="control-group formSep" id="imgUpload">
+                    <label class="control-label">上传图片</label>
+                    <div class="controls">
+                        <input type="radio" name="files" value="up" th:checked="true"/>上传文件
+                        <input type="radio" name="files" value="url"/>远程文件
+                        <br />
+                        <br />
+                        <span id="_up" style="display: block;" >
+                            <input type="file" class="input_text span30" name="imageurl" id="imageurl"/>
+                        </span>
+                        <span id="_url" style="display: none;">
+                            <input type="text" name="urlfile" id="urlfile" class="input_text span30"/> 远程绝对地址支持JPG,GIF,PNG,SWF,HTML（支持HTML格式文件 ）
+                        </span>
+                    </div>
+                </div>
+                <div class="control-group formSep" id="imgEffect">
+                    <label class="control-label">图片效果</label>
+                    <div class="controls">
+                        <select name="adeffect" id="adeffect" class="input_text">
+                            <option value="0" th:selected="${adInfo.adeffect eq 0}">默认</option>
+                            <option value="1" th:selected="${adInfo.adeffect eq 1}">抖几下</option>
+                            <option value="2" th:selected="${adInfo.adeffect eq 2}">从右进</option>
+                            <option value="3" th:selected="${adInfo.adeffect eq 3}">远近观</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="control-group formSep">
+                    <label class="control-label">广告地址</label>
+                    <div class="controls">
+                        <input class="input_text span30" type="url" name="adurl" id="adurl" th:value="${adInfo.adurl}" style="width: 600px;"/>
+                        <span class="has-error" style="display: none" id="adurlError"></span>
+                    </div>
+                </div>
+                <div class="control-group formSep">
+                    <label class="control-label">是否暗层</label>
+                    <div class="controls">
+                        <input type="radio" name="limitdiv" id="limitdiv" value="0" />默认
+                        <input type="radio" name="limitdiv" id="limitdiv" value="1" />不弹
+                        <input type="radio" name="limitdiv" id="limitdiv" value="2" />每个IP一次
+                        <input type="radio" name="limitdiv" id="limitdiv" value="3" />随机
+                        <input type="radio" name="limitdiv" id="limitdiv" value="4" />每次
+                    </div>
+                </div>
+                <div class="control-group formSep" id="limitdivheightWrapper" style="display: none">
+                    <label class="control-label">暗层高度</label>
+                    <div class="controls">
+                        <input type="text" class="input_text" name="limitdivheight" id="limitdivheight" placeholder="高度"
+                        th:value="${adInfo.limitdivheight}"/>px
+                    </div>
+                </div>
+                <div class="control-group formSep">
+                    <label class="control-label">是否弹窗</label>
+                    <div class="controls">
+                        <input type="radio" name="limitpop" value="0" th:checked="${adInfo.limitdiv} ==0"/>默认
+                        <input type="radio" name="limitpop" value="1" th:checked="${adInfo.limitdiv} ==1"/>不弹
+                        <input type="radio" name="limitpop" value="2" th:checked="${adInfo.limitdiv} ==2"/>每个IP一次
+                        <input type="radio" name="limitpop" value="3" th:checked="${adInfo.limitdiv} ==3"/>随机
+                        <input type="radio" name="limitpop" value="4" th:checked="${adInfo.limitdiv} ==4"/>每次
+                    </div>
+                </div>
+                <div class="control-group formSep">
+                    <label class="control-label">扣量比例</label>
+                    <div class="controls">
+                        <input type="input" class="input_text" name="deduction" id="deduction" placeholder="扣量比例" th:value="${adInfo.deduction}"/>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <!-- 提交按钮 -->
+        <div class="control-group" style="height:50px; margin-bottom:30px; margin-left: 158px;">
+            <div class="controls">
+                <button class="btn btn-gebo" type="button" id="f_button" style="display:none">下一步</button>
+                <button class="btn btn-primary" id="f_submit" style="">提交</button>
+            </div>
+        </div>
+        <div class="control-group formSep">
+            <h3 class="heading">素材预览</h3>
+            <div class="controls">
+                <img src="" id="showImg" />
+            </div>
+        </div>
+    </section>
+    <input id="adid" type="hidden" th:value="${adInfo.adid}"/>
+    <input id="hiddenPlanId" type="hidden" th:value="${planId}"/>
+</div>
+
+<div style="display: none;" layout:fragment="script">
+    <!-- form validate -->
+    <script src="https://cdn.bootcss.com/jquery-validate/1.16.0/jquery.validate.js"></script>
+    <script src="https://cdn.bootcss.com/jquery.form/4.2.1/jquery.form.js"></script>
+
+    <script type="application/javascript" th:inline="JavaScript">
+        /*<![CDATA[*/
+        function checkForm(){
+            var hasError = false;
+            var errorId = [];
+            if (!$("#planid").val()) {
+                $("#planidError").text("请选择所属广告计划");
+                errorId.push("planidError")
+                hasError = true;
+            }
+            if (!$("#adname").val()) {
+                $("#adnameError").text("广告名称不能为空");
+                errorId.push("adnameError");
+                hasError = true;
+            }
+            if (!$("#adtype").val()) {
+                $("#adtypeError").text("请选择广告类型");
+                errorId.push("adtypeError");
+                hasError = true;
+            }
+            if (!$("#adurl").val()) {
+                $("#adurlError").text("广告地址不能为空")
+                errorId.push("adurlError");
+                hasError = true;
+            }
+            $.each(errorId, function(i, error){
+                $("#"+error).show();
+            });
+            return hasError;
+        }
+
+        function clearError() {
+            $(".has-error").hide().text("");
+        }
+
+        function setFormVal(data){
+            // 所属计划
+            $("#planid").val(data.ad.planid);
+            data.ad.planid ? $("#planid").prop("disabled", true) : '';
+            // 广告类型
+            data.ad.adtype && $("#adtype").prop("disabled", true);
+            // 显示尺寸
+            var size = data.ad.width + "*" + data.ad.height;
+            $("#size").val(size).prop("disabled", true);
+
+            // 数据来源
+            if (data.ad.dataType != 0) {
+                $("#imgUpload,#imgEffect").hide();
+            }
+
+            // 上传图片
+            if (data.ad.imageurl) {
+                data.ad.imageurl.indexOf("http") == 0 ? $("#urlfile").val(data.ad.imageurl): "";
+            }
+            // 是否暗层
+            if (data.ad.limitdiv != '0' && data.ad.limitdiv != '1') {
+                $("#limitdivheightWrapper").show();
+            }
+            $("input[name='limitdiv']")[data.ad.limitdiv].checked = true;
+            $("#showImg").attr("src", data.imagePreView);
+        }
+
+        function adurlSetByPlan(planid) {
+            $.ajax({
+                type: 'POST',
+                url: '/manage/getAdsPlanById',
+                async: true,
+                dataType: 'json',
+                data:{"planId": planid},
+                success: function(data){
+                    if (data.plan) {
+                        $("input[name='adurl']").val(data.plan.adsUrl);
+                    }
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown){
+                    alert("getAdInfoById error...");
+                }
+            });
+        }
+
+        function init() {
+            if ($("#pageTitle").text() === "编辑广告"){
+                var adid = $("#adid").val();
+                $.ajax({
+                    type: "POST",
+                    url: "/manage/getAdInfoById",
+                    async: true,
+                    contentType: 'application/x-www-form-urlencoded',
+                    dataType: "json",
+                    data: {"adid": adid},
+                    success: setFormVal,
+                    error: function(XMLHttpRequest, textStatus, errorThrown){
+                        alert("getAdInfoById error...");
+                    }
+                });
+            } else {
+                $("#hiddenPlanId").val() && $("form #planid").val($("#hiddenPlanId").val());
+                $("#hiddenPlanId").val() && adurlSetByPlan($("#hiddenPlanId").val());
+            }
+        }
+
+        /*]]>*/
+    </script>
+    <script type="application/javascript" th:inline="JavaScript">
+        /*<![CDATA[*/
+        init();
+
+
+        /** page  bind events follows **/
+        // 所属广告计划onchange事件
+        $("select[name='planid']").on('change', function(){
+            var planid = $("select[name='planid'] option:selected").val();
+            adurlSetByPlan(planid);
+        });
+
+        // 数据来源联动
+        $("select[name='dataType']").on("change", function(){
+            if ($(this).val() != 0) {
+                $("#imgUpload,#imgEffect").hide()
+                $("#urlfile").val("");
+                var file = $("#imageurl");
+                file.after(file.clone().val(""));
+                file.remove();
+            } else {
+                $("#imgUpload,#imgEffect").show();
+            }
+        });
+
+        // 上传图片radio click
+        $("input[name='files']").click(function(){
+            this.value === "url" ? $("#_url").show() && $("#_up").hide(): $("#_up").show() && $("#_url").hide();
+            if (this.value === "up") {
+                $("input[name='urlfile']").val("");
+            }
+            if (this.value === "url") {
+                $("input[name='imageurl']").val("");
+            }
+        });
+
+        // 是否暗层
+        $("input[name='limitdiv']").on("click", function(){
+            (this.value == "0" || this.value == "1") ? $("#limitdivheightWrapper").hide(): $("#limitdivheightWrapper").show();
+           if (this.value == "0" || this.value == "1") {
+                $("#limitdivheight").val("");
+           }
+        });
+
+        // 提交
+        $("#f_submit").on("click", function(){
+            clearError();
+            if (checkForm()) {
+                return;
+            }
+            var thisBtn = $(this);
+            var form = new FormData(document.getElementById("tf"));
+            form.append("adid", $("#adid").val());
+            $("#planid").is(":disabled") && form.append("planid", $("#planid").val());
+            $("#adtype").is(":disabled") && form.append("adtype", $("#adtype").val());
+            $("#size").is(":disabled") && form.append("size", $("#size").val());
+            $.ajax({
+                url: "/manage/saveAdInfo",
+                type: "POST",
+                data: form,
+                processData: false,
+                contentType: false,
+                success: function(data){
+                    if (data.error) {
+                        alert(data.error);
+                    } else {
+                        thisBtn.prop("disabled", true);
+                        $(".has-error").hide().text("");
+                        alert("提交成功");
+                        // 按照林谋伟 需求， 新建完之后跳到编辑页面
+                        window.location.href = "/manage/initAd?adid=" + data.adid;
+                    }
+                },
+                error:function(e){
+                    console.log(e);
+                    alert("错误！！");
+                }
+            });
+        });
+
+        /*]]>*/
+    </script>
+</div>
+</body>
+</html>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" layout:decorator="waplayout">
+<head>
+    <title th:text="${wapTitle}"/>
+</head>
+<body>
+<div layout:fragment="content">
+    <section class="product1">
+        <div class="center-wrap pro-center">
+            <div class="pro-main clearfix">
+                <img src="/images/pro1.png" alt=""/>
+                <div class="pro-char">
+                    <h1>插屏广告</h1>
+                    <p><b>使用说明：</b>在移动设备访问时在页面上全屏覆盖显示广告图片，用户可以手动关闭广告图片。</p>
+                    <p><b>投放位置：</b>网页顶部内嵌js代码（网站主），app开启时缓冲显示暂停对话框内，退出对话框（开发者）</p>
+                    <p><b>适用对象：</b>网站主APP开发者<br/>
+                        <b>计费方式：</b>CPM
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="product2">
+        <div class="center-wrap pro-center">
+            <div class="pro-main clearfix">
+                <div class="pro-char">
+                    <h1>横幅(通栏广告)</h1>
+                    <p><b>使用说明：</b>在移动设备访问时，在屏幕的顶部或底部显示通栏广告。</p>
+                    <p><b>投放位置：</b>网页顶部内嵌js代码（网站主）。</p>
+                    <p><b>适用对象：</b>网站主APP开发者<br/>
+                        <b>计费方式：</b>CPM
+                    </p>
+                </div>
+                <img src="/images/pro2.png" alt=""/>
+            </div>
+        </div>
+    </section>
+    <section class="product3">
+        <div class="center-wrap pro-center">
+            <div class="pro-main clearfix">
+                <img src="/images/pro3.png" alt=""/>
+                <div class="pro-char">
+                    <h1>点击广告</h1>
+                    <p><b>使用说明：</b>在移动设备访问时，在屏幕固定框架位置展示；</p>
+                    <p><b>投放位置：</b>网页顶部内嵌js代码（网站主）</p>
+                    <p><b>适用对象：</b>网站主APP开发者<br/>
+                        <b>计费方式：</b>CPM
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+</body>
+</html>

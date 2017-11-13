@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" layout:decorator="waplayout">
+<head>
+	<title th:text="${wapTitle}"/>
+</head>
+<body>
+<div layout:fragment="content">
+	<section class="aboutbg">
+		<div class="about-box center-wrap">
+			<title>Oops! 您来到了错误页</title>
+			<div class="about-char" style="text-align: center;">
+				<p th:text="${errmsg}"/>
+				<p>返回 <a href="index">首页</a> 或者 <a href="/login">会员登录</a> 继续操作</p>
+			</div>
+		</div>
+	</section>
+</div>
+</body>
+</html>

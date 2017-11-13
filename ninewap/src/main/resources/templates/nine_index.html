@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8" />
+<title th:text="${wapTitle}"/>
+<link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="/css/nine_style.css" />
+<script src="/js/jquery.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+</head>
+<body>
+	<header class="header">
+		<div class="center-wrap clearfix">
+			<a href="/nine_index" class="logo"><img src="/images/nine/logo.png" width="179" height="44" /></a>
+			<ul class="nav">
+				<li><a href="/nine_index" class="active">首页</a></li>
+				<li><a href="/nine_product">产品介绍</a></li>
+				<li><a href="/nine_flow">流量变现</a></li>
+				<li><a href="/nine_notice">公告动态</a></li>
+				<li><a href="/nine_about">关于我们</a></li>
+			</ul>
+			<a href="/nine_login" class="login btn">登录</a>
+			<a href="/reg/adv" class="register btn">广告主注册</a>
+			<a href="/reg/aff" class="register btn">网站主注册</a>
+		</div>
+	</header>
+	<section id="myCarousel" class="carousel slide banner">
+	<!-- 轮播（Carousel）指标 -->
+	<ol class="carousel-indicators">
+		<li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+        <li data-target="#myCarousel" data-slide-to="1"></li>
+	</ol>
+	<!-- 轮播（Carousel）项目 -->
+		<div class="carousel-inner">
+			<div class="item active">
+				<img src="/images/nine/banner.jpg" alt="First slide" />
+				<a href="/reg/adv" class="quickreg">快速注册</a>
+			</div>
+			<div class="item">
+            	<img src="/images/nine/banner.jpg" alt="Second slide" />
+            	<a href="/reg/adv" class="quickreg">快速注册</a>
+        	</div>
+		</div>
+	</section>
+	<section class="bg_gray">
+		<div class="center-wrap advan">
+			<div class="index_title">
+				<h1>我们的优势</h1>
+				<b></b>
+				<h2>更合理、透明的费用管理模式，帮助你平衡成本和收益</h2>
+			</div>
+			<div class="link clearfix">
+				<a href="javascript:;">
+					<img src="/images/nine/icon1.png" />
+					<h2>优质的媒体资源</h2>
+					<b></b>
+					<p>九点移动广告平台涉及手机报、手机游戏、手机文学手机视频等方面的资源，拥有高质量用户群体。让您极大的规避无效投入，获得更高产出</p>
+				</a>
+				<a href="javascript:;">
+					<img src="/images/nine/icon2.png" />
+					<h2>精准定向投放</h2>
+					<b></b>
+					<p>我们为您提供了众多广告定向条件，您可以从中选择适合达成您商业目标的条件锁定人群，包括人口属性，商业兴趣，地理位置等</p>
+				</a>
+				<a href="javascript:;">
+					<img src="/images/nine/icon3.png" />
+					<h2>合理多样的计费方式</h2>
+					<b></b>
+					<p>我们为您提供了众多广告定向条件，您可以从中选择适合达成您商业目标的条件锁定人群，包括人口属性，商业兴趣，地理位置等</p>
+				</a>
+			</div>
+		</div>
+	</section>
+	<section class="bg_white">
+		<div class="center-wrap adver">
+			<div class="index_title">
+				<h1>广告形式</h1>
+				<b></b>
+				<h2>多样化的展示方式，让您的广告更精准的送达至目标用户</h2>
+			</div>
+			<div id="myAdver" class="carousel slide lb carousel-fade">
+				<!-- 轮播（Carousel）指标 -->
+					<ol class="carousel-indicators">
+						<li data-target="#myAdver" data-slide-to="0" class="active">banner广告</li>
+        				<li data-target="#myAdver" data-slide-to="1">插屏广告</li>
+        				<li data-target="#myAdver" data-slide-to="2">原生广告</li>
+					</ol>
+				<!-- 轮播（Carousel）项目 -->
+				<div class="carousel-inner">
+					<div class="item active">
+						<div class="ad"><img src="/images/nine/ad1.png" alt="First slide" /></div>
+						<div class="info">
+							<h1>Banner广告</h1>
+							<h2>合适在用户停留比较久或者访问频繁的页面</h2>
+							<strong>特点：</strong>
+							<ul>
+								<li>嵌入简单，页面通用性极强。</li>
+								<li>最高的曝光可见性，利于转化收益。</li>
+								<li>常规素材即可满足，广告填充率稳定。</li>
+							</ul>
+						</div>
+					</div>
+					<div class="item">
+            			<div class="ad"><img src="/images/nine/ad2.png" alt="Second slide" /></div>
+            			<div class="info">
+							<h1>插屏广告</h1>
+							<h2>以半屏或全屏大图的方式展现APP之中，拥有信息承载环境纯净且品牌到达力强劲的优势</h2>
+							<strong>特点：</strong>
+							<ul>
+								<li>大图曝光，显著的用户视觉感染力。</li>
+								<li>品牌传播效应强，促进广告eCPM提高。</li>
+								<li>自定义插入时刻，更能符合用户使用场景。</li>
+							</ul>
+						</div>
+        			</div>
+        			<div class="item">
+            			<div class="ad"><img src="/images/nine/ad3.png" alt="Second slide" /></div>
+            			<div class="info">
+							<h1>原生广告</h1>
+							<h2>作为应用的一部分与APP高度融合，在用户不经意的浏览过程中展现广告</h2>
+							<strong>特点：</strong>
+							<ul>
+								<li>CPC计费方式</li>
+								<li>与应用高度融合，展现位置千变万化</li>
+								<li>支持Android和iOS平台</li>
+							</ul>
+						</div>
+        			</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<section class="bg_gray">
+		<div class="center-wrap partner">
+			<div class="index_title">
+				<h1>战略合作品牌</h1>
+				<b></b>
+				<h2>精准的投放效果，获得超10000+品牌广告客户的认可</h2>
+			</div>
+			<div class="company clearfix">
+				<a href="javascript:;"><img src="/images/nine/1.jpg" /></a>
+				<a href="javascript:;"><img src="/images/nine/2.jpg" /></a>
+				<a href="javascript:;"><img src="/images/nine/3.jpg" /></a>
+				<a href="javascript:;"><img src="/images/nine/4.jpg" /></a>
+				<a href="javascript:;"><img src="/images/nine/5.jpg" /></a>
+				<a href="javascript:;"><img src="/images/nine/6.jpg" /></a>
+				<a href="javascript:;"><img src="/images/nine/7.jpg" /></a>
+				<a href="javascript:;"><img src="/images/nine/8.jpg" /></a>
+				<a href="javascript:;"><img src="/images/nine/9.jpg" /></a>
+				<a href="javascript:;"><img src="/images/nine/10.jpg" /></a>
+				<a href="javascript:;"><img src="/images/nine/11.jpg" /></a>
+				<a href="javascript:;"><img src="/images/nine/12.jpg" /></a>
+				<a href="javascript:;"><img src="/images/nine/13.jpg" /></a>
+				<a href="javascript:;"><img src="/images/nine/14.jpg" /></a>
+				<a href="javascript:;"><img src="/images/nine/15.jpg" /></a>
+				<a href="javascript:;"><img src="/images/nine/16.jpg" /></a>
+				<a href="javascript:;"><img src="/images/nine/17.jpg" /></a>
+				<a href="javascript:;"><img src="/images/nine/18.jpg" /></a>
+			</div>
+		</div>
+	</section>
+	<footer class="footer">
+		<div class="footertop">
+			<ul>
+				<li>帮助中心</li><li><a href="/nine_about">关于我们</a></li><li><a href="/nine_about">加入我们</a></li>
+			</ul>
+			<ul>
+				<li>广告主客服</li>
+				<li th:each="node,nodeStat:${services}" th:if="${(node.utype eq 4) and (node.ustatus eq 1)}">
+					<a th:href="@{tencent://message/(uin=${node.qq},Site=${wapUrl},Menu=yes)}" th:text="${node.realname + '(' + node.qq + ')'}"/>
+				</li>
+			</ul>
+			<ul>
+				<li>网站主客服</li>
+				<li th:each="node,nodeStat:${services}" th:if="${(node.utype eq 3) and (node.ustatus eq 1)}">
+					<a th:href="@{tencent://message/(uin=${node.qq},Site=${wapUrl},Menu=yes)}" th:text="${node.realname + '(' + node.qq + ')'}"/>
+				</li>
+			</ul>
+			<ul>
+				<li>联系我们</li>
+				<li>联系方式：0751-89569130</li>
+				<li>上班时间：周一至周五9：00-18：00</li>
+				<li>联系邮箱：1372751327@qq.com</li>
+			</ul>
+			<div class="rqcode"><img src="/images/nine/rqcode.jpg" width="133" height="133" /></div>
+		</div>
+	</footer>
+	<footer class="footer2">
+		<p>COPYRIGHT @2016 深圳市蓝色思维网络科技有限公司 ALL RIGHTS RESERVED.版权所有</p>
+	</footer>
+<script type="text/javascript">
+	  $('.carousel').carousel();
+</script>
+</body>
+</html>

@@ -1,0 +1,50 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="afflayout">
+<head>
+    <title>点优移动传媒会员后台</title>
+</head>
+<body>
+<div id="page-main" layout:fragment="content">
+    <div class="row" th:if="${(successmsg ne null) or (errmsg ne null)}">
+        <div th:class="|alert ${successmsg ne null ? 'alert-success' : (errmsg ne null ? 'alert-danger' : '')} alert-dismissible|" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <strong th:text="${successmsg ne null ? successmsg : (errmsg ne null ? errmsg : '')}"/>
+        </div>
+    </div>
+    <div class="basicbox row">
+        <div class="basicin col-md-12 col-sm-12 col-xs-12">
+            <h1><b>我的账户</b></h1>
+            <form role="form" id="form" th:action="@{/aff/basic}" method="post">
+                <div class="basicside">
+                    <input type="hidden" name="uid" th:value="${session.userContext.uid}"/>
+                    <div class="form-group">
+                        <label for="username">用户名</label>
+                        <input type="text" class="form-control" id="username" name="username" th:value="${session.userContext.username}" readonly="true" />
+                    </div>
+                    <div class="form-group">
+                        <label for="realname">联系人</label>
+                        <input type="text" class="form-control" id="realname" name="realname" th:value="${session.userContext.realname}" />
+                    </div>
+                    <div class="form-group">
+                        <label for="mobile">联系电话</label>
+                        <input type="number" th:maxlength="11" class="form-control" id="mobile" name="mobile" th:value="${session.userContext.mobile}" />
+                    </div>
+                    <div class="form-group">
+                        <label for="qq">联系QQ</label>
+                        <input type="number" class="form-control" id="qq" name="qq" th:value="${session.userContext.qq}" />
+                    </div>
+                    <div class="form-group">
+                        <label for="idcard">证件号码</label>
+                        <input type="text" class="form-control" id="idcard" name="idcard" th:value="${session.userContext.idcard}" />
+                    </div>
+                </div>
+                <div class="basicbtn">
+                    <button class="btn btn-lg" type="submit">提交</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,14 @@
+syntax = "proto3";
+package io.union.log.common.proto;
+
+option java_package = "io.union.log.common.proto";
+option java_outer_classname = "UnionReqtsProto";
+
+message UnionReqtsMessage {
+
+    uint64 id = 1;
+    uint64 uid = 2;
+    uint64 zoneid = 3;
+    uint64 add_time = 4;
+    uint64 requests = 5;
+}

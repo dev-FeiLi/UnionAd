@@ -1,0 +1,52 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" layout:decorator="advlayout">
+<head>
+    <title>点优移动传媒会员后台</title>
+</head>
+<body>
+<div id="page-main" layout:fragment="content">
+    <div class="basicbox row" th:if="${(successmsg ne null) or (errmsg ne null)}">
+        <div th:class="|alert ${successmsg ne null ? 'alert-success' : (errmsg ne null ? 'alert-danger' : '')} alert-dismissible|" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <strong th:text="${successmsg ne null ? successmsg : (errmsg ne null ? errmsg : '')}"/>
+        </div>
+    </div>
+    <div class="basicbox row">
+        <div class="page-table col-md-12 col-sm-12 col-xs-12">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered table-hover">
+                            <thead>
+                            <tr>
+                                <th>广告ID</th>
+                                <th>广告名称</th>
+                                <th>类型</th>
+                                <th>平台</th>
+                                <th>状态</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="node : ${planmap}" th:object="${node.value}">
+                                <td th:text="*{planid}"/>
+                                <td th:text="*{title}"/>
+                                <td th:text="*{paytype eq 1?'CPM':(paytype eq 2?'CPV':(paytype eq 3?'CPC':(paytype eq 4?'CPA':'CPS')))}"/>
+                                <td>
+                                    <span class="label label-primary" th:if="*{limitdevice ne null}" th:each="d : *{#strings.arraySplit(limitdevice, ',')}"
+                                          th:text="${d eq '1' ? 'PC' : (d eq '2' ? 'iOS' : (d eq '3' ? 'Android' : 'WinPhone'))}"/>
+                                </td>
+                                <td>
+                                    <span class="label label-success" th:if="*{pstatus eq 0}">正常</span>
+                                    <span class="label label-danger" th:if="*{pstatus ne 0}">锁定</span>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

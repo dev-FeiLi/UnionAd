@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"  layout:decorator="${session.userContext.menuPos eq 'layout-top-nav' ? 'layoutTop' : 'layoutLeft'}">
+<head>
+    <title></title>
+</head>
+<body>
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper" layout:fragment="content">
+    <section class="content-header">
+        <h1 th:if="${stattype eq 'plan'}" th:text="|计划报表|"/>
+        <h1 th:if="${stattype eq 'u'}" th:text="|站长报表|"/>
+        <h1 th:if="${stattype eq 'ad'}" th:text="|广告报表|"/>
+        <h1 th:if="${stattype eq 'zone'}" th:text="|广告位报表|"/>
+    </section>
+    <section class="content">
+        <form th:action="${'/manage/' + stattype + 'statlist'}" method="post">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <input type="number" class="col-sm-6 form-control" aria-label="..." th:value="${searchValue}" name="searchValue"/>
+                    <span class="input-group-addon">
+						<select style="border:none; background-color:#eee; font-size:15px;" name="searchField">
+							<option th:selected="${searchField eq 'planid'}" value="planid">计划ID</option>
+                            <option th:selected="${searchField eq 'uid'}" value="uid">站长ID</option>
+                            <option th:selected="${searchField eq 'adid'}" value="adid">广告ID</option>
+                            <option th:selected="${searchField eq 'zoneid'}" value="zoneid">广告位ID</option>
+						</select>
+					</span>
+                    <span class="input-group-addon">
+                        <select style="border:none; background-color:#eee; font-size:15px;" name="sortField">
+                            <option th:selected="${sortField eq ''}" value="">默认排序</option>
+                            <option th:selected="${sortField eq 'views'}" value="views">展现</option>
+                            <option th:selected="${sortField eq 'clicks'}" value="clicks">点击量</option>
+                            <option th:selected="${sortField eq 'clickip'}" value="clickip">点击IP</option>
+                            <option th:selected="${sortField eq 'paynum'}" value="paynum">结算数</option>
+                            <option th:selected="${sortField eq 'sumpay'}" value="sumpay">应付</option>
+                            <option th:selected="${sortField eq 'sumprofit'}" value="sumprofit">盈利</option>
+                        </select>
+                    </span>
+                    <span class="input-group-addon">
+                        <select style="border:none; background-color:#eee; font-size:15px;" name="limitType">
+                            <option th:selected="${limitType eq ''}" value="">所有类型</option>
+                            <option th:selected="${limitType eq '1'}" value="1">CPM</option>
+                            <option th:selected="${limitType eq '2'}" value="2">CPV</option>
+                            <option th:selected="${limitType eq '3'}" value="3">CPC</option>
+                            <option th:selected="${limitType eq '4'}" value="4">CPA</option>
+                            <option th:selected="${limitType eq '5'}" value="5">CPS</option>
+                        </select>
+                    </span>
+                </div><!-- /input-group -->
+            </div><!-- /.col-lg-6 -->
+            <div class="col-md-1">
+                <button id="export" type="button" class="form-control" title="导出"><i class="fa fa-download"></i></button>
+            </div>
+            <div class="clearfix"></div>
+            <div class="col-md-3 col-sm-6 col-xs-6">
+                <div class="input-group">
+                    <input name="startTime" id="start-date" class="form-control" readonly="true" th:value="${startTime}" placeholder="开始日期"/>
+                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 col-xs-6">
+                <div class="input-group">
+                    <input name="stopTime" id="end-date" class="form-control" readonly="true" th:value="${stopTime}" placeholder="结束日期"/>
+                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                </div>
+            </div>
+            <div class="col-md-1">
+                <button class="form-control" type="submit" title="查询 "><i class="fa fa-search"></i></button>
+            </div>
+        </div>
+        </form>
+        <table id="table" class="table"></table>
+        <input id="stattype" type="hidden" th:value="${stattype}" />
+    </section>
+</div>
+<div style="display: none;" layout:fragment="script">
+<script type="application/javascript" th:inline="JavaScript">
+/*<![CDATA[*/
+$('#start-date').datepicker({
+    language : 'zh-CN',
+    todayBtn: "linked",
+    clearBtn: true,// 自定义属性,true 显示 清空按钮 false 隐藏 默认:true
+    format: "yyyy-mm-dd",
+    keyboardNavigation: true,
+    forceParse: false,
+    calendarWeeks: false,
+    autoclose: true,
+    endDate: /*[[${stopTime}]]*/
+}).on('changeDate', function (ev) {
+    $('#end-date').datepicker('setStartDate', ev.date);
+});
+$('#end-date').datepicker({
+    language : 'zh-CN',
+    todayBtn: "linked",
+    clearBtn: true,// 自定义属性,true 显示 清空按钮 false 隐藏 默认:true
+    format: "yyyy-mm-dd",
+    keyboardNavigation: true,
+    forceParse: false,
+    calendarWeeks: false,
+    autoclose: true,
+    startDate: /*[[${startTime}]]*/
+}).on('changeDate', function (ev) {
+    $('#start-date').datepicker('setEndDate', ev.date);
+});
+var height = $(window).width() <= 767 ? $(window).height() - 220 : $(window).height() - 135;
+$('#table').bootstrapTable({
+    url: /*[[${'/manage/'+stattype+'statdata'}]]*/,
+    striped: true,  //表格显示条纹
+    pagination: true, //启动分页
+    paginationLoop: false, //
+    pageSize: 50,  //每页显示的记录数
+    pageNumber: 1, //当前第几页
+    pageList: [50, 100, 200],  //记录数可选列表
+    search: false,  //是否启用查询
+    sortable: false, //是否启用排序
+    showHeader: true, //
+    showFooter: true, //
+    singleSelect: true, //
+    toolbar: '#toolbar', //
+    stickyHeader: true, // 是否固定表头
+    sidePagination: "server", //表示服务端请求
+    queryParamsType: "undefined",// limit or undefined
+    queryParams: function queryParams(params) {   //设置查询参数
+        var param = {
+            //这里是在ajax发送请求的时候设置一些参数 params有什么东西，自己看看源码就知道了
+            searchField : /*[[${searchField}]]*/,
+            searchValue : /*[[${searchValue}]]*/,
+            sortField : /*[[${sortField}]]*/,
+            limitType : /*[[${limitType}]]*/,
+            startTime : /*[[${startTime}]]*/,
+            stopTime : /*[[${stopTime}]]*/,
+            page : params.pageNumber - 1,
+            size : params.pageSize
+        };
+        return param;
+    },
+    columns: [
+        {field: 'addTime', title: '日期', align: 'center', valign: 'middle', formatter: function (value, row, index) {
+            try {return new Date(value.time).format('yyyy-MM-dd');}catch (e){}
+        }},
+        {field: 'id', title: '名称', align: 'left', valign: 'middle', formatter: function (value, row, index) {
+            if ($("#stattype").val() === 'u'){
+                return "<a href='/manage/userList?uid="+ row.id +"'>["+ row.id +"]"+ row.name +"</a>";
+            } else if ($("#stattype").val() === 'plan'){
+                return "<a href='/manage/planlist?planId=" + row.id + "'>[" + row.id + "]" + row.name + "</a>";
+            }
+            return '[' + row.id + ']' + row.name;
+        }},
+        {field: 'views', title: '展现', align: 'center', valign: 'middle'},
+        {field: 'clicks', title: '点击', align: 'center', valign: 'middle'},
+        {field: 'clickip', title: '排重', align: 'center', valign: 'middle'},
+        {field: 'clickRate', title: '点击率(排重)', align: 'center', valign: 'middle', formatter: function (value, row, index) {
+            try {if (row.paynum) {var rate = row.clickip / row.paynum * 100; return rate.toFixed(2)+'%';}return '0%';}catch(e){}
+        }},
+        {field: 'paynum', title: '结算', align: 'center', valign: 'middle'},
+        {field: 'dedunum', title: '扣量', align: 'center', valign: 'middle'},
+        {field: 'payRate', title: '结算率', align: 'center', valign: 'middle', formatter: function (value, row, index) {
+            try {if (row.views) {var rate = row.paynum / row.views * 100; return rate.toFixed(2)+'%';}return '0%';}catch(e){}
+        }},
+        {field: 'sumpay', title: '应付', align: 'center', valign: 'middle'},
+        {field: 'sumadvpay', title: '应收', align: 'center', valign: 'middle'},
+        {field: 'sumprofit', title: '盈利', align: 'center', valign: 'middle'}
+    ]
+});
+
+// export数据,
+$("#export").on("click", function(){
+    var prefix = /*[[${'/manage/' + stattype + 'statdataExport'}]]*/;
+    var limitType = $("select[name='limitType']").val() ? $("select[name='limitType']").val() : 0;
+    var url = prefix + '?searchField=' + $("select[name='searchField']").val() + '&searchValue=' + $("input[name='searchValue']").val()
+        + '&sortField=' + $("select[name='sortField']").val() + '&limitType=' + limitType + '&startTime=' + $("#start-date").val()
+        + '&stopTime=' + $("#end-date").val();
+    var form = $("<form>");//定义一个form表单
+    form.attr("style","display:none");
+    form.attr("target","");
+    form.attr("method","post"); //请求类型
+    form.attr("action",url); //请求地址
+    $("body").append(form);//将表单放置在web中
+    form.submit(); //表单提交
+    return false;
+});
+
+/*]]>*/
+</script>
+</div>
+</body>
+</html>

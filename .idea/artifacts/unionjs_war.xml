@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="unionjs:war">
+    <output-path>$PROJECT_DIR$/unionjs/target</output-path>
+    <root id="archive" name="unionjs.war">
+      <element id="artifact" artifact-name="unionjs:war exploded" />
+    </root>
+  </artifact>
+</component>

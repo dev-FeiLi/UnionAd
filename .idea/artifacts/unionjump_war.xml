@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="unionjump:war">
+    <output-path>$PROJECT_DIR$/unionjump/target</output-path>
+    <root id="archive" name="unionadmin.war">
+      <element id="artifact" artifact-name="unionjump:war exploded" />
+    </root>
+  </artifact>
+</component>

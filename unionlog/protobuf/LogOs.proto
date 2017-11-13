@@ -1,0 +1,13 @@
+syntax = "proto3";
+package io.union.log.common.proto;
+
+option java_package = "io.union.log.common.proto";
+option java_outer_classname = "LogOsProto";
+
+message LogOsMessage {
+    uint64 id = 1;
+    string cus_os = 2;
+    uint64 cus_num = 3;
+    uint64 uid = 4;
+    uint64 add_time = 5;
+}

@@ -1,0 +1,549 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" layout:decorator="${session.userContext.menuPos eq 'layout-top-nav' ? 'layoutTop' : 'layoutLeft'}">
+<head>
+    <title></title>
+    <style type="text/css">
+        .zone-zstatus{
+            margin:15px;
+            color: black;
+        }
+    </style>
+</head>
+<body>
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper" layout:fragment="content">
+    <section class="content-header">
+        <h1>广告位管理</h1>
+    </section>
+    <section class="content">
+        <div id="toolbar" class="btn-group">
+            <button id="all" type="button" class="btn btn-default  plan-type">
+                <span class="glyphicon glyphicon-home" aria-hidden="true"></span>全部列表
+            </button>
+            <button id="btn_add" type="button" class="btn btn-default plan-type">
+                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>增加
+            </button>
+            <button id="cpc" type="button" class="btn btn-default plan-type">
+                <span class="glyphicon glyphicon-search" aria-hidden="true"></span>CPC
+            </button>
+            <button id="cpm" type="button" class="btn btn-default plan-type">
+                <span class="glyphicon glyphicon-search" aria-hidden="true"></span>CPM
+            </button>
+            <button id="cpv" type="button" class="btn btn-default plan-type">
+                <span class="glyphicon glyphicon-search" aria-hidden="true"></span>CPV
+            </button>
+            <button id="cps" type="button" class="btn btn-default plan-type">
+                <span class="glyphicon glyphicon-search" aria-hidden="true"></span>CPS
+            </button>
+            <button id="cpa" type="button" class="btn btn-default plan-type">
+                <span class="glyphicon glyphicon-search" aria-hidden="true"></span>CPA
+            </button>
+            <div>
+                <span class="zone-zstatus"><a class="glyphicon glyphicon-ok zstatus" zstatus="0" href="javacript:void(0);">正常</a></span>
+                <span class="zone-zstatus"><a class="glyphicon glyphicon-lock zstatus" zstatus="9" href="javacript:void(0);">锁定</a></span>
+            </div>
+        </div>
+        <table id="table" class="table"></table>
+        <input type="hidden" th:value="${uid}" id="searchContent"/>
+    </section>
+    <div class="modal fade" id="modalDialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content" style="width:800px;">
+                <form role="form" th:action="@{/manage/addZone}" method="post" id="form" class="form-horizontal">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title" id="myModalLabel">广告位信息</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="zonename" class="col-sm-2 control-label">名称</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="zonename" name="zonename" placeholder="必填" maxlength="50"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="uid" class="col-sm-2 control-label">会员ID</label>
+                            <div class="col-sm-10">
+                                <input type="number" class="form-control" id="uid" name="uid" placeholder="必填" maxlength="8"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="paytype" class="col-sm-2 control-label">计费模式</label>
+                            <div class="col-sm-10">
+                                <select class="form-control" name="paytype" id="paytype">
+                                    <option th:text="cpv" th:value="2"/>
+                                    <option th:text="cpm" th:value="1"/>
+                                    <option th:text="cpc" th:value="3"/>
+                                    <option th:text="cpa" th:value="4"/>
+                                    <option th:text="cps" th:value="5"/>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="viewtype2" class="col-sm-2 control-label">展现类型</label>
+                            <div class="col-sm-10">
+                                <select class="form-control" name="viewtype" id="viewtype2">
+                                    <option th:text="移动悬浮" th:value="2"/>
+                                    <option th:text="移动弹窗" th:value="1"/>
+                                    <option th:text="移动横幅" th:value="3"/>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="sizetype" class="col-sm-2 control-label">尺寸</label>
+                            <div class="col-sm-10">
+                                <select class="form-control" name="sizetype" id="sizetype">
+                                    <option value="640x200">640x200</option>
+                                    <option value="640x150">640x150</option>
+                                    <option value="640x100">640x100</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="hcontrol" class="col-sm-2 control-label">位置</label>
+                            <div class="col-sm-10">
+                                <select class="form-control" name="hcontrol" id="hcontrol">
+                                    <option value="bottom">底部</option>
+                                    <option value="top">顶部</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="jdomain" class="col-sm-2 control-label">站长代码域名</label>
+                            <div class="col-sm-10">
+                                <input type="url" class="form-control" id="jdomain" name="jdomain" placeholder="站长解析二级代码域名，没有则空，慎填"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="idomain" class="col-sm-2 control-label">站长图片域名</label>
+                            <div class="col-sm-10">
+                                <input type="url" class="form-control" id="idomain" name="idomain" placeholder="站长解析二级图片域名，没有则空，慎填"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="description" class="col-sm-2 control-label">站长页面描述</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="description" name="description" placeholder="站长页面中的description，或者站长网站的关键字，不清楚就随便填"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">广告模版</label>
+                            <div class="col-sm-10">
+                                <select class="form-control" name="viewname" id="viewname">
+                                    <option value="">系统默认</option>
+                                    <option value="h5CPVDefault">CPV-默认模版</option>
+                                    <option value="h5CPVArticle">CPV-背景模版</option>
+                                    <option value="h5CPVLoop">CPV-循环模版</option>
+                                    <option value="h5CPCDefault">CPC-默认模版</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">广告过滤</label>
+                            <div class="col-sm-10">
+                                <select class="form-control" name="viewadids" id="viewadids">
+                                    <option value="智能轮播">智能轮播</option>
+                                    <option value="手动选择">手动选择</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div id="idsArea" class="box-body" style="display: none; margin: 0 55px;">
+                            <label><input type="checkbox" id="viewadsid_all"/>全选</label>
+                            <div class="a_d"></div>
+                        </div>
+                        <div class="form-group has-feedback">
+                            <span id="errContainer" style="color:red;"/>
+                            <input type="hidden" id="zoneid" name="zoneid"/>
+                            <input type="hidden" id="viewadids2" name="viewadids2"/>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                        <button type="submit" class="btn btn-primary">提交</button>
+                    </div>
+                </form>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal -->
+    </div>
+
+    <div class="modal fade bs-example-modal-sm" tabindex="-1" id="models" role="dialog" aria-labelledby="mySmallModalLabel">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Info</h4>
+                </div>
+                <div class="modal-body">
+                    <span id="returnstatus"></span>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" data-dismiss="modal" class="btn btn-primary">YES</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div style="display: none;" layout:fragment="script">
+    <!-- form validate -->
+    <script src="https://cdn.bootcss.com/jquery-validate/1.16.0/jquery.validate.js"></script>
+    <script src="https://cdn.bootcss.com/jquery.form/4.2.1/jquery.form.js"></script>
+    <script type="application/javascript" th:inline="JavaScript">
+        function addSearchGroup(){
+            // 插入多选框、输入框、按钮
+            var searchBtnGroup = $('<div class="input-group pull-right"></div>');
+            var $button = $('<div class="columns pull-right search-button"><button id="search" class="btn btn-default form-control" type="button" name="refresh" title="查询">' +
+                '<i class="glyphicon glyphicon-search icon-search"></i></button></div>');
+            var $input = $('<div class="columns pull-right search-input"><input id="searchValue" class="form-control" type="text" placeholder="搜索内容"/></div>');
+            var $select = $('<div class="columns pull-right search-select"><select id="viewtype" class="form-control">' +
+                '<option value="1">移动弹窗</option><option value="2">移动悬浮</option><option value="3">移动banner</option>' +
+                '<option value="0" selected="selected">广告类型</option></select></div>');
+            var $select2 = $('<div class="columns pull-right search-select"><select id="search-condition" class="form-control">' +
+                '<option value="zonename">广告位标题</option>' +
+                '<option value="zoneid">广告位ID</option>' +
+                '<option value="uid">站长uid</option>' +
+                '</select></div>');
+            searchBtnGroup.append($button,$input,$select2,$select);
+            $('.fixed-table-toolbar').append(searchBtnGroup);
+        }
+        /*<![CDATA[*/
+        var height = $(window).width() <= 767 ? $(window).height() - 115 : $(window).height() - 65;
+        //渲染数据到表格中
+        $('#table').bootstrapTable({
+            url: '/manage/adsZoneList',
+            striped: true,  //表格显示条纹
+            pagination: true, //启动分页
+            paginationLoop: false, //
+            pageSize: 50,  //每页显示的记录数
+            pageNumber: 1, //当前第几页
+            pageList: [50, 100, 200],  //记录数可选列表
+            search: false,  //是否启用查询
+            sortable: false, //是否启用排序
+            showHeader: true, //
+            showFooter: true, //
+            singleSelect: true, //
+            toolbar: '#toolbar', //
+            stickyHeader: true, // 是否固定表头
+            sidePagination: "server", //表示服务端请求
+            queryParamsType: "undefined",// limit or undefined
+            queryParams: function queryParams(params) {   //设置查询参数
+                var param = {
+                    //这里是在ajax发送请求的时候设置一些参数 params有什么东西，自己看看源码就知道了
+                    page: params.pageNumber - 1,
+                    size: params.pageSize
+                };
+                return param;
+            },
+            columns: [
+                {field: 'zoneid', title: '广告位ID', align: 'center', valign: 'middle'},
+                {field: 'zonename', title: '广告位标题', align: 'left', valign: 'middle',
+                    formatter: function (value, row, index) {
+                        return '<span style="color: #3c8dbc;cursor: pointer; "> ' + value + '</span>'
+                    }
+                },
+                {field: 'username', title: '所属会员', align: 'left', valign: 'middle',
+                    formatter: function(value, row, index){
+                        return "[" + row.uid + "]" + row.username;
+                    }},
+                {field: 'paytype', title: '计费模式', align: 'center', valign: 'middle',
+                    formatter:function(value,row,index){
+                        if(value==1){
+                            return "cpm";
+                        }
+                        else if(value==2){
+                            return "cpv";
+                        }
+                        else if(value==3){
+                            return "cpc";
+                        }
+                        else if(value==4){
+                            return "cpa";
+                        }
+                        else if(value==5){
+                            return "cps";
+                        }
+                    }
+                },
+                {field: 'viewtype', title: '广告类型', align: 'center', valign: 'middle',
+                    formatter:function(value,row,index) {
+                        if (value == 1) {
+                            return "移动弹窗";
+                        } else if (value == 2) {
+                            return "移动悬浮";
+                        }
+                        else if (value == 3) {
+                            return "移动banner";
+                        }
+                    }
+                },
+                {field: '', title: '尺寸', align: 'center', valign: 'middle',
+                    formatter: function(value, row, index){
+                        return row.width + "x" + row.height;
+                    }
+                },
+                {field: 'zstatus', title: '状态', align: 'center', valign: 'middle',
+                    formatter:function(value,row,index){
+                        if (value == 0) {
+                            return '<span class="label label-info">正常</span>';
+                        } else if(value==9) {
+                            return '<span class="label label-danger">锁定</span>';
+                        }
+                    }
+                }
+            ],
+            onClickCell: function (field, value, row, $element) {
+                var array = [];
+                array.push("<a href='javascript: void(0);' class='btn-edit'>修改</a>");
+                array.push("<a class='update-zstatus' href='javascript:void(0);' zstatus='0'  zoneid='" + row.zoneid + "'>正常</a>");
+                array.push("<a class='update-zstatus' href='javascript:void(0);' zstatus='9'  zoneid='" + row.zoneid + "'>锁定</a>");
+                array.push("<a class='update-zstatus' href='javascript:void(0);' zstatus='8'  zoneid='" + row.zoneid + "'>删除</a>");
+                quickMenu((field === 'zonename'), array, $element);
+            }
+        });
+        $('#table').bootstrapTable("refresh");
+        addSearchGroup();
+        // 从网站主列表列表跳过来， 默认查询该站长下的广告位
+        if ($("#searchContent").val()) {
+            $("#table").bootstrapTable('refreshOptions', {url: '/manage/adsZoneList?viewtype=0'
+            + '&searchCondition=uid&searchValue=' + $("#searchContent").val() });
+            addSearchGroup();
+        }
+        $('#modalDialog').modal({backdrop: false, keyboard: false, show: false});
+        //重置表单
+        $('#modalDialog').on('hide.bs.modal', function () {
+            $('#form :input').not(':button,:submit,:reset, select').val('').removeAttr('checked');
+            $('#form select option:first').prop("selected", "selected");
+            $('#idsArea').hide();
+        });
+        function viewAchtion(){
+            var uid = $("#uid").val();
+            var viewadids = $("#viewadids").val();//广告过滤
+            var viewtype = $("#viewtype2").val();//展现类型
+            var sizetype = $("#sizetype").val();//大小
+            if (viewadids == "手动选择") {
+                if (uid == null || uid == "" || uid == undefined) {
+                    alert("uid不能为空！");
+                    return;
+                }
+                $.ajax({
+                    type: 'POST',
+                    url: '/manage/findAllAdsAdByUid',
+                    async: true,
+                    //contentType: 'application/x-www-form-urlencoded',
+                    data: {"uid": uid, "viewtype": viewtype, "sizetype": sizetype},
+                    dataType: "json",
+                    success: function (data) {
+                        var inner = "";
+                        if (data.errMsg) {
+                            alert(data.errMsg);
+                            return;
+                        }
+                        var checkIds = [];
+                        var viewadids2 = $("#viewadids2").val();//隐藏域的值
+                        if (viewadids2 != null && viewadids2 != "") {
+                            checkIds = viewadids2.split(",");
+                        }
+                        $.each(data.data, function (index, item) {
+                            var checked = $.inArray(item.adid + "", checkIds) >= 0 ? "checked='checked'" : "";
+                            inner += "<div class='img'><label><input type='checkbox' name='viewadsid' value='"
+                                + item.adid + "' " + checked + "/>" + item.title + "(Aid#" + item.adid
+                                + ")<br/><img src='" + item.imageurl + "' border='0' style='width:100%' /></label></div>";
+                        });
+                        $(".a_d").html(inner);
+                        $('#idsArea').show();
+                        //$('#modalDialog2').modal('show');
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        alert("error occurred");
+                    }
+                });
+            } else {
+                // $('#modalDialog2').modal('hide');
+                $(".a_d").html("");
+                $('#idsArea').hide();
+            }
+        }
+        $('#viewadids').change(function (){viewAchtion();});
+        //点击添加按钮时触发的事件
+        $('#btn_add').click(function () {
+            $('#modalDialog').modal('show');
+            $("#_hcontrol").hide();
+            document.getElementById("uid").readOnly="";
+            $("#viewadids2").val("");
+        });
+        //点击修改按钮触发的事件
+        $('#menu-panel').on("click", ".btn-edit", function () {
+            var index = $("#table").find("tr.info").data("index");
+            var selObj = $("#table").bootstrapTable('getData')[index];
+            document.getElementById("uid").readOnly="readonly";
+            $('#menu-panel').hide();
+            if (selObj) {
+                var row = selObj;
+                //得到尺寸大小
+                var str=row.width+"x"+row.height;
+                var position="";
+                if (row.hcontrol != "" && row.hcontrol != null) {
+                    var hcontrol = row.hcontrol;
+                    if(hcontrol.position==undefined||hcontrol.position==""||hcontrol.position==null){
+                        hcontrol.position="";
+                    }
+                    position = hcontrol.position;
+                }
+                if(row.viewtype==2){
+                    $("#_hcontrol").show();
+                    document.forms["form"].hcontrol.value =position;//位置
+                }
+                else{
+                    $("#_hcontrol").hide();
+                }
+                document.forms["form"].zoneid.value = row.zoneid;//广告位ID
+                document.forms["form"].zonename.value = row.zonename;//广告位标题
+                document.forms["form"].paytype.value = row.paytype;//计费模式
+                document.forms["form"].viewtype.value = row.viewtype;//广告类型
+                document.forms["form"].sizetype.value = str;//广告尺寸
+                document.forms["form"].uid.value = row.uid;//真实姓名
+                document.forms["form"].jdomain.value = row.jdomain;
+                document.forms["form"].idomain.value = row.idomain;
+                document.forms["form"].description.value = row.description;
+                document.forms["form"].viewname.value = row.viewname;
+                if(row.viewadids!=""&&row.viewadids!=null){
+                    $("#viewadids2").val(row.viewadids);
+                    document.forms["form"].viewadids.value = "手动选择";
+                    viewAchtion();
+                }
+                $('#modalDialog').modal('show');
+            } else {
+                alert('至少选择一条记录');
+            }
+        });
+        $("#form").validate({
+            rules: {
+                zonename: 'required',
+                uid:'required'
+            },
+            messages: {
+                zonename: '广告位标题！',
+                uid:'UID不能为空！'
+            },
+            focusCleanup: true,
+            focusInvalid: false,
+            onfocusin: function (element) {
+                $("#errContainer").html("");
+            },
+            errorPlacement: function (error, element) {
+                $("#errContainer").html("");
+                $("#errContainer").html($(error).text());
+            },
+            submitHandler: function (form) {
+                $(form).ajaxSubmit({
+                    success: function (responseText, statusText, xhr, $form) {
+                        var json = $.parseJSON(responseText);
+                        if (json.result == 'success') {
+                            window.location.reload();
+                        } else if(json.result=='没有该用户UID'){
+                            $("#models").modal("show");
+                            $("#returnstatus").text("没有这个站长编号或者该该编号被删除了！，请重新输入！");
+                        }
+                        else{
+                            alert(responseText);
+                        }
+                    }
+                });
+            }
+        });
+        // zstatus状态更新click 事件
+        $("#menu-panel").on("click", ".update-zstatus", function () {
+            var zoneid = $(this).attr("zoneid");
+            var zstatus = $(this).attr("zstatus");
+            if(!confirm("你是否要做此操作？")){
+                return;
+            }
+            $.ajax({
+                type: 'POST',
+                url : '/manage/updateZstatus',
+                async: true,
+                contentType: 'application/x-www-form-urlencoded',
+                data: {"zoneid": zoneid, "zstatus": zstatus},
+                dataType: "json",
+                success: function(data){
+                    $("#menu-panel").hide();
+                    $("#table").bootstrapTable("refresh");
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown){}
+            });
+        });
+        // 定义搜索框click 事件
+        $(".content").on("click",".search-button #search", function(){
+            var searchCondition = $("#search-condition").val();
+            var searchValue = $("#searchValue").val();
+            var viewtype=$("#viewtype").val();
+            //当搜索框为空值时，直接赋值searchCondition=sitetype
+            if(searchValue==""||searchValue==null){
+                var type ="viewtype";
+                $("#table").bootstrapTable('refreshOptions', {url: '/manage/adsZoneList?searchCondition=' + type
+                +'&&searchValue=' +viewtype });
+            }
+            else{
+                $("#table").bootstrapTable('refreshOptions', {url: '/manage/adsZoneList?searchCondition=' + searchCondition
+                +'&&searchValue=' +searchValue
+                +'&&viewtype='+viewtype});
+            }
+            addSearchGroup();
+        });
+        // 点击全部查询事件
+        $("#all,#normal,#locked,#cpc,#cpm,#cpv,#cpa,#cps").on("click",function(){
+            if (this.id === "normal") {
+                $("#table").bootstrapTable('refreshOptions',{url: '/manage/findZstatus?zstatus=0'});
+            } else if (this.id === "locked") {
+                $("#table").bootstrapTable('refreshOptions', {url:'/manage/findZstatus?zstatus=9'});
+            } else if (this.id === "all") {
+                $("#table").bootstrapTable('refreshOptions',{url: '/manage/adsZoneList'});
+            }
+            else if (this.id === "cpc") {
+                $("#table").bootstrapTable('refreshOptions',{url: '/manage/findByPaytype?paytype=cpc'});
+            }else if (this.id === "cpm") {
+                $("#table").bootstrapTable('refreshOptions',{url: '/manage/findByPaytype?paytype=cpm'});
+            }else if (this.id === "cpv") {
+                $("#table").bootstrapTable('refreshOptions',{url: '/manage/findByPaytype?paytype=cpv'});
+            }else if (this.id === "cpa") {
+                $("#table").bootstrapTable('refreshOptions',{url: '/manage/findByPaytype?paytype=cpa'});
+            }else if (this.id === "cps") {
+                $("#table").bootstrapTable('refreshOptions',{url: '/manage/findByPaytype?paytype=cps'});
+            }
+            addSearchGroup();
+            $(".plan-type").removeClass('active');
+            $(this).addClass('active');
+        });
+        // 定义pstatus状态查询click 事件
+        $(".zstatus").on("click", function(){
+            var searchValue = $(this).attr('zstatus');
+            $("#table").bootstrapTable('refreshOptions', {url: '/manage/findZstatus?zstatus=' + searchValue});
+            addSearchGroup();
+        });
+        //当选择框的值改变时触发的事件
+        $('#viewtype2').change(function(){
+            var viewtype=$("#viewtype2").val();
+            if(viewtype==2){
+                $("#_hcontrol").show();
+            }
+            else{
+                $("#_hcontrol").hide();
+            }
+        });
+        $("#viewadsid_all").on("click", function(){
+            if(this.checked){
+                $('input[name="viewadsid"]').prop("checked", true);
+            }else{
+                $('input[name="viewadsid"]').prop("checked", false);
+            }
+        });
+        //点击enter搜索
+        $(document).keydown(function (event) {
+            if(event.keyCode==13){
+                $("#search").trigger('click');
+            }
+        })
+        /*]]>*/
+    </script>
+</div>
+</body>
+</html>

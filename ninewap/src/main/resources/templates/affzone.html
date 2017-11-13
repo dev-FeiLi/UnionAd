@@ -1,0 +1,119 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" layout:decorator="afflayout">
+<head>
+    <title>点优移动传媒会员后台</title>
+</head>
+<body>
+<div id="page-main" layout:fragment="content">
+    <div class="basicbox row" th:if="${(successmsg ne null) or (errmsg ne null)}">
+        <div th:class="|alert ${successmsg ne null ? 'alert-success' : (errmsg ne null ? 'alert-danger' : '')} alert-dismissible|" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <strong th:text="${successmsg ne null ? successmsg : (errmsg ne null ? errmsg : '')}"/>
+        </div>
+    </div>
+    <div class="pagetitle2 row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <button class="btn btn-primary btn-lg addad" data-toggle="modal" data-target="#myModal">添加新广告位</button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="page-table col-md-12 col-sm-12 col-xs-12">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered table-hover">
+                            <thead>
+                            <tr>
+                                <th>广告位</th>
+                                <th>名称</th>
+                                <th>模式</th>
+                                <th>类型</th>
+                                <th>尺寸</th>
+                                <th>状态</th>
+                                <th>操作</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="node : ${zones}">
+                                <td th:text="${node.zoneid}"/>
+                                <td th:text="${node.zonename}"/>
+                                <td th:text="${node.paytype eq 1?'cpm':(node.paytype eq 2?'cpv':(node.paytype eq 3?'cpc':(node.paytype eq 4?'cps':(ode.paytype eq 5?'cpa':''))))}"/>
+                                <td th:text="${node.viewtype eq 1?'弹窗':(node.viewtype eq 2?'悬浮':(node.viewtype eq 3?'横幅':''))}"/>
+                                <td th:text="${node.width+'x'+node.height}"/>
+                                <td><span class="label label-success" th:if="${node.zstatus eq 0}">正常</span><span class="label label-danger" th:if="${node.zstatus ne 0}">锁定</span></td>
+                                <td><a class="btn btn-primary btn-sm" th:if="${node.zstatus eq 0}" th:text="|查看代码|" href="javascript:void(0);" th:onclick="|viewjs(${node.viewtype},${node.zoneid})|"/></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">查看广告代码</h3>
+                </div>
+                <div class="panel-body" id="panel-body"></div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form role="form" th:action="@{/aff/zone}" method="post" onsubmit="return checkform()">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title" id="myModalLabel">添加新广告位</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="zonename">广告位名称</label>
+                            <input type="text" class="form-control" id="zonename" name="zonename" placeholder="必填"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="paytype">计费模式</label>
+                            <select class="form-control" name="paytype" id="paytype">
+                                <option th:each="node : ${pays}" th:text="${node eq 2 ? 'CPV' : 'CPC'}" th:value="${node}" />
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="viewtype">展现类型</label>
+                            <select class="form-control" name="viewtype" id="viewtype">
+                                <option th:each="node : ${views}" th:text="${node eq 2 ? '悬浮' : '横幅'}" th:value="${node}" />
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="sizetype">尺寸</label>
+                            <select class="form-control" name="sizetype" id="sizetype">
+                                <option th:each="node : ${sizes}" th:text="${node}" th:value="${node}" />
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                        <button type="submit" class="btn btn-primary">提交</button>
+                    </div>
+                </form>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal -->
+    </div>
+</div>
+<div style="display: none;" layout:fragment="script">
+<script type="application/javascript" th:inline="javascript">
+/*<![CDATA[*/
+function checkform() {
+    var name = $('#zonename').val().trim();
+    if (!name) {$('#zonename').focus();return false;}
+}
+function viewjs(ty,id) {
+    var host = /*[[${currentHost}]]*/;
+    $('#panel-body').html('&lt;script src="'+host+'m-'+id+'-'+(Math.floor(Math.random() * 9999999 + 1))+'"&gt;&lt;\/script&gt;')
+}
+/*]]>*/
+</script>
+</div>
+</body>
+</html>
